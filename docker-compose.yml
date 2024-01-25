@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        TIMEZONE: ${TIMEZONE}
+    volumes:
+      - ./:/var/www/html/
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_SECRET: ${APP_SECRET}
+    networks:
+      - nginx_to_php
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+      - ./symfony/:/var/www/symfony/
+    ports:
+      - "8080:80"
+    networks:
+      - nginx_to_php
+
+networks:
+  nginx_to_php:
+    driver: bridge
