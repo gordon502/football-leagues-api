@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: docker/nginx/Dockerfile
     volumes:
-      - ./symfony/:/var/www/symfony/
+      - ./:/var/www/html/
     ports:
       - "8080:80"
     networks:
