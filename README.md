@@ -14,3 +14,9 @@ sh run-dev-env.sh
 ```bash
 docker compose exec php bash
 ```
+
+### Generate JWT keys
+Inside the PHP container, run:
+```bash
+php bin/console lexik:jwt:generate-keypair
+```
