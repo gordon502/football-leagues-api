@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Modules\Index;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api')]
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'app_index')]

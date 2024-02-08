@@ -1,9 +1,8 @@
-controllers:
+index:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: ../src/Modules/Index/
+        namespace: App\Modules\Index
     type: attribute
-    prefix: /api
 
 api_login_check:
     path: /api/login
