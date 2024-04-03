@@ -26,6 +26,7 @@ services:
     App\Modules\Auth\EventListener\JwtAuthenticationFailureListener:
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_failure, method: onAuthenticationFailure }
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_not_found, method: onJwtNotFound }
     # TODO: definitely need to refactor this, but for now it works
     # autowiring services based on DB Implementation
     autowire_factory:
