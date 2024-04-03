@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Common\EventListener;
+
+use App\Common\Response\RouteNotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+final class ExceptionListener
+{
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        /** @var NotFoundHttpException|HttpException $exception */
+        $exception = $event->getThrowable();
+
+        if ($exception instanceof NotFoundHttpException)  {
+            throw new RouteNotFoundException();
+        }
+
+        $event->setResponse(new JsonResponse(
+            data: $exception,
+            status: $exception->getStatusCode()
+        ));
+    }
+}
