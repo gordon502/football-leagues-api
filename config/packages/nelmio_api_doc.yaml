@@ -69,6 +69,4 @@ nelmio_api_doc:
                                                 example: "Invalid credentials, could not log you in."
     areas: # to filter documented areas
         path_patterns:
-            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
-        host_patterns: # document only routes with a host of the form api.*
-            - ^api\.
+            - ^/api(?!/doc$)(?!/doc\.json$) # Accepts routes under /api except /api/doc and /api/doc.json
