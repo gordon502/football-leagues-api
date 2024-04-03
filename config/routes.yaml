@@ -1,7 +1,7 @@
-index:
+users:
     resource:
-        path: ../src/Modules/Index/
-        namespace: App\Modules\Index
+        path: ../src/Modules/User/
+        namespace: App\Modules\User
     type: attribute
 
 api_login_check:
