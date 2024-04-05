@@ -48,10 +48,14 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-football_league}
+      MONGO_INITDB_USER: ${MONGO_INITDB_USER:-user}
+      MONGO_INITDB_PWD: ${MONGO_INITDB_PWD:-password}
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+      - ./docker/mongo/:/docker-entrypoint-initdb.d/
     networks:
         - php_to_mongodb
 
