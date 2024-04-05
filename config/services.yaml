@@ -35,6 +35,10 @@ services:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
 
+    app.jwt_authenticator:
+        class: App\Common\Security\JWTAuthenticator
+        parent: lexik_jwt_authentication.security.jwt_authenticator
+
     # TODO: definitely need to refactor this, but for now it works
     # autowiring services based on DB Implementation
     autowire_factory:

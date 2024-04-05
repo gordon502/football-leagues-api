@@ -22,4 +22,9 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
     {
         return $this->find($id);
     }
+
+    public function findByEmail(string $email): ?UserInterface
+    {
+        return $this->findOneBy(['email' => $email]);
+    }
 }

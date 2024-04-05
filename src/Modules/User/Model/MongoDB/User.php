@@ -144,4 +144,20 @@ class User implements UserInterface
         $this->deletedAt = $deletedAt;
         return $this;
     }
+
+    // Security UserInterface methods
+    public function getRoles(): array
+    {
+        return ['ROLE_' . strtoupper($this->role)];
+    }
+
+    public function eraseCredentials(): void
+    {
+        $this->password = '';
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
 }

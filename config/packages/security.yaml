@@ -6,6 +6,10 @@ security:
             cost: 13
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
 
+    providers:
+        app_user_provider:
+            id: App\Modules\User\Provider\UserProvider
+
     firewalls:
         public:
             pattern: ^/(_(profiler|wdt)css|images|js)/
@@ -22,7 +26,8 @@ security:
         api:
             pattern: ^/api
             stateless: true
-            jwt: ~
+            jwt:
+                authenticator: app.jwt_authenticator
 
 
     # Easy way to control access for large sections of your site
@@ -31,16 +36,6 @@ security:
         - { path: /api/login, roles: PUBLIC_ACCESS }
         - { path: /api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_ADMIN }
-
-when@dev:
-    security:
-        providers:
-            users_in_memory:
-                memory:
-                    users:
-                        admin@admin.com:
-                            password: '$2y$13$U78DKbGetxKtYa2uINj2wu2SgYJHfPNWFR3ZKtZkhJxxkjgYXg1/m'
-                            roles: ROLE_ADMIN
 
 when@test:
     security:
