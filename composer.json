@@ -1,5 +1,7 @@
 {
     "type": "project",
+    "name": "gordon502/football-leagues-api",
+    "description": "Football Leagues API",
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
