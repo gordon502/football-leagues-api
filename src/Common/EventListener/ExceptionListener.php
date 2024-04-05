@@ -15,7 +15,7 @@ final class ExceptionListener
         /** @var NotFoundHttpException|HttpException $exception */
         $exception = $event->getThrowable();
 
-        if ($exception instanceof NotFoundHttpException)  {
+        if ($exception instanceof NotFoundHttpException) {
             throw new RouteNotFoundException();
         }
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Common\OARoleBasedProperty;
 
@@ -55,8 +57,7 @@ class OARoleBasedProperty extends Property
         AdditionalProperties|bool|null $additionalProperties = null,
         ?array $x = null,
         ?array $attachables = null
-    )
-    {
+    ) {
         $description = sprintf(
             '%s | Field available for [%s] roles.',
             $description,

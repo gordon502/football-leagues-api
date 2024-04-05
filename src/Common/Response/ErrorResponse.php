@@ -7,7 +7,7 @@ use JsonSerializable;
 final readonly class ErrorResponse implements JsonSerializable
 {
     public function __construct(
-        public int    $code,
+        public int $code,
         public string $name,
         public string $message
     ) {

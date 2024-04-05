@@ -8,11 +8,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final readonly class AutowireFactory
 {
-
     public function __construct(
         private ContainerInterface $serviceContainer
-    )
-    {
+    ) {
     }
     public function usingDatabaseImplementation(string $namespaceWithFolderParameter): object
     {

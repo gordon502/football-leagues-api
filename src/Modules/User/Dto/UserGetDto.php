@@ -11,8 +11,7 @@ readonly class UserGetDto implements UserGetInterface
 {
     public function __construct(
         private UserGetInterface $user
-    )
-    {
+    ) {
     }
 
     #[Groups(RoleSerializationGroup::ALL)]
