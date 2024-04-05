@@ -10,9 +10,9 @@ doctrine_mongodb:
         default:
             auto_mapping: true
             mappings:
-                App:
-                    dir: '%kernel.project_dir%/src/Document'
-                    prefix: 'App\Document'
+                App\Modules\User\Model\MongoDB:
+                    dir: '%kernel.project_dir%/src/Modules/User/Model/MongoDB'
+                    prefix: 'App\Modules\User\Model\MongoDB'
 
 when@prod:
     doctrine_mongodb:

@@ -42,17 +42,15 @@ services:
         arguments: ['@service_container']
         public: true
 
-    # User Module Autowire
-    user_factory:
-        factory: ['@autowire_factory', 'usingDatabaseImplementation']
-        arguments: ['App\Modules\User\Factory\{DB_IMPL}\UserFactory']
-        class: App\Modules\User\Factory\UserFactoryInterface
-    App\Modules\User\Factory\InMemory\UserFactory:
-        public: true
+#    # User Module Autowire
+#    user_factory:
+#        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+#        arguments: ['App\Modules\User\Factory\{DB_IMPL}\UserFactory']
+#        class: App\Modules\User\Factory\UserFactoryInterface
 
     user_repository:
         factory: ['@autowire_factory', 'usingDatabaseImplementation']
         arguments: ['App\Modules\User\Repository\{DB_IMPL}\UserRepository']
         class: App\Modules\User\Repository\UserRepositoryInterface
-    App\Modules\User\Repository\InMemory\UserRepository:
+    App\Modules\User\Repository\MongoDB\UserRepository:
         public: true

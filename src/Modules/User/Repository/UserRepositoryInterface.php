@@ -7,5 +7,5 @@ use App\Modules\User\Model\UserInterface;
 
 interface UserRepositoryInterface extends FindableByIdInterface
 {
-    public function findById(int|string $id): ?UserInterface;
+    public function findById(string $id): ?UserInterface;
 }

@@ -45,7 +45,7 @@ class UserController extends AbstractController
         response: 404,
         description: 'User not found.',
     )]
-    public function getById(int|string $id): JsonResponse
+    public function getById(string $id): JsonResponse
     {
         $user = $this->userRepository->findById($id);
         if ($user === null) {
