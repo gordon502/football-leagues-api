@@ -13,7 +13,13 @@ use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Xml;
 use OpenApi\Generator;
 
-#[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER | Attribute::TARGET_CLASS_CONSTANT | Attribute::IS_REPEATABLE)]
+#[Attribute(
+    Attribute::TARGET_METHOD |
+    Attribute::TARGET_PROPERTY |
+    Attribute::TARGET_PARAMETER |
+    Attribute::TARGET_CLASS_CONSTANT |
+    Attribute::IS_REPEATABLE
+)]
 class OARoleBasedProperty extends Property
 {
     public function __construct(

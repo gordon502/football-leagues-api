@@ -19,9 +19,13 @@ final readonly class AutowireFactory
         }
 
         return match ($_ENV['DATABASE_IMPLEMENTATION']) {
-            'InMemory' => $this->serviceContainer->get(str_replace('{DB_IMPL}', 'InMemory', $namespaceWithFolderParameter)),
+            'InMemory' => $this->serviceContainer->get(
+                str_replace('{DB_IMPL}', 'InMemory', $namespaceWithFolderParameter)
+            ),
             'MySQL' => $this->serviceContainer->get(str_replace('{DB_IMPL}', 'MySQL', $namespaceWithFolderParameter)),
-            'MongoDB' => $this->serviceContainer->get(str_replace('{DB_IMPL}', 'MongoDB', $namespaceWithFolderParameter)),
+            'MongoDB' => $this->serviceContainer->get(
+                str_replace('{DB_IMPL}', 'MongoDB', $namespaceWithFolderParameter)
+            ),
             default => throw new DatabaseImplementationEnvVariableInvalidException(),
         };
     }
