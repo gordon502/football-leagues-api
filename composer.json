@@ -7,6 +7,7 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/mongodb-odm-bundle": "^5.0",
         "lexik/jwt-authentication-bundle": "^2.20",
         "nelmio/api-doc-bundle": "^4.19",
         "symfony/asset": "7.0.*",
@@ -72,7 +73,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": "true",
             "require": "7.0.*"
         }
     }
