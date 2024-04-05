@@ -19,6 +19,10 @@ final class ExceptionListener
             throw new RouteNotFoundException();
         }
 
+        if (!method_exists($exception, 'getStatusCode')) {
+            return;
+        }
+
         $event->setResponse(new JsonResponse(
             data: $exception,
             status: $exception->getStatusCode()
