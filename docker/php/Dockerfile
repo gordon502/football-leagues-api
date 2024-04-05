@@ -32,6 +32,10 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
     && printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini \
     && "date"
 
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+RUN pecl config-set php_ini /etc/php.ini
+RUN echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/docker-php-config.ini
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
