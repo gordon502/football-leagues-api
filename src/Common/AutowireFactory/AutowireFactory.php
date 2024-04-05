@@ -19,10 +19,9 @@ final readonly class AutowireFactory
         }
 
         return match ($_ENV['DATABASE_IMPLEMENTATION']) {
-            'InMemory' => $this->serviceContainer->get(
-                str_replace('{DB_IMPL}', 'InMemory', $namespaceWithFolderParameter)
+            'MariaDB' => $this->serviceContainer->get(
+                str_replace('{DB_IMPL}', 'MariaDB', $namespaceWithFolderParameter)
             ),
-            'MySQL' => $this->serviceContainer->get(str_replace('{DB_IMPL}', 'MySQL', $namespaceWithFolderParameter)),
             'MongoDB' => $this->serviceContainer->get(
                 str_replace('{DB_IMPL}', 'MongoDB', $namespaceWithFolderParameter)
             ),
