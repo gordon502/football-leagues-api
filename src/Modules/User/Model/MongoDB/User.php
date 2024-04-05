@@ -7,7 +7,7 @@ use App\Modules\User\Repository\MongoDB\UserRepository;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
-#[MongoDB\Document(collection: 'users', repositoryClass: UserRepository::class)]
+#[MongoDB\Document(collection: 'user', repositoryClass: UserRepository::class)]
 class User implements UserInterface
 {
     #[MongoDB\Id(type: 'string', strategy: 'UUID')]
