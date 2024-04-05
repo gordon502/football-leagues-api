@@ -15,6 +15,7 @@ services:
     networks:
       - nginx_to_php
       - php_to_mariadb
+      - php_to_mongodb
   nginx:
     build:
       context: .
