@@ -3,7 +3,8 @@
 ## Development
 
 ### Environment variables
-Copy the `.env` file to `.env.local` and fill/replace the values with your own.
+Copy the `.env` file to `.env.local` and fill/replace the values with your own,
+especially the `MONGODB_URL`, `MONGODB_DB` and `DATABASE_URL`.
 
 ### Run the app
 ```bash
@@ -19,4 +20,17 @@ docker compose exec php bash
 Inside the PHP container, run:
 ```bash
 php bin/console lexik:jwt:generate-keypair
+```
+
+### Create/Update DB schemas
+Inside the PHP container, run:
+```bash
+php bin/console doctrine:mongodb:schema:create
+php bin/console doctrine:schema:create
+```
+
+If you want to update the schema, run:
+```bash
+php bin/console doctrine:mongodb:schema:update --force
+php bin/console doctrine:schema:update --force
 ```
