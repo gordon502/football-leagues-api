@@ -58,3 +58,5 @@ services:
         class: App\Modules\User\Repository\UserRepositoryInterface
     App\Modules\User\Repository\MongoDB\UserRepository:
         public: true
+    App\Modules\User\Repository\MariaDB\UserRepository:
+        public: true
