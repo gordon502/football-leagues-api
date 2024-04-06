@@ -29,7 +29,7 @@ class RoleBasedSerializer
         $user = $this->security->getUser();
 
         // TODO: workaround until we get rid of InMemory users
-        if ($user === null || !method_exists('getRole', $user)) {
+        if ($user === null || !method_exists($user, 'getRole')) {
             return $this->serializer->normalize(
                 $object,
                 null,
