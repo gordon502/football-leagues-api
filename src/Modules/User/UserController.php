@@ -25,7 +25,6 @@ class UserController extends AbstractController
 
     #[Route('/api/users/{id}', name: 'api.users.get_by_id', methods: ['GET'])]
     #[OA\Tag(name: 'Users')]
-    #[Security(name: "Bearer")]
     #[OA\Parameter(
         name: 'id',
         description: 'The id of the user to retrieve.',
