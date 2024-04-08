@@ -2,14 +2,19 @@
 
 namespace App\Modules\User\Model\MongoDB;
 
+use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\User\Model\UserInterface;
 use App\Modules\User\Repository\MongoDB\UserRepository;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 
 #[MongoDB\Document(collection: 'user', repositoryClass: UserRepository::class)]
+#[HasLifecycleCallbacks]
 class User implements UserInterface
 {
+    use TimestampableTrait;
+
     #[MongoDB\Id(type: 'string', strategy: 'UUID')]
     protected string $id;
 

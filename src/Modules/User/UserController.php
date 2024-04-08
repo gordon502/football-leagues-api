@@ -2,16 +2,21 @@
 
 namespace App\Modules\User;
 
+use App\Common\CustomValidation\CustomValidationInterface;
+use App\Common\Response\HttpCode;
 use App\Common\Response\ResourceNotFoundException;
 use App\Common\Serialization\RoleBasedSerializer;
+use App\Common\Validator\DtoValidatorInterface;
+use App\Modules\User\CustomValidation\UserEmailAlreadyExistsValidation;
+use App\Modules\User\Dto\UserCreateDto;
 use App\Modules\User\Dto\UserGetDto;
 use App\Modules\User\Repository\UserRepositoryInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 class UserController extends AbstractController
@@ -19,8 +24,43 @@ class UserController extends AbstractController
     public function __construct(
         #[Autowire(service: 'user_repository')]
         private readonly UserRepositoryInterface $userRepository,
-        private readonly RoleBasedSerializer $serializer
+        private readonly RoleBasedSerializer $serializer,
+        private readonly DtoValidatorInterface $dtoValidator,
+        #[Autowire(service: UserEmailAlreadyExistsValidation::class)]
+        private readonly CustomValidationInterface $userEmailAlreadyExistsValidation
     ) {
+    }
+
+    #[Route('/api/users', name: 'api.users.register', methods: ['POST'])]
+    #[OA\Tag(name: 'Users')]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: UserCreateDto::class)
+    )]
+    #[OA\Response(
+        response: HttpCode::CREATED,
+        description: 'Returns instance of the created user.',
+        content: new Model(type: UserGetDto::class)
+    )]
+    #[OA\Response(
+        response: HttpCode::CONFLICT,
+        description: 'Email is already taken.'
+    )]
+    #[OA\Response(
+        response: HttpCode::UNPROCESSABLE_ENTITY,
+        description: 'Invalid input.'
+    )]
+    public function register(Request $request): JsonResponse
+    {
+        /** @var UserCreateDto $dto */
+        $dto = $this->serializer->denormalize($request->getPayload()->all(), UserCreateDto::class);
+        $this->dtoValidator->validate($dto);
+
+        $this->userEmailAlreadyExistsValidation->validate($dto->getEmail());
+
+        $user = $this->userRepository->create($dto);
+
+        return $this->json($this->serializer->normalize(new UserGetDto($user)), HttpCode::CREATED);
     }
 
     #[Route('/api/users/{id}', name: 'api.users.get_by_id', methods: ['GET'])]

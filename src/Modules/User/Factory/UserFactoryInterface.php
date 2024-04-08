@@ -2,10 +2,10 @@
 
 namespace App\Modules\User\Factory;
 
-use App\Common\Factory\SimpleFactoryInterface;
+use App\Modules\User\Model\UserCreatableInterface;
 use App\Modules\User\Model\UserInterface;
 
-interface UserFactoryInterface extends SimpleFactoryInterface
+interface UserFactoryInterface
 {
-    public function create(): UserInterface;
+    public function create(UserCreatableInterface $userCreatable, string $modelClass): UserInterface;
 }
