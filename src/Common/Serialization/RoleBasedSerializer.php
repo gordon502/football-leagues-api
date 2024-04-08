@@ -5,6 +5,7 @@ namespace App\Common\Serialization;
 use App\Modules\User\Model\UserInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -17,7 +18,7 @@ class RoleBasedSerializer
         Security $security
     ) {
         $this->serializer = new Serializer(
-            normalizers: [new ObjectNormalizer()],
+            normalizers: [new ObjectNormalizer(), new ArrayDenormalizer()],
             encoders: [new JsonEncoder()]
         );
         $this->security = $security;
@@ -41,6 +42,19 @@ class RoleBasedSerializer
             $object,
             null,
             ['groups' => [$user->getRole()]]
+        );
+    }
+
+    public function denormalize(array $data, string $classString): object
+    {
+        /** @var UserInterface|null $user */
+        $user = $this->security->getUser();
+
+        return $this->serializer->denormalize(
+            $data,
+            $classString,
+            'json',
+            ['groups' => [$user?->getRole() ?? RoleSerializationGroup::GUEST]]
         );
     }
 }
