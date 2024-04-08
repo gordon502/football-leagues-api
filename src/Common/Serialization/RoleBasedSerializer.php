@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-class RoleBasedSerializer
+class RoleBasedSerializer implements RoleBasedSerializerInterface
 {
     private Serializer $serializer;
     private Security $security;

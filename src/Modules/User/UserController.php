@@ -5,7 +5,7 @@ namespace App\Modules\User;
 use App\Common\CustomValidation\CustomValidationInterface;
 use App\Common\Response\HttpCode;
 use App\Common\Response\ResourceNotFoundException;
-use App\Common\Serialization\RoleBasedSerializer;
+use App\Common\Serialization\RoleBasedSerializerInterface;
 use App\Common\Validator\DtoValidatorInterface;
 use App\Modules\User\CustomValidation\UserEmailAlreadyExistsValidation;
 use App\Modules\User\Dto\UserCreateDto;
@@ -24,7 +24,7 @@ class UserController extends AbstractController
     public function __construct(
         #[Autowire(service: 'user_repository')]
         private readonly UserRepositoryInterface $userRepository,
-        private readonly RoleBasedSerializer $serializer,
+        private readonly RoleBasedSerializerInterface $serializer,
         private readonly DtoValidatorInterface $dtoValidator,
         #[Autowire(service: UserEmailAlreadyExistsValidation::class)]
         private readonly CustomValidationInterface $userEmailAlreadyExistsValidation
