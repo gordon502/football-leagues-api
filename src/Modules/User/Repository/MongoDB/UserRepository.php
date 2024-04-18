@@ -37,7 +37,7 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
 
     public function findById(string $id): ?UserInterface
     {
-        return $this->find($id);
+        return $this->findOneBy(['id' => $id]);
     }
 
     public function findByEmail(string $email): ?UserInterface

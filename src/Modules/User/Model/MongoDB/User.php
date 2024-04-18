@@ -2,6 +2,8 @@
 
 namespace App\Modules\User\Model\MongoDB;
 
+use App\Common\Model\MongoDB\ModelDbIdTrait;
+use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\User\Model\UserInterface;
 use App\Modules\User\Repository\MongoDB\UserRepository;
@@ -13,10 +15,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 #[HasLifecycleCallbacks]
 class User implements UserInterface
 {
+    use ModelDbIdTrait;
+    use ModelUuidTrait;
     use TimestampableTrait;
-
-    #[MongoDB\Id(type: 'string', strategy: 'UUID')]
-    protected string $id;
 
     #[MongoDB\Field(type: 'string')]
     #[MongoDB\UniqueIndex(order: 'asc')]
@@ -45,11 +46,6 @@ class User implements UserInterface
 
     #[MongoDB\Field(type: 'date', nullable: true)]
     protected ?DateTimeInterface $deletedAt = null;
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
 
     public function getEmail(): string
     {

@@ -2,16 +2,15 @@
 
 namespace App\Modules\User\Model\MariaDB;
 
+use App\Common\Model\MariaDB\ModelDbIdTrait;
+use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\User\Model\UserInterface;
 use App\Modules\User\Repository\MariaDB\UserRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: UserRepository::class)]
@@ -19,13 +18,9 @@ use Doctrine\ORM\Mapping\Table;
 #[HasLifecycleCallbacks]
 class User implements UserInterface
 {
+    use ModelDbIdTrait;
+    use ModelUuidTrait;
     use TimestampableTrait;
-
-    #[Id]
-    #[Column(type: 'string', length: 36, unique: true)]
-    #[GeneratedValue(strategy: 'CUSTOM')]
-    #[CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    protected string $id;
 
     #[Column(type: 'string', unique: true)]
     protected string $email;
@@ -53,11 +48,6 @@ class User implements UserInterface
 
     #[Column(type: 'datetime', nullable: true)]
     protected ?DateTimeInterface $deletedAt = null;
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
 
     public function getEmail(): string
     {

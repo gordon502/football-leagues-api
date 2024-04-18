@@ -4,7 +4,7 @@ namespace App\Modules\User\Model;
 
 interface UserGetInterface
 {
-    public function getId(): string|int;
+    public function getId(): string;
 
     public function getEmail(): string;
 

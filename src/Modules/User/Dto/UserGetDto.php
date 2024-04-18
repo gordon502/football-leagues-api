@@ -16,7 +16,7 @@ readonly class UserGetDto implements UserGetInterface
 
     #[Groups(RoleSerializationGroup::ALL)]
     #[OARoleBasedProperty('User identifier.', RoleSerializationGroup::ALL)]
-    public function getId(): string|int
+    public function getId(): string
     {
         return $this->user->getId();
     }
