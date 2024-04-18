@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Repository\MongoDB;
 
+use App\Common\Repository\MongoDB\FindByHttpQueryFiltersTrait;
 use App\Modules\User\Factory\UserFactoryInterface;
 use App\Modules\User\Model\MongoDB\User;
 use App\Modules\User\Model\UserCreatableInterface;
@@ -12,6 +13,8 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 class UserRepository extends DocumentRepository implements UserRepositoryInterface
 {
+    use FindByHttpQueryFiltersTrait;
+
     private readonly UserFactoryInterface $userFactory;
 
     public function __construct(DocumentManager $dm, UserFactoryInterface $userFactory)

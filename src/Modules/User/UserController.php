@@ -3,6 +3,8 @@
 namespace App\Modules\User;
 
 use App\Common\CustomValidation\CustomValidationInterface;
+use App\Common\HttpQuery\HttpQueryHandlerInterface;
+use App\Common\OAAttributes\OAFilterQueryParameter;
 use App\Common\Response\HttpCode;
 use App\Common\Response\ResourceNotFoundException;
 use App\Common\Serialization\RoleBasedSerializerInterface;
@@ -10,6 +12,7 @@ use App\Common\Validator\DtoValidatorInterface;
 use App\Modules\User\CustomValidation\UserEmailAlreadyExistsValidation;
 use App\Modules\User\Dto\UserCreateDto;
 use App\Modules\User\Dto\UserGetDto;
+use App\Modules\User\Model\UserGetInterface;
 use App\Modules\User\Repository\UserRepositoryInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -27,7 +30,8 @@ class UserController extends AbstractController
         private readonly RoleBasedSerializerInterface $serializer,
         private readonly DtoValidatorInterface $dtoValidator,
         #[Autowire(service: UserEmailAlreadyExistsValidation::class)]
-        private readonly CustomValidationInterface $userEmailAlreadyExistsValidation
+        private readonly CustomValidationInterface $userEmailAlreadyExistsValidation,
+        private readonly HttpQueryHandlerInterface $httpQueryHandler
     ) {
     }
 
@@ -92,5 +96,30 @@ class UserController extends AbstractController
         }
 
         return $this->json($this->serializer->normalize(new UserGetDto($user)));
+    }
+
+    #[Route('/api/users', name: 'api.users.filter', methods: ['GET'])]
+    #[OA\Tag(name: 'Users')]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the users that match the filter.',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserGetDto::class))
+        )
+    )]
+    #[OAFilterQueryParameter]
+    public function filter(Request $request): JsonResponse
+    {
+        $handler = $this->httpQueryHandler->handle(
+            $request->query,
+            UserGetInterface::class
+        );
+
+        $users = $this->userRepository->findByHttpQueryFilters($handler['filters']);
+
+        return $this->json(
+            array_map(fn(UserGetInterface $user) => $this->serializer->normalize(new UserGetDto($user)), $users)
+        );
     }
 }

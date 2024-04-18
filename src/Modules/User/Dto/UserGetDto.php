@@ -2,7 +2,7 @@
 
 namespace App\Modules\User\Dto;
 
-use App\Common\OARoleBasedProperty\OARoleBasedProperty;
+use App\Common\OAAttributes\OARoleBasedProperty;
 use App\Common\Serialization\RoleSerializationGroup;
 use App\Modules\User\Model\UserGetInterface;
 use Symfony\Component\Serializer\Attribute\Groups;

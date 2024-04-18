@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Repository\MariaDB;
 
+use App\Common\Repository\MariaDB\FindByHttpQueryFiltersTrait;
 use App\Modules\User\Factory\UserFactoryInterface;
 use App\Modules\User\Model\MariaDB\User;
 use App\Modules\User\Model\UserCreatableInterface;
@@ -12,6 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
+    use FindByHttpQueryFiltersTrait;
+
     private readonly UserFactoryInterface $userFactory;
 
     public function __construct(

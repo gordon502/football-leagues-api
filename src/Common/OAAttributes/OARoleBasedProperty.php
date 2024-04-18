@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Common\OARoleBasedProperty;
+namespace App\Common\OAAttributes;
 
 use Attribute;
 use OpenApi\Attributes\AdditionalProperties;
