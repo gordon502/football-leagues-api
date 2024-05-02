@@ -11,6 +11,7 @@ use App\Common\OAAttributes\OASortQueryParameter;
 use App\Common\Pagination\PaginatedResponseFactoryInterface;
 use App\Common\Response\HttpCode;
 use App\Common\Response\ResourceNotFoundException;
+use App\Common\Response\SingleObjectResponseFactoryInterface;
 use App\Common\Serialization\RoleBasedSerializerInterface;
 use App\Common\Validator\DtoValidatorInterface;
 use App\Modules\User\CustomValidation\UserEmailAlreadyExistsValidation;
@@ -36,6 +37,7 @@ class UserController extends AbstractController
         #[Autowire(service: UserEmailAlreadyExistsValidation::class)]
         private readonly CustomValidationInterface $userEmailAlreadyExistsValidation,
         private readonly HttpQueryHandlerInterface $httpQueryHandler,
+        private readonly SingleObjectResponseFactoryInterface $singleObjectResponseFactory,
         private readonly PaginatedResponseFactoryInterface $paginatedResponseFactory,
     ) {
     }
@@ -69,7 +71,10 @@ class UserController extends AbstractController
 
         $user = $this->userRepository->create($dto);
 
-        return $this->json($this->serializer->normalize(new UserGetDto($user)), HttpCode::CREATED);
+        return $this->json(
+            $this->singleObjectResponseFactory->fromObject($user, UserGetDto::class),
+            HttpCode::CREATED
+        );
     }
 
     #[Route('/api/users/{id}', name: 'api.users.get_by_id', methods: ['GET'])]
@@ -100,7 +105,7 @@ class UserController extends AbstractController
             throw new ResourceNotFoundException();
         }
 
-        return $this->json($this->serializer->normalize(new UserGetDto($user)));
+        return $this->json($this->singleObjectResponseFactory->fromObject($user, UserGetDto::class));
     }
 
     #[Route('/api/users', name: 'api.users.collection', methods: ['GET'])]
