@@ -3,6 +3,9 @@
 namespace App\Common\Repository\MariaDB;
 
 use App\Common\HttpQuery\HttpQuery;
+use App\Common\Pagination\PaginatedQueryResultInterface;
+use App\Common\Pagination\PaginationOutOfBoundException;
+use App\Common\Repository\PaginatedQueryResult;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -10,7 +13,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 trait FindByHttpQueryTrait
 {
-    public function findByHttpQuery(HttpQuery $query): array
+    public function findByHttpQuery(HttpQuery $query): PaginatedQueryResultInterface
     {
         $qb = $this->createQueryBuilder('filter');
 
@@ -25,6 +28,26 @@ trait FindByHttpQueryTrait
                 ->addOrderBy("filter.{$sort->field}", $sort->direction);
         }
 
-        return $qb->getQuery()->getResult();
+        $totalCount = (clone $qb)->select('COUNT(filter)')->getQuery()->getSingleScalarResult();
+
+        $qb
+            ->setFirstResult(($query->paginate->page - 1) * $query->paginate->limit)
+            ->setMaxResults($query->paginate->limit);
+
+        $data = $qb->getQuery()->getResult();
+
+        $totalPages = (int) ceil($totalCount / $query->paginate->limit);
+
+        if ($query->paginate->page > $totalPages) {
+            throw new PaginationOutOfBoundException();
+        }
+
+        return new PaginatedQueryResult(
+            data: $data,
+            total: $totalCount,
+            limit: $query->paginate->limit,
+            currentPage: $query->paginate->page,
+            totalPages: $totalPages,
+        );
     }
 }

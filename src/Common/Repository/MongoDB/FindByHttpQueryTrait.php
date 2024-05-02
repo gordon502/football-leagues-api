@@ -2,8 +2,10 @@
 
 namespace App\Common\Repository\MongoDB;
 
-use App\Common\HttpQuery\Filter\HttpQueryFilter;
 use App\Common\HttpQuery\HttpQuery;
+use App\Common\Pagination\PaginatedQueryResultInterface;
+use App\Common\Pagination\PaginationOutOfBoundException;
+use App\Common\Repository\PaginatedQueryResult;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use MongoDB\BSON\Regex;
 
@@ -12,7 +14,7 @@ use MongoDB\BSON\Regex;
  */
 trait FindByHttpQueryTrait
 {
-    public function findByHttpQuery(HttpQuery $query): array
+    public function findByHttpQuery(HttpQuery $query): PaginatedQueryResultInterface
     {
         $qb = $this->createQueryBuilder();
 
@@ -33,7 +35,27 @@ trait FindByHttpQueryTrait
                 ->sort($sort->field, $sort->direction === 'asc' ? 1 : -1);
         }
 
-        return $qb->getQuery()->execute()->toArray();
+        $totalCount = (clone $qb)->count()->getQuery()->execute();
+
+        $qb
+            ->skip(($query->paginate->page - 1) * $query->paginate->limit)
+            ->limit($query->paginate->limit);
+
+        $data = $qb->getQuery()->execute()->toArray();
+
+        $totalPages = (int) ceil($totalCount / $query->paginate->limit);
+
+        if ($query->paginate->page > $totalPages) {
+            throw new PaginationOutOfBoundException();
+        }
+
+        return new PaginatedQueryResult(
+            data: $data,
+            total: $totalCount,
+            limit: $query->paginate->limit,
+            currentPage: $query->paginate->page,
+            totalPages: $totalPages,
+        );
     }
 
     private function sqlLikeToRegex(string $sqlLike): Regex

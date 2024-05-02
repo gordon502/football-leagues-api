@@ -5,7 +5,10 @@ namespace App\Modules\User;
 use App\Common\CustomValidation\CustomValidationInterface;
 use App\Common\HttpQuery\HttpQueryHandlerInterface;
 use App\Common\OAAttributes\OAFilterQueryParameter;
+use App\Common\OAAttributes\OALimitQueryParameter;
+use App\Common\OAAttributes\OAPageQueryParameter;
 use App\Common\OAAttributes\OASortQueryParameter;
+use App\Common\Pagination\PaginatedResponseFactoryInterface;
 use App\Common\Response\HttpCode;
 use App\Common\Response\ResourceNotFoundException;
 use App\Common\Serialization\RoleBasedSerializerInterface;
@@ -32,7 +35,8 @@ class UserController extends AbstractController
         private readonly DtoValidatorInterface $dtoValidator,
         #[Autowire(service: UserEmailAlreadyExistsValidation::class)]
         private readonly CustomValidationInterface $userEmailAlreadyExistsValidation,
-        private readonly HttpQueryHandlerInterface $httpQueryHandler
+        private readonly HttpQueryHandlerInterface $httpQueryHandler,
+        private readonly PaginatedResponseFactoryInterface $paginatedResponseFactory,
     ) {
     }
 
@@ -99,7 +103,7 @@ class UserController extends AbstractController
         return $this->json($this->serializer->normalize(new UserGetDto($user)));
     }
 
-    #[Route('/api/users', name: 'api.users.filter', methods: ['GET'])]
+    #[Route('/api/users', name: 'api.users.collection', methods: ['GET'])]
     #[OA\Tag(name: 'Users')]
     #[OA\Response(
         response: 200,
@@ -111,17 +115,19 @@ class UserController extends AbstractController
     )]
     #[OAFilterQueryParameter]
     #[OASortQueryParameter]
-    public function filter(Request $request): JsonResponse
+    #[OAPageQueryParameter]
+    #[OALimitQueryParameter]
+    public function collection(Request $request): JsonResponse
     {
         $httpQuery = $this->httpQueryHandler->handle(
             $request->query,
             UserGetInterface::class
         );
 
-        $users = $this->userRepository->findByHttpQuery($httpQuery);
+        $paginatedUsers = $this->userRepository->findByHttpQuery($httpQuery);
 
         return $this->json(
-            array_map(fn(UserGetInterface $user) => $this->serializer->normalize(new UserGetDto($user)), $users)
+            $this->paginatedResponseFactory->fromPaginatedQueryResultInterface($paginatedUsers, UserGetDto::class)
         );
     }
 }

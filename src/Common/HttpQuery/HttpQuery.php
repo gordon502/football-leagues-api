@@ -3,6 +3,7 @@
 namespace App\Common\HttpQuery;
 
 use App\Common\HttpQuery\Filter\HttpQueryFilter;
+use App\Common\HttpQuery\Paginate\HttpQueryPaginate;
 use App\Common\HttpQuery\Sort\HttpQuerySort;
 
 /**
@@ -14,6 +15,7 @@ readonly class HttpQuery
     public function __construct(
         public array $filters,
         public array $sort,
+        public HttpQueryPaginate $paginate,
     ) {
     }
 }
