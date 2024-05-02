@@ -2,7 +2,6 @@
 
 namespace App\Common\HttpQuery\Filter;
 
-use App\Common\HttpQuery\Exception\HttpQueryFilterParserException;
 use ReflectionClass;
 
 use function trim;

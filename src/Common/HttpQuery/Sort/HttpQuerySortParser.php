@@ -2,8 +2,7 @@
 
 namespace App\Common\HttpQuery\Sort;
 
-use App\Common\HttpQuery\Exception\HttpQueryFilterParserException;
-use App\Common\HttpQuery\Exception\HttpQuerySortParserException;
+use App\Common\HttpQuery\Filter\HttpQueryFilterParserException;
 use ReflectionClass;
 
 class HttpQuerySortParser implements HttpQuerySortParserInterface

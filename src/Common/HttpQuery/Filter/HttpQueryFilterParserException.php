@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\HttpQuery\Exception;
+namespace App\Common\HttpQuery\Filter;
 
 use App\Common\Response\HttpCode;
 use JsonSerializable;

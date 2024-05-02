@@ -2,8 +2,6 @@
 
 namespace App\Common\HttpQuery\Filter;
 
-use App\Common\HttpQuery\Exception\HttpQueryFilterParserException;
-
 interface HttpQueryFilterParserInterface
 {
     /**
