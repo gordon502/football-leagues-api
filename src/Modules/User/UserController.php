@@ -17,9 +17,11 @@ use App\Common\Validator\DtoValidatorInterface;
 use App\Modules\User\CustomValidation\UserEmailAlreadyExistsValidation;
 use App\Modules\User\Dto\UserCreateDto;
 use App\Modules\User\Dto\UserGetDto;
+use App\Modules\User\Dto\UserUpdateDto;
 use App\Modules\User\Model\UserGetInterface;
 use App\Modules\User\Repository\UserRepositoryInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -43,6 +45,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users', name: 'api.users.register', methods: ['POST'])]
+    #[Security(name: null)]
     #[OA\Tag(name: 'Users')]
     #[OA\RequestBody(
         required: true,
@@ -78,6 +81,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users/{id}', name: 'api.users.get_by_id', methods: ['GET'])]
+    #[Security(name: null)]
     #[OA\Tag(name: 'Users')]
     #[OA\Parameter(
         name: 'id',
@@ -105,6 +109,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users', name: 'api.users.collection', methods: ['GET'])]
+    #[Security(name: null)]
     #[OA\Tag(name: 'Users')]
     #[OA\Response(
         response: 200,
@@ -129,6 +134,64 @@ class UserController extends AbstractController
 
         return $this->json(
             $this->paginatedResponseFactory->fromPaginatedQueryResultInterface($paginatedUsers, UserGetDto::class)
+        );
+    }
+
+    #[Route('/api/users/{id}', name: 'api.users.update', methods: ['PUT'])]
+    #[OA\Tag(name: 'Users')]
+    #[OA\Parameter(
+        name: 'id',
+        description: 'The id of the user to update.',
+        in: 'path',
+        required: true
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: UserUpdateDto::class)
+    )]
+    #[OA\Response(
+        response: HttpCode::OK,
+        description: 'Returns instance of the updated user.',
+        content: new Model(type: UserGetDto::class)
+    )]
+    #[OA\Response(
+        response: HttpCode::NOT_FOUND,
+        description: 'User not found.',
+    )]
+    #[OA\Response(
+        response: HttpCode::CONFLICT,
+        description: 'Email is already taken.'
+    )]
+    #[OA\Response(
+        response: HttpCode::UNPROCESSABLE_ENTITY,
+        description: 'Invalid input.'
+    )]
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $existingUser = $this->userRepository->findById($id);
+
+        if ($existingUser === null) {
+            throw new ResourceNotFoundException();
+        }
+
+        /** @var UserUpdateDto $dto */
+        $dto = $this->serializer->denormalize(
+            $request->getPayload()->all(),
+            UserUpdateDto::class,
+        );
+
+        $this->dtoValidator->validatePartial($dto);
+
+        if ($dto->getEmail()) {
+            $this->userEmailAlreadyExistsValidation->validate($dto->getEmail());
+        }
+
+        $this->userRepository->updateOne($id, $dto);
+
+        $updatedUser = $this->userRepository->findById($id);
+
+        return $this->json(
+            $this->singleObjectResponseFactory->fromObject($updatedUser, UserGetDto::class)
         );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Modules\User\Repository\MongoDB;
 
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
+use App\Common\Repository\MongoDB\UpdateOneTrait;
 use App\Modules\User\Factory\UserFactoryInterface;
 use App\Modules\User\Model\MongoDB\User;
 use App\Modules\User\Model\UserCreatableInterface;
@@ -14,6 +15,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 class UserRepository extends DocumentRepository implements UserRepositoryInterface
 {
     use FindByHttpQueryTrait;
+    use UpdateOneTrait;
 
     private readonly UserFactoryInterface $userFactory;
 
@@ -40,7 +42,13 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
 
     public function findById(string $id): ?UserInterface
     {
-        return $this->findOneBy(['id' => $id]);
+        $user = $this->findOneBy(['id' => $id]);
+
+        if ($user !== null) {
+            $this->getDocumentManager()->refresh($user);
+        }
+
+        return $user;
     }
 
     public function findByEmail(string $email): ?UserInterface

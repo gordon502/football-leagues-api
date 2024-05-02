@@ -3,6 +3,7 @@
 namespace App\Modules\User\Repository\MariaDB;
 
 use App\Common\Repository\MariaDB\FindByHttpQueryTrait;
+use App\Common\Repository\MariaDB\UpdateOneTrait;
 use App\Modules\User\Factory\UserFactoryInterface;
 use App\Modules\User\Model\MariaDB\User;
 use App\Modules\User\Model\UserCreatableInterface;
@@ -14,6 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
     use FindByHttpQueryTrait;
+    use UpdateOneTrait;
 
     private readonly UserFactoryInterface $userFactory;
 
@@ -40,7 +42,13 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
 
     public function findById(string $id): ?UserInterface
     {
-        return $this->findOneBy(['id' => $id]);
+        $user = $this->findOneBy(['id' => $id]);
+
+        if ($user !== null) {
+            $this->getEntityManager()->refresh($user);
+        }
+
+        return $user;
     }
 
     public function findByEmail(string $email): ?UserInterface

@@ -2,8 +2,10 @@
 
 namespace App\Modules\User\Dto;
 
+use App\Common\Serialization\RoleSerializationGroup;
 use App\Modules\User\Model\UserCreatableInterface;
 use OpenApi\Attributes\Property;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserCreateDto implements UserCreatableInterface
@@ -19,6 +21,7 @@ class UserCreateDto implements UserCreatableInterface
         $this->password = $password;
     }
 
+    #[Groups([RoleSerializationGroup::GUEST])]
     #[Property(description: 'User email. It will be used for login. It must be unique.')]
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -27,6 +30,7 @@ class UserCreateDto implements UserCreatableInterface
         return $this->email;
     }
 
+    #[Groups([RoleSerializationGroup::GUEST])]
     #[Property(description: 'User display name.')]
     #[Assert\NotBlank]
     public function getName(): string
@@ -34,6 +38,7 @@ class UserCreateDto implements UserCreatableInterface
         return $this->name;
     }
 
+    #[Groups([RoleSerializationGroup::GUEST])]
     #[Property(description: 'User password.')]
     #[Assert\Length(
         min: 8,
