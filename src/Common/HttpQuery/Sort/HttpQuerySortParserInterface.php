@@ -2,8 +2,6 @@
 
 namespace App\Common\HttpQuery\Sort;
 
-use App\Common\HttpQuery\Filter\HttpQueryFilterParserException;
-
 interface HttpQuerySortParserInterface
 {
     /**
@@ -11,7 +9,7 @@ interface HttpQuerySortParserInterface
      * @param string $testedInterface
      * @return array<HttpQuerySort>
      *
-     * @throws HttpQueryFilterParserException If the query string is not in the right format.
+     * @throws HttpQuerySortParserException If the query string is not in the right format.
      */
     public function parse(string $sortQuery, string $testedInterface): array;
 }
