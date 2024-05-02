@@ -55,4 +55,13 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
     {
         return $this->findOneBy(['email' => $email]);
     }
+
+    public function delete(string $id): void
+    {
+        $this->createQueryBuilder()
+            ->remove()
+            ->field('id')->equals($id)
+            ->getQuery()
+            ->execute();
+    }
 }

@@ -55,4 +55,14 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     {
         return $this->findOneBy(['email' => $email]);
     }
+
+    public function delete(string $id): void
+    {
+        $this->createQueryBuilder('u')
+            ->delete()
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
 }

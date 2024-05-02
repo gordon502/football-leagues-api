@@ -20,6 +20,7 @@ use App\Modules\User\Dto\UserGetDto;
 use App\Modules\User\Dto\UserUpdateDto;
 use App\Modules\User\Model\UserGetInterface;
 use App\Modules\User\Repository\UserRepositoryInterface;
+use App\Modules\User\Voter\UserVoter;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
@@ -193,5 +194,34 @@ class UserController extends AbstractController
         return $this->json(
             $this->singleObjectResponseFactory->fromObject($updatedUser, UserGetDto::class)
         );
+    }
+
+    #[Route('/api/users/{id}', name: 'api.users.delete', methods: ['DELETE'])]
+    #[OA\Tag(name: 'Users')]
+    #[OA\Response(
+        response: HttpCode::NO_CONTENT,
+        description: 'User deleted.',
+    )]
+    #[OA\Response(
+        response: HttpCode::FORBIDDEN,
+        description: 'Forbidden.'
+    )]
+    #[OA\Response(
+        response: HttpCode::NOT_FOUND,
+        description: 'User not found.',
+    )]
+    public function delete(string $id): JsonResponse
+    {
+        $user = $this->userRepository->findById($id);
+
+        if ($user === null) {
+            throw new ResourceNotFoundException();
+        }
+
+        $this->denyAccessUnlessGranted(UserVoter::DELETE, $user);
+
+        $this->userRepository->delete($id);
+
+        return $this->json('', HttpCode::NO_CONTENT);
     }
 }
