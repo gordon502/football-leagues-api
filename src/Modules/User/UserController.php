@@ -91,10 +91,6 @@ class UserController extends AbstractController
         content: new Model(type: UserGetDto::class)
     )]
     #[OA\Response(
-        response: 401,
-        description: 'Unauthorized.',
-    )]
-    #[OA\Response(
         response: 404,
         description: 'User not found.',
     )]
