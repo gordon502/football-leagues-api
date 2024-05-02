@@ -2,6 +2,7 @@
 
 namespace App\Common\HttpQuery;
 
+use App\Common\HttpQuery\Filter\HttpQueryFilterParserInterface;
 use Symfony\Component\HttpFoundation\InputBag;
 
 readonly class HttpQueryHandler implements HttpQueryHandlerInterface

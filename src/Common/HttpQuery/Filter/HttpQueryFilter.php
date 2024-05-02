@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\HttpQuery;
+namespace App\Common\HttpQuery\Filter;
 
 readonly class HttpQueryFilter
 {

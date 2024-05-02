@@ -2,7 +2,7 @@
 
 namespace App\Modules\User\Repository;
 
-use App\Common\HttpQuery\HttpQueryFilter;
+use App\Common\HttpQuery\Filter\HttpQueryFilter;
 use App\Common\Repository\FindableByIdInterface;
 use App\Modules\User\Model\UserCreatableInterface;
 use App\Modules\User\Model\UserInterface;

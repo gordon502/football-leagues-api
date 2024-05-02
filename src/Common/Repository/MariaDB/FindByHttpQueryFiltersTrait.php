@@ -2,7 +2,7 @@
 
 namespace App\Common\Repository\MariaDB;
 
-use App\Common\HttpQuery\HttpQueryFilter;
+use App\Common\HttpQuery\Filter\HttpQueryFilter;
 use Doctrine\ORM\QueryBuilder;
 
 /**

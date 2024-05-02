@@ -2,7 +2,7 @@
 
 namespace App\Common\Repository\MongoDB;
 
-use App\Common\HttpQuery\HttpQueryFilter;
+use App\Common\HttpQuery\Filter\HttpQueryFilter;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use MongoDB\BSON\Regex;
 
