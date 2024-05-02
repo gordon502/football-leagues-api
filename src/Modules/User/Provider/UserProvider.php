@@ -6,6 +6,7 @@ use App\Modules\User\Model\UserInterface;
 use App\Modules\User\Repository\UserRepositoryInterface;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -19,7 +20,13 @@ readonly class UserProvider implements UserProviderInterface
 
     public function refreshUser(SecurityUserInterface $user): SecurityUserInterface
     {
-        return $this->userRepository->findByEmail($user->getUserIdentifier());
+        $user = $this->userRepository->findByEmail($user->getUserIdentifier());
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        return $user;
     }
 
     public function supportsClass(string $class): bool
@@ -30,6 +37,12 @@ readonly class UserProvider implements UserProviderInterface
 
     public function loadUserByIdentifier(string $identifier): SecurityUserInterface
     {
-        return $this->userRepository->findByEmail($identifier);
+        $user = $this->userRepository->findByEmail($identifier);
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        return $user;
     }
 }
