@@ -2,7 +2,6 @@
 
 namespace App\Modules\User\Model\MongoDB;
 
-use App\Common\Model\MongoDB\ModelDbIdTrait;
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\User\Model\UserInterface;
@@ -15,7 +14,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 #[HasLifecycleCallbacks]
 class User implements UserInterface
 {
-    use ModelDbIdTrait;
     use ModelUuidTrait;
     use TimestampableTrait;
 

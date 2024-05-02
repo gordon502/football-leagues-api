@@ -7,6 +7,7 @@ use Symfony\Component\Uid\Uuid;
 
 trait ModelUuidTrait
 {
+    #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true)]
     protected string $id;
 

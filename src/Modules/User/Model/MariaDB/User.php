@@ -2,7 +2,6 @@
 
 namespace App\Modules\User\Model\MariaDB;
 
-use App\Common\Model\MariaDB\ModelDbIdTrait;
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\User\Model\UserInterface;
@@ -18,7 +17,6 @@ use Doctrine\ORM\Mapping\Table;
 #[HasLifecycleCallbacks]
 class User implements UserInterface
 {
-    use ModelDbIdTrait;
     use ModelUuidTrait;
     use TimestampableTrait;
 

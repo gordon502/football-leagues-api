@@ -42,7 +42,7 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
 
     public function findById(string $id): ?UserInterface
     {
-        $user = $this->findOneBy(['id' => $id]);
+        $user = $this->find($id);
 
         if ($user !== null) {
             $this->getDocumentManager()->refresh($user);

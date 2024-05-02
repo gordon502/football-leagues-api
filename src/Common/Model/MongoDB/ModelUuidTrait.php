@@ -7,7 +7,7 @@ use Symfony\Component\Uid\Uuid;
 
 trait ModelUuidTrait
 {
-    #[MongoDB\Field(type: 'string')]
+    #[MongoDB\Id(type: 'string', strategy: 'NONE')]
     #[MongoDB\UniqueIndex(order: 'asc')]
     protected string $id;
 
