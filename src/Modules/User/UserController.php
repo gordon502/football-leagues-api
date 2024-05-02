@@ -5,6 +5,7 @@ namespace App\Modules\User;
 use App\Common\CustomValidation\CustomValidationInterface;
 use App\Common\HttpQuery\HttpQueryHandlerInterface;
 use App\Common\OAAttributes\OAFilterQueryParameter;
+use App\Common\OAAttributes\OASortQueryParameter;
 use App\Common\Response\HttpCode;
 use App\Common\Response\ResourceNotFoundException;
 use App\Common\Serialization\RoleBasedSerializerInterface;
@@ -109,14 +110,15 @@ class UserController extends AbstractController
         )
     )]
     #[OAFilterQueryParameter]
+    #[OASortQueryParameter]
     public function filter(Request $request): JsonResponse
     {
-        $handler = $this->httpQueryHandler->handle(
+        $httpQuery = $this->httpQueryHandler->handle(
             $request->query,
             UserGetInterface::class
         );
 
-        $users = $this->userRepository->findByHttpQueryFilters($handler['filters']);
+        $users = $this->userRepository->findByHttpQuery($httpQuery);
 
         return $this->json(
             array_map(fn(UserGetInterface $user) => $this->serializer->normalize(new UserGetDto($user)), $users)

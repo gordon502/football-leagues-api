@@ -3,20 +3,20 @@
 namespace App\Common\Repository\MongoDB;
 
 use App\Common\HttpQuery\Filter\HttpQueryFilter;
+use App\Common\HttpQuery\HttpQuery;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use MongoDB\BSON\Regex;
 
 /**
  * @method QueryBuilder createQueryBuilder()
  */
-trait FindByHttpQueryFiltersTrait
+trait FindByHttpQueryTrait
 {
-    public function findByHttpQueryFilters(array $filters): array
+    public function findByHttpQuery(HttpQuery $query): array
     {
         $qb = $this->createQueryBuilder();
 
-        /** @var HttpQueryFilter $filter */
-        foreach ($filters as $filter) {
+        foreach ($query->filters as $filter) {
             if ($filter->operator === '$regex') {
                 $qb
                     ->field($filter->field)
@@ -26,6 +26,11 @@ trait FindByHttpQueryFiltersTrait
 
             $qb
                 ->field($filter->field)->{$filter->operator}($filter->value);
+        }
+
+        foreach ($query->sort as $sort) {
+            $qb
+                ->sort($sort->field, $sort->direction === 'asc' ? 1 : -1);
         }
 
         return $qb->getQuery()->execute()->toArray();
