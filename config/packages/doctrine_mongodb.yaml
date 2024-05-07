@@ -13,6 +13,9 @@ doctrine_mongodb:
                 App\Modules\User\Model\MongoDB:
                     dir: '%kernel.project_dir%/src/Modules/User/Model/MongoDB'
                     prefix: 'App\Modules\User\Model\MongoDB'
+                App\Modules\OrganizationalUnit\Model\MongoDB:
+                    dir: '%kernel.project_dir%/src/Modules/OrganizationalUnit/Model/MongoDB'
+                    prefix: 'App\Modules\OrganizationalUnit\Model\MongoDB'
 
 when@prod:
     doctrine_mongodb:

@@ -19,6 +19,9 @@ doctrine:
             App\Modules\User\Model\MariaDB:
                 dir: '%kernel.project_dir%/src/Modules/User/Model/MariaDB'
                 prefix: 'App\Modules\User\Model\MariaDB'
+            App\Modules\OrganizationalUnit\Model\MariaDB:
+                dir: '%kernel.project_dir%/src/Modules/OrganizationalUnit/Model/MariaDB'
+                prefix: 'App\Modules\OrganizationalUnit\Model\MariaDB'
         controller_resolver:
             auto_mapping: true
 

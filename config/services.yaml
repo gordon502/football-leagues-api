@@ -60,3 +60,12 @@ services:
         public: true
     App\Modules\User\Repository\MariaDB\UserRepository:
         public: true
+
+    organizational_unit_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\OrganizationalUnit\Repository\{DB_IMPL}\OrganizationalUnitRepository']
+        class: App\Modules\OrganizationalUnit\Repository\OrganizationalUnitRepositoryInterface
+    App\Modules\OrganizationalUnit\Repository\MongoDB\OrganizationalUnitRepository:
+        public: true
+    App\Modules\OrganizationalUnit\Repository\MariaDB\OrganizationalUnitRepository:
+        public: true

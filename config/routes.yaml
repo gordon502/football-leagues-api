@@ -4,5 +4,11 @@ users:
         namespace: App\Modules\User
     type: attribute
 
+organizational_units:
+    resource:
+        path: ../src/Modules/OrganizationalUnit/
+        namespace: App\Modules\OrganizationalUnit
+    type: attribute
+
 api_login_check:
     path: /api/login
