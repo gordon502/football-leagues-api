@@ -154,7 +154,6 @@ class User implements UserInterface
 
     public function eraseCredentials(): void
     {
-        $this->password = '';
     }
 
     public function getUserIdentifier(): string
