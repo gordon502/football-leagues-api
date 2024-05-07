@@ -5,9 +5,12 @@ namespace App\Modules\OrganizationalUnit\Model\MongoDB;
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 
 #[Document(collection: 'organizational_unit')]
 #[HasLifecycleCallbacks]
@@ -33,6 +36,19 @@ class OrganizationalUnit implements OrganizationalUnitInterface
 
     #[Field(type: 'string', nullable: true)]
     protected ?string $phone = null;
+
+    #[ReferenceMany(
+        targetDocument: OrganizationalUnit::class,
+        cascade: ['persist'],
+        orphanRemoval: true,
+        mappedBy: 'leagues'
+    )]
+    protected Collection $leagues;
+
+    public function __construct()
+    {
+        $this->leagues = new ArrayCollection();
+    }
 
     public function getName(): string
     {
@@ -104,5 +120,10 @@ class OrganizationalUnit implements OrganizationalUnitInterface
         $this->phone = $phone;
 
         return $this;
+    }
+
+    public function getLeagues(): Collection
+    {
+        return $this->leagues;
     }
 }

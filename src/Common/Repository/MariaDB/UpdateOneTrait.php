@@ -13,6 +13,7 @@ use ReflectionClass;
  */
 trait UpdateOneTrait
 {
+    // TODO: handle referencing object, not only single properties
     public function updateOne(string $id, object $updatable): bool
     {
         $qb = $this

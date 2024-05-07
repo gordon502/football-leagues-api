@@ -69,3 +69,12 @@ services:
         public: true
     App\Modules\OrganizationalUnit\Repository\MariaDB\OrganizationalUnitRepository:
         public: true
+
+    league_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\League\Repository\{DB_IMPL}\LeagueRepository']
+        class: App\Modules\League\Repository\LeagueRepositoryInterface
+    App\Modules\League\Repository\MongoDB\LeagueRepository:
+        public: true
+    App\Modules\League\Repository\MariaDB\LeagueRepository:
+        public: true

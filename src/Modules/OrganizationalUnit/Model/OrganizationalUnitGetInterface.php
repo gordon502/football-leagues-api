@@ -2,6 +2,8 @@
 
 namespace App\Modules\OrganizationalUnit\Model;
 
+use Doctrine\Common\Collections\Collection;
+
 interface OrganizationalUnitGetInterface
 {
     public function getId(): string;
@@ -17,4 +19,6 @@ interface OrganizationalUnitGetInterface
     public function getPostalCode(): string;
 
     public function getPhone(): string|null;
+
+    public function getLeagues(): Collection;
 }

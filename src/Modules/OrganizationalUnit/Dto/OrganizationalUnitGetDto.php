@@ -7,7 +7,7 @@ use App\Common\Serialization\RoleSerializationGroup;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitGetInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
-readonly class OrganizationalUnitGetDto implements OrganizationalUnitGetInterface
+readonly class OrganizationalUnitGetDto
 {
     public function __construct(
         private OrganizationalUnitGetInterface $organizationalUnit

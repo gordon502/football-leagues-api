@@ -10,5 +10,11 @@ organizational_units:
         namespace: App\Modules\OrganizationalUnit
     type: attribute
 
+leagues:
+    resource:
+        path: ../src/Modules/League/
+        namespace: App\Modules\League
+    type: attribute
+
 api_login_check:
     path: /api/login

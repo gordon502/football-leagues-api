@@ -4,11 +4,15 @@ namespace App\Modules\OrganizationalUnit\Model\MariaDB;
 
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
+use App\Modules\League\Model\MariaDB\League;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
 use App\Modules\OrganizationalUnit\Repository\MariaDB\OrganizationalUnitRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: OrganizationalUnitRepository::class)]
@@ -36,6 +40,14 @@ class OrganizationalUnit implements OrganizationalUnitInterface
 
     #[Column(type: 'string', nullable: true)]
     protected ?string $phone = null;
+
+    #[OneToMany(targetEntity: League::class, mappedBy: 'organizationalUnit', cascade: ['persist'], orphanRemoval: true)]
+    protected Collection $leagues;
+
+    public function __construct()
+    {
+        $this->leagues = new ArrayCollection();
+    }
 
     public function getName(): string
     {
@@ -107,5 +119,10 @@ class OrganizationalUnit implements OrganizationalUnitInterface
         $this->phone = $phone;
 
         return $this;
+    }
+
+    public function getLeagues(): Collection
+    {
+        return $this->leagues;
     }
 }
