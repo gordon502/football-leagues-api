@@ -5,7 +5,6 @@ namespace App\Common\Validator;
 use App\Common\Dto\NotIncludedInBody;
 use App\Common\Response\UnprocessableEntityException;
 use ReflectionClass;
-use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -35,26 +34,16 @@ readonly class DtoValidator implements DtoValidatorInterface
         $violations = null;
 
         foreach ($reflection->getProperties() as $property) {
-            $propertyNameUcFirst = ucfirst($property->getName());
+            $propertyName = $property->getName();
             $value = $property->getValue($dto);
 
             if ($value instanceof NotIncludedInBody) {
                 continue;
             }
 
-            $getIsMethod = $reflection->hasMethod('get' . $propertyNameUcFirst)
-                ? 'get' . $propertyNameUcFirst
-                : ($reflection->hasMethod('is' . $propertyNameUcFirst)
-                    ? 'is' . $propertyNameUcFirst
-                    : null);
-
-            if ($getIsMethod === null) {
-                throw new RuntimeException('Getter or Is method not found for property ' . $property->getName());
-            }
-
             $validated = $this->validator->validateProperty(
                 object: $dto,
-                propertyName: $getIsMethod,
+                propertyName: lcfirst($propertyName),
                 groups: $groups
             );
 
