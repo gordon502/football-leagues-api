@@ -68,7 +68,11 @@ readonly class DtoValidator implements DtoValidatorInterface
     {
         $message = '';
         foreach ($violations as $violation) {
-            $message .= $this->camelCaseToSnakeCase($violation->getPropertyPath()) . ': ' . $violation->getMessage() . PHP_EOL;
+            $message .=
+                $this->camelCaseToSnakeCase($violation->getPropertyPath())
+                . ': '
+                . $violation->getMessage()
+                . PHP_EOL;
         }
 
         return $message;
