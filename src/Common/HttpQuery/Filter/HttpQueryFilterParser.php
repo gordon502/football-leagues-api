@@ -35,10 +35,12 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
                 throw new HttpQueryFilterParserException($filterQuery);
             }
 
-            $objectFieldName = $this->snakeToCamelCase($terms[0]);
+            $objectFieldName = $terms[0];
+            $ucObjectFieldName = ucfirst($objectFieldName);
 
-            $hasGetter = $reflection->hasMethod('get' . ucfirst($objectFieldName));
-            $hasIsser = $reflection->hasMethod('is' . ucfirst($objectFieldName));
+            $hasGetter = $reflection->hasMethod('get' . $ucObjectFieldName);
+            $hasIsser = $reflection->hasMethod('is' . $ucObjectFieldName);
+
             if (!$hasGetter && !$hasIsser) {
                 throw new HttpQueryFilterParserException($filterQuery);
             }
@@ -55,11 +57,6 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
         }
 
         return $result;
-    }
-
-    private function snakeToCamelCase(string $input): string
-    {
-        return \lcfirst(\str_replace('_', '', \ucwords($input, '_')));
     }
 
     private function convertOperator(string $operator): string

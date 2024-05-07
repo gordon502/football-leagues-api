@@ -69,17 +69,12 @@ readonly class DtoValidator implements DtoValidatorInterface
         $message = '';
         foreach ($violations as $violation) {
             $message .=
-                $this->camelCaseToSnakeCase($violation->getPropertyPath())
+                $violation->getPropertyPath()
                 . ': '
                 . $violation->getMessage()
                 . PHP_EOL;
         }
 
         return $message;
-    }
-
-    private function camelCaseToSnakeCase(string $str): string
-    {
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $str));
     }
 }
