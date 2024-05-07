@@ -10,9 +10,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserCreateDto implements UserCreatableInterface
 {
-    private string $email;
-    private string $name;
-    private string $password;
+    private string|null $email;
+    private string|null $name;
+    private string|null $password;
 
     public function __construct(string $email = null, string $name = null, string $password = null)
     {
@@ -25,7 +25,7 @@ class UserCreateDto implements UserCreatableInterface
     #[Property(description: 'User email. It will be used for login. It must be unique.')]
     #[Assert\NotBlank]
     #[Assert\Email]
-    public function getEmail(): string
+    public function getEmail(): string|null
     {
         return $this->email;
     }
@@ -33,20 +33,21 @@ class UserCreateDto implements UserCreatableInterface
     #[Groups([RoleSerializationGroup::GUEST])]
     #[Property(description: 'User display name.')]
     #[Assert\NotBlank]
-    public function getName(): string
+    public function getName(): string|null
     {
         return $this->name;
     }
 
     #[Groups([RoleSerializationGroup::GUEST])]
     #[Property(description: 'User password.')]
+    #[Assert\NotBlank]
     #[Assert\Length(
         min: 8,
         max: 255,
         minMessage: 'Password must be at least {{ limit }} characters long.',
         maxMessage: 'Password cannot be longer than {{ limit }} characters.'
     )]
-    public function getPassword(): string
+    public function getPassword(): string|null
     {
         return $this->password;
     }
