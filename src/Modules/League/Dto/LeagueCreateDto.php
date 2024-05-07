@@ -5,6 +5,7 @@ namespace App\Modules\League\Dto;
 use App\Common\OAAttributes\OARoleBasedProperty;
 use App\Common\Serialization\RoleSerializationGroup;
 use App\Modules\League\Model\LeagueCreatableInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class LeagueCreateDto implements LeagueCreatableInterface
@@ -26,6 +27,11 @@ class LeagueCreateDto implements LeagueCreatableInterface
         $this->organizationalUnitId = $organizationalUnitId;
     }
 
+    #[Groups([
+        RoleSerializationGroup::ADMIN,
+        RoleSerializationGroup::MODERATOR,
+        RoleSerializationGroup::EDITOR
+    ])]
     #[OARoleBasedProperty('League name.', [
         RoleSerializationGroup::ADMIN,
         RoleSerializationGroup::MODERATOR,
@@ -38,6 +44,11 @@ class LeagueCreateDto implements LeagueCreatableInterface
         return $this->name;
     }
 
+    #[Groups([
+        RoleSerializationGroup::ADMIN,
+        RoleSerializationGroup::MODERATOR,
+        RoleSerializationGroup::EDITOR
+    ])]
     #[OARoleBasedProperty('League active.', [
         RoleSerializationGroup::ADMIN,
         RoleSerializationGroup::MODERATOR,
@@ -50,6 +61,11 @@ class LeagueCreateDto implements LeagueCreatableInterface
         return $this->active;
     }
 
+    #[Groups([
+        RoleSerializationGroup::ADMIN,
+        RoleSerializationGroup::MODERATOR,
+        RoleSerializationGroup::EDITOR
+    ])]
     #[OARoleBasedProperty('League level.', [
         RoleSerializationGroup::ADMIN,
         RoleSerializationGroup::MODERATOR,
@@ -61,6 +77,11 @@ class LeagueCreateDto implements LeagueCreatableInterface
         return $this->level;
     }
 
+    #[Groups([
+        RoleSerializationGroup::ADMIN,
+        RoleSerializationGroup::MODERATOR,
+        RoleSerializationGroup::EDITOR
+    ])]
     #[OARoleBasedProperty(
         'Organizational unit identifier.',
         [
@@ -68,7 +89,6 @@ class LeagueCreateDto implements LeagueCreatableInterface
             RoleSerializationGroup::MODERATOR,
             RoleSerializationGroup::EDITOR
         ],
-        property: 'organizational_unit_id'
     )]
     #[Assert\NotNull]
     #[Assert\Uuid]

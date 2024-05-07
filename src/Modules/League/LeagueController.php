@@ -16,9 +16,9 @@ use App\Common\Validator\DtoValidatorInterface;
 use App\Modules\League\Dto\LeagueCreateDto;
 use App\Modules\League\Dto\LeagueGetDto;
 use App\Modules\League\Dto\LeagueUpdateDto;
+use App\Modules\League\Model\LeagueGetInterface;
 use App\Modules\League\Repository\LeagueRepositoryInterface;
 use App\Modules\League\Voter\LeagueVoter;
-use App\Modules\OrganizationalUnit\Model\OrganizationalUnitGetInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
@@ -71,11 +71,11 @@ class LeagueController extends AbstractController
         );
         $this->dtoValidator->validate($dto);
 
-        $organizationalUnit = $this->leagueRepository->create($dto);
+        $league = $this->leagueRepository->create($dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(
-                $organizationalUnit,
+                $league,
                 LeagueGetDto::class
             ),
             HttpCode::CREATED
@@ -102,13 +102,13 @@ class LeagueController extends AbstractController
     )]
     public function getById(string $id): JsonResponse
     {
-        $organizationalUnit = $this->leagueRepository->findById($id);
-        if ($organizationalUnit === null) {
+        $league = $this->leagueRepository->findById($id);
+        if ($league === null) {
             throw new ResourceNotFoundException();
         }
 
         return $this->json($this->singleObjectResponseFactory->fromObject(
-            $organizationalUnit,
+            $league,
             LeagueGetDto::class
         ));
     }
@@ -132,14 +132,14 @@ class LeagueController extends AbstractController
     {
         $httpQuery = $this->httpQueryHandler->handle(
             $request->query,
-            OrganizationalUnitGetInterface::class
+            LeagueGetInterface::class
         );
 
-        $paginatedOrganizationalUnits = $this->leagueRepository->findByHttpQuery($httpQuery);
+        $paginatedLeagues = $this->leagueRepository->findByHttpQuery($httpQuery);
 
         return $this->json(
             $this->paginatedResponseFactory->fromPaginatedQueryResultInterface(
-                $paginatedOrganizationalUnits,
+                $paginatedLeagues,
                 LeagueGetDto::class
             )
         );

@@ -46,7 +46,6 @@ readonly class LeagueGetDto
     #[OARoleBasedProperty(
         'League organizational unit.',
         RoleSerializationGroup::ALL,
-        property: 'organizational_unit_id'
     )]
     public function getOrganizationalUnitId(): string
     {
