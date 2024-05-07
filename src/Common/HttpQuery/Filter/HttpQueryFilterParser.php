@@ -35,7 +35,7 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
                 throw new HttpQueryFilterParserException($filterQuery);
             }
 
-            $objectFieldName = $terms[0];
+            $objectFieldName = $this->snakeToCamelCase($terms[0]);
 
             $hasGetter = $reflection->hasMethod('get' . ucfirst($objectFieldName));
             $hasIsser = $reflection->hasMethod('is' . ucfirst($objectFieldName));

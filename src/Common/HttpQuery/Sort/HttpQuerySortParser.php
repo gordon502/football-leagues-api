@@ -32,7 +32,7 @@ class HttpQuerySortParser implements HttpQuerySortParserInterface
                 throw new HttpQuerySortParserException($sortQuery);
             }
 
-            $objectFieldName = $terms[0];
+            $objectFieldName = $this->snakeToCamelCase($terms[0]);
 
             $hasGetter = $reflection->hasMethod('get' . ucfirst($objectFieldName));
             $hasIsser = $reflection->hasMethod('is' . ucfirst($objectFieldName));
@@ -51,5 +51,10 @@ class HttpQuerySortParser implements HttpQuerySortParserInterface
         }
 
         return $result;
+    }
+
+    private function snakeToCamelCase(string $input): string
+    {
+        return \lcfirst(\str_replace('_', '', \ucwords($input, '_')));
     }
 }
