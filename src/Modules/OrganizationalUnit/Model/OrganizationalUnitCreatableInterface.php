@@ -4,15 +4,15 @@ namespace App\Modules\OrganizationalUnit\Model;
 
 interface OrganizationalUnitCreatableInterface
 {
-    public function getName(): string;
+    public function getName(): string|null;
 
-    public function getCountry(): string;
+    public function getCountry(): string|null;
 
-    public function getAddress(): string;
+    public function getAddress(): string|null;
 
-    public function getCity(): string;
+    public function getCity(): string|null;
 
-    public function getPostalCode(): string;
+    public function getPostalCode(): string|null;
 
     public function getPhone(): string|null;
 }

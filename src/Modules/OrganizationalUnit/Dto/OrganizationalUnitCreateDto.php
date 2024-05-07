@@ -10,20 +10,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class OrganizationalUnitCreateDto implements OrganizationalUnitCreatableInterface
 {
-    private string $name;
-    private string $country;
-    private string $address;
-    private string $city;
-    private string $postalCode;
+    private ?string $name;
+    private ?string $country;
+    private ?string $address;
+    private ?string $city;
+    private ?string $postalCode;
     private ?string $phone;
 
     public function __construct(
-        string $name,
-        string $country,
-        string $address,
-        string $city,
-        string $postalCode,
-        ?string $phone
+        string $name = null,
+        string $country = null,
+        string $address = null,
+        string $city = null,
+        string $postalCode = null,
+        string $phone = null
     ) {
         $this->name = $name;
         $this->country = $country;
@@ -75,6 +75,7 @@ class OrganizationalUnitCreateDto implements OrganizationalUnitCreatableInterfac
 
     #[Groups([RoleSerializationGroup::ADMIN])]
     #[OARoleBasedProperty(description: 'Organizational unit phone.', roles: [RoleSerializationGroup::ADMIN])]
+    #[Assert\Type(['null', 'string'])]
     public function getPhone(): string|null
     {
         return $this->phone;

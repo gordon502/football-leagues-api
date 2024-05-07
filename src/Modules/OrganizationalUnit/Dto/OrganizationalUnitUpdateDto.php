@@ -25,48 +25,48 @@ readonly class OrganizationalUnitUpdateDto implements OrganizationalUnitUpdatabl
     }
 
     #[Groups([RoleSerializationGroup::ADMIN])]
-    #[Assert\NotBlank]
     #[OARoleBasedProperty('Organizational unit name.', [RoleSerializationGroup::ADMIN])]
+    #[Assert\NotBlank]
     public function getName(): string|null
     {
         return $this->toValueOrNull($this->name);
     }
 
     #[Groups([RoleSerializationGroup::ADMIN])]
-    #[Assert\NotBlank]
     #[OARoleBasedProperty('Organizational unit country.', [RoleSerializationGroup::ADMIN])]
+    #[Assert\NotBlank]
     public function getCountry(): string|null
     {
         return $this->toValueOrNull($this->country);
     }
 
     #[Groups([RoleSerializationGroup::ADMIN])]
-    #[Assert\NotBlank]
     #[OARoleBasedProperty('Organizational unit address.', [RoleSerializationGroup::ADMIN])]
+    #[Assert\NotBlank]
     public function getAddress(): string|null
     {
         return $this->toValueOrNull($this->address);
     }
 
     #[Groups([RoleSerializationGroup::ADMIN])]
-    #[Assert\NotBlank]
     #[OARoleBasedProperty('Organizational unit city.', [RoleSerializationGroup::ADMIN])]
+    #[Assert\NotBlank]
     public function getCity(): string|null
     {
         return $this->toValueOrNull($this->city);
     }
 
     #[Groups([RoleSerializationGroup::ADMIN])]
-    #[Assert\NotBlank]
     #[OARoleBasedProperty('Organizational unit postal code.', [RoleSerializationGroup::ADMIN])]
+    #[Assert\NotBlank]
     public function getPostalCode(): string|null
     {
         return $this->toValueOrNull($this->postalCode);
     }
 
     #[Groups([RoleSerializationGroup::ADMIN])]
-    #[Assert\NotBlank]
     #[OARoleBasedProperty('Organizational unit phone.', [RoleSerializationGroup::ADMIN])]
+    #[Assert\Type(['string', 'null'])]
     public function getPhone(): string|null
     {
         return $this->toValueOrNull($this->phone);
