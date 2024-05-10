@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 
-#[Document(collection: 'league', repositoryClass: LeagueRepository::class)]
+#[Document(collection: 'league')]
 #[HasLifecycleCallbacks]
 class League implements LeagueInterface
 {
