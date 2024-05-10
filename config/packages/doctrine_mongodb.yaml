@@ -25,6 +25,9 @@ doctrine_mongodb:
                 App\Modules\Season\Model\MongoDB:
                     dir: '%kernel.project_dir%/src/Modules/Season/Model/MongoDB'
                     prefix: 'App\Modules\Season\Model\MongoDB'
+                App\Modules\SeasonTeam\Model\MongoDB:
+                    dir: '%kernel.project_dir%/src/Modules/SeasonTeam/Model/MongoDB'
+                    prefix: 'App\Modules\SeasonTeam\Model\MongoDB'
 
 when@prod:
     doctrine_mongodb:

@@ -16,6 +16,12 @@ season:
         namespace: App\Modules\Season
     type: attribute
 
+season_team:
+    resource:
+        path: ../src/Modules/SeasonTeam/
+        namespace: App\Modules\SeasonTeam
+    type: attribute
+
 teams:
     resource:
         path: ../src/Modules/Team/

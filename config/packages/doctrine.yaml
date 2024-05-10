@@ -31,6 +31,9 @@ doctrine:
             App\Modules\Season\Model\MariaDB:
                 dir: '%kernel.project_dir%/src/Modules/Season/Model/MariaDB'
                 prefix: 'App\Modules\Season\Model\MariaDB'
+            App\Modules\SeasonTeam\Model\MariaDB:
+                dir: '%kernel.project_dir%/src/Modules/SeasonTeam/Model/MariaDB'
+                prefix: 'App\Modules\SeasonTeam\Model\MariaDB'
         controller_resolver:
             auto_mapping: true
 
