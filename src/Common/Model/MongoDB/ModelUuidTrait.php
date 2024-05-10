@@ -8,7 +8,6 @@ use Symfony\Component\Uid\Uuid;
 trait ModelUuidTrait
 {
     #[MongoDB\Id(type: 'string', strategy: 'NONE')]
-    #[MongoDB\UniqueIndex(order: 'asc')]
     protected string $id;
 
     public function getId(): string
