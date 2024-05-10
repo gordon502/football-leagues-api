@@ -21,4 +21,6 @@ interface OrganizationalUnitGetInterface
     public function getPhone(): string|null;
 
     public function getLeagues(): Collection;
+
+    public function getTeams(): Collection;
 }

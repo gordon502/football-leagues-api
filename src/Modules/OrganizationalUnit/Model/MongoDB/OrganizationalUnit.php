@@ -45,6 +45,14 @@ class OrganizationalUnit implements OrganizationalUnitInterface
     )]
     protected Collection $leagues;
 
+    #[ReferenceMany(
+        targetDocument: OrganizationalUnit::class,
+        cascade: ['persist'],
+        orphanRemoval: true,
+        mappedBy: 'teams'
+    )]
+    protected Collection $teams;
+
     public function __construct()
     {
         $this->leagues = new ArrayCollection();
@@ -125,5 +133,10 @@ class OrganizationalUnit implements OrganizationalUnitInterface
     public function getLeagues(): Collection
     {
         return $this->leagues;
+    }
+
+    public function getTeams(): Collection
+    {
+        return $this->teams;
     }
 }

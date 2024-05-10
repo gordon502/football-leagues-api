@@ -7,6 +7,7 @@ use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\League\Model\MariaDB\League;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
 use App\Modules\OrganizationalUnit\Repository\MariaDB\OrganizationalUnitRepository;
+use App\Modules\Team\Model\MariaDB\Team;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -44,9 +45,13 @@ class OrganizationalUnit implements OrganizationalUnitInterface
     #[OneToMany(targetEntity: League::class, mappedBy: 'organizationalUnit', cascade: ['persist'], orphanRemoval: true)]
     protected Collection $leagues;
 
+    #[OneToMany(targetEntity: Team::class, mappedBy: 'organizationalUnit', cascade: ['persist'], orphanRemoval: true)]
+    protected Collection $teams;
+
     public function __construct()
     {
         $this->leagues = new ArrayCollection();
+        $this->teams = new ArrayCollection();
     }
 
     public function getName(): string
@@ -124,5 +129,10 @@ class OrganizationalUnit implements OrganizationalUnitInterface
     public function getLeagues(): Collection
     {
         return $this->leagues;
+    }
+
+    public function getTeams(): Collection
+    {
+        return $this->teams;
     }
 }
