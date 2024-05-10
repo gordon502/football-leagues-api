@@ -1,7 +1,7 @@
-users:
+leagues:
     resource:
-        path: ../src/Modules/User/
-        namespace: App\Modules\User
+        path: ../src/Modules/League/
+        namespace: App\Modules\League
     type: attribute
 
 organizational_units:
@@ -10,16 +10,16 @@ organizational_units:
         namespace: App\Modules\OrganizationalUnit
     type: attribute
 
-leagues:
-    resource:
-        path: ../src/Modules/League/
-        namespace: App\Modules\League
-    type: attribute
-
 teams:
     resource:
         path: ../src/Modules/Team/
         namespace: App\Modules\Team
+    type: attribute
+
+users:
+    resource:
+        path: ../src/Modules/User/
+        namespace: App\Modules\User
     type: attribute
 
 api_login_check:
