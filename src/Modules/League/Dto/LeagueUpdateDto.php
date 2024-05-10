@@ -2,11 +2,13 @@
 
 namespace App\Modules\League\Dto;
 
+use App\Common\Dto\DtoPropertyRelatedToEntity;
 use App\Common\Dto\NotIncludedInBody;
 use App\Common\Dto\NotIncludedInBodyTrait;
 use App\Common\OAAttributes\OARoleBasedProperty;
 use App\Common\Serialization\RoleSerializationGroup;
 use App\Modules\League\Model\LeagueUpdatableInterface;
+use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -81,6 +83,7 @@ readonly class LeagueUpdateDto implements LeagueUpdatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
+    #[DtoPropertyRelatedToEntity(OrganizationalUnitInterface::class)]
     #[Assert\NotBlank]
     #[Assert\Uuid]
     public function getOrganizationalUnitId(): string|null
