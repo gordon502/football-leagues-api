@@ -79,6 +79,15 @@ services:
     App\Modules\League\Repository\MariaDB\LeagueRepository:
         public: true
 
+    season_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\Season\Repository\{DB_IMPL}\SeasonRepository']
+        class: App\Modules\Season\Repository\SeasonRepositoryInterface
+    App\Modules\Season\Repository\MongoDB\SeasonRepository:
+        public: true
+    App\Modules\Season\Repository\MariaDB\SeasonRepository:
+        public: true
+
     team_repository:
         factory: ['@autowire_factory', 'usingDatabaseImplementation']
         arguments: ['App\Modules\Team\Repository\{DB_IMPL}\TeamRepository']

@@ -10,6 +10,12 @@ organizational_units:
         namespace: App\Modules\OrganizationalUnit
     type: attribute
 
+season:
+    resource:
+        path: ../src/Modules/Season/
+        namespace: App\Modules\Season
+    type: attribute
+
 teams:
     resource:
         path: ../src/Modules/Team/

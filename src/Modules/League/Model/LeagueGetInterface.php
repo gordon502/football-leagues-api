@@ -3,6 +3,7 @@
 namespace App\Modules\League\Model;
 
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitGetInterface;
+use Doctrine\Common\Collections\Collection;
 
 interface LeagueGetInterface
 {
@@ -15,4 +16,6 @@ interface LeagueGetInterface
     public function getLevel(): int|null;
 
     public function getOrganizationalUnit(): OrganizationalUnitGetInterface;
+
+    public function getSeasons(): Collection;
 }

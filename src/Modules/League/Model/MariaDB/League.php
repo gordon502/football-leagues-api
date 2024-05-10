@@ -8,10 +8,14 @@ use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Repository\MariaDB\LeagueRepository;
 use App\Modules\OrganizationalUnit\Model\MariaDB\OrganizationalUnit;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
+use App\Modules\Season\Model\MariaDB\Season;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: LeagueRepository::class)]
@@ -33,6 +37,14 @@ class League implements LeagueInterface
 
     #[ManyToOne(targetEntity: OrganizationalUnit::class, inversedBy: 'leagues')]
     private OrganizationalUnitInterface $organizationalUnit;
+
+    #[OneToMany(targetEntity: Season::class, mappedBy: 'league', orphanRemoval: true)]
+    private Collection $seasons;
+
+    public function __construct()
+    {
+        $this->seasons = new ArrayCollection();
+    }
 
     public function getName(): string
     {
@@ -80,5 +92,10 @@ class League implements LeagueInterface
         $this->organizationalUnit = $organizationalUnit;
 
         return $this;
+    }
+
+    public function getSeasons(): Collection
+    {
+        return $this->seasons;
     }
 }

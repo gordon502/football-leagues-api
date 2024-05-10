@@ -5,12 +5,15 @@ namespace App\Modules\League\Model\MongoDB;
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\League\Model\LeagueInterface;
-use App\Modules\League\Repository\MongoDB\LeagueRepository;
 use App\Modules\OrganizationalUnit\Model\MongoDB\OrganizationalUnit;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
+use App\Modules\Season\Model\MongoDB\Season;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 
 #[Document(collection: 'league')]
@@ -33,6 +36,14 @@ class League implements LeagueInterface
     private OrganizationalUnitInterface $organizationalUnit;
 
     private string $organizationalUnitId;
+
+    #[ReferenceMany(targetDocument: Season::class, orphanRemoval: true, mappedBy: 'league')]
+    private Collection $seasons;
+
+    public function __construct()
+    {
+        $this->seasons = new ArrayCollection();
+    }
 
     public function getName(): string
     {
@@ -87,5 +98,10 @@ class League implements LeagueInterface
         $this->organizationalUnit = $organizationalUnitId;
 
         return $this;
+    }
+
+    public function getSeasons(): Collection
+    {
+        return $this->seasons;
     }
 }
