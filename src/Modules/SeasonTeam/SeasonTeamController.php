@@ -42,7 +42,7 @@ class SeasonTeamController extends AbstractController
     ) {
     }
 
-    #[Route('/api/seasons-teams', name: 'api.seasons.teams.create', methods: ['POST'])]
+    #[Route('/api/season-teams', name: 'api.seasons.teams.create', methods: ['POST'])]
     #[OA\Tag(name: 'Season Teams')]
     #[OA\RequestBody(
         required: true,
@@ -83,7 +83,7 @@ class SeasonTeamController extends AbstractController
         );
     }
 
-    #[Route('/api/seasons-teams/{id}', name: 'api.seasons.teams.get_by_id', methods: ['GET'])]
+    #[Route('/api/season-teams/{id}', name: 'api.seasons.teams.get_by_id', methods: ['GET'])]
     #[Security(name: null)]
     #[OA\Tag(name: 'Season Teams')]
     #[OA\Parameter(
@@ -114,7 +114,7 @@ class SeasonTeamController extends AbstractController
         ));
     }
 
-    #[Route('/api/seasons-teams', name: 'api.seasons.teams.collection', methods: ['GET'])]
+    #[Route('/api/season-teams', name: 'api.seasons.teams.collection', methods: ['GET'])]
     #[Security(name: null)]
     #[OA\Tag(name: 'Season Teams')]
     #[OA\Response(
@@ -146,7 +146,7 @@ class SeasonTeamController extends AbstractController
         );
     }
 
-    #[Route('/api/seasons-teams/{id}', name: 'api.seasons.teams.update', methods: ['PUT'])]
+    #[Route('/api/season-teams/{id}', name: 'api.seasons.teams.update', methods: ['PUT'])]
     #[OA\Tag(name: 'Season Teams')]
     #[OA\Parameter(
         name: 'id',
@@ -205,7 +205,7 @@ class SeasonTeamController extends AbstractController
         );
     }
 
-    #[Route('/api/seasons-teams/{id}', name: 'api.seasons.teams.delete', methods: ['DELETE'])]
+    #[Route('/api/season-teams/{id}', name: 'api.seasons.teams.delete', methods: ['DELETE'])]
     #[OA\Tag(name: 'Season Teams')]
     #[OA\Response(
         response: HttpCode::NO_CONTENT,
