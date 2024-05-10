@@ -2,6 +2,7 @@
 
 namespace App\Modules\OrganizationalUnit\Repository\MongoDB;
 
+use App\Common\Repository\MongoDB\DeleteTrait;
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
 use App\Common\Repository\MongoDB\UpdateOneTrait;
 use App\Modules\OrganizationalUnit\Factory\OrganizationalUnitFactoryInterface;
@@ -16,6 +17,7 @@ class OrganizationalUnitRepository extends DocumentRepository implements Organiz
 {
     use FindByHttpQueryTrait;
     use UpdateOneTrait;
+    use DeleteTrait;
 
     private readonly OrganizationalUnitFactoryInterface $organizationalUnitFactory;
 
@@ -53,14 +55,5 @@ class OrganizationalUnitRepository extends DocumentRepository implements Organiz
         }
 
         return $organizationalUnit;
-    }
-
-    public function delete(string $id): void
-    {
-        $this->createQueryBuilder()
-            ->remove()
-            ->field('id')->equals($id)
-            ->getQuery()
-            ->execute();
     }
 }

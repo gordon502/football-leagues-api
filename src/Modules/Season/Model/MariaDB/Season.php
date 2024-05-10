@@ -11,6 +11,7 @@ use App\Modules\Season\Model\SeasonInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
@@ -32,6 +33,7 @@ class Season implements SeasonInterface
     protected string $period;
 
     #[ManyToOne(targetEntity: League::class, inversedBy: 'seasons')]
+    #[JoinColumn(name: 'league_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected LeagueInterface $league;
 
     public function getName(): string

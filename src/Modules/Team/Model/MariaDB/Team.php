@@ -11,6 +11,7 @@ use App\Modules\Team\Repository\MariaDB\TeamRepository;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
@@ -49,7 +50,8 @@ class Team implements TeamInterface
     #[Column(type: 'string', nullable: true)]
     private string|null $stadium;
 
-    #[ManyToOne(targetEntity: OrganizationalUnit::class)]
+    #[ManyToOne(targetEntity: OrganizationalUnit::class, inversedBy: 'teams')]
+    #[JoinColumn(name: 'organizational_unit_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private OrganizationalUnitInterface $organizationalUnit;
 
     public function getName(): string

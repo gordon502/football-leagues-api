@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Repository\MongoDB;
 
+use App\Common\Repository\MongoDB\DeleteTrait;
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
 use App\Common\Repository\MongoDB\UpdateOneTrait;
 use App\Modules\User\Factory\UserFactoryInterface;
@@ -16,6 +17,7 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
 {
     use FindByHttpQueryTrait;
     use UpdateOneTrait;
+    use DeleteTrait;
 
     private readonly UserFactoryInterface $userFactory;
 
@@ -54,14 +56,5 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
     public function findByEmail(string $email): ?UserInterface
     {
         return $this->findOneBy(['email' => $email]);
-    }
-
-    public function delete(string $id): void
-    {
-        $this->createQueryBuilder()
-            ->remove()
-            ->field('id')->equals($id)
-            ->getQuery()
-            ->execute();
     }
 }

@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
@@ -36,9 +37,10 @@ class League implements LeagueInterface
     private int|null $level;
 
     #[ManyToOne(targetEntity: OrganizationalUnit::class, inversedBy: 'leagues')]
+    #[JoinColumn(name: 'organizational_unit_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private OrganizationalUnitInterface $organizationalUnit;
 
-    #[OneToMany(targetEntity: Season::class, mappedBy: 'league', orphanRemoval: true)]
+    #[OneToMany(targetEntity: Season::class, mappedBy: 'league', cascade: ['all'], orphanRemoval: true)]
     private Collection $seasons;
 
     public function __construct()

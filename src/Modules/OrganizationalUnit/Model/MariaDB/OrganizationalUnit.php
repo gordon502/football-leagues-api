@@ -42,10 +42,10 @@ class OrganizationalUnit implements OrganizationalUnitInterface
     #[Column(type: 'string', nullable: true)]
     protected ?string $phone = null;
 
-    #[OneToMany(targetEntity: League::class, mappedBy: 'organizationalUnit', cascade: ['persist'], orphanRemoval: true)]
+    #[OneToMany(targetEntity: League::class, mappedBy: 'organizationalUnit', cascade: ['all'], orphanRemoval: true)]
     protected Collection $leagues;
 
-    #[OneToMany(targetEntity: Team::class, mappedBy: 'organizationalUnit', cascade: ['persist'], orphanRemoval: true)]
+    #[OneToMany(targetEntity: Team::class, mappedBy: 'organizationalUnit', cascade: ['all'], orphanRemoval: true)]
     protected Collection $teams;
 
     public function __construct()

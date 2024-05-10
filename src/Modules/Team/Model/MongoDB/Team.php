@@ -46,7 +46,7 @@ class Team implements TeamInterface
     #[Field(type: 'string', nullable: true)]
     private string|null $stadium;
 
-    #[ReferenceOne(targetDocument: OrganizationalUnit::class)]
+    #[ReferenceOne(targetDocument: OrganizationalUnit::class, inversedBy: 'teams')]
     private OrganizationalUnitInterface $organizationalUnit;
 
     public function getName(): string

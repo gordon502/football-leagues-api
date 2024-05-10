@@ -2,6 +2,7 @@
 
 namespace App\Modules\League\Repository\MongoDB;
 
+use App\Common\Repository\MongoDB\DeleteTrait;
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
 use App\Common\Repository\MongoDB\UpdateOneTrait;
 use App\Modules\League\Factory\LeagueFactoryInterface;
@@ -16,6 +17,7 @@ class LeagueRepository extends DocumentRepository implements LeagueRepositoryInt
 {
     use FindByHttpQueryTrait;
     use UpdateOneTrait;
+    use DeleteTrait;
 
     private readonly LeagueFactoryInterface $leagueFactory;
 
@@ -53,14 +55,5 @@ class LeagueRepository extends DocumentRepository implements LeagueRepositoryInt
         }
 
         return $league;
-    }
-
-    public function delete(string $id): void
-    {
-        $this->createQueryBuilder()
-            ->remove()
-            ->field('id')->equals($id)
-            ->getQuery()
-            ->execute();
     }
 }

@@ -37,7 +37,7 @@ class League implements LeagueInterface
 
     private string $organizationalUnitId;
 
-    #[ReferenceMany(targetDocument: Season::class, orphanRemoval: true, mappedBy: 'league')]
+    #[ReferenceMany(targetDocument: Season::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'league')]
     private Collection $seasons;
 
     public function __construct()

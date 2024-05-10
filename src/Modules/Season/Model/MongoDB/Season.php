@@ -28,7 +28,7 @@ class Season implements SeasonInterface
     #[Field(type: 'string')]
     protected string $period;
 
-    #[ReferenceOne(targetDocument: League::class, orphanRemoval: true, inversedBy: 'seasons')]
+    #[ReferenceOne(targetDocument: League::class, inversedBy: 'seasons')]
     protected LeagueInterface $league;
 
     public function getName(): string

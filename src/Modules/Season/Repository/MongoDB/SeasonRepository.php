@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Repository\MongoDB;
 
+use App\Common\Repository\MongoDB\DeleteTrait;
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
 use App\Common\Repository\MongoDB\UpdateOneTrait;
 use App\Modules\Season\Factory\SeasonFactoryInterface;
@@ -16,6 +17,7 @@ class SeasonRepository extends DocumentRepository implements SeasonRepositoryInt
 {
     use FindByHttpQueryTrait;
     use UpdateOneTrait;
+    use DeleteTrait;
 
     private readonly SeasonFactoryInterface $seasonFactory;
 
@@ -53,14 +55,5 @@ class SeasonRepository extends DocumentRepository implements SeasonRepositoryInt
         }
 
         return $season;
-    }
-
-    public function delete(string $id): void
-    {
-        $this->createQueryBuilder()
-            ->remove()
-            ->field('id')->equals($id)
-            ->getQuery()
-            ->execute();
     }
 }

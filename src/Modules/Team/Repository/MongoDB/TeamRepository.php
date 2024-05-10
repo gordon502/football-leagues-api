@@ -2,6 +2,7 @@
 
 namespace App\Modules\Team\Repository\MongoDB;
 
+use App\Common\Repository\MongoDB\DeleteTrait;
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
 use App\Common\Repository\MongoDB\UpdateOneTrait;
 use App\Modules\Team\Factory\TeamFactoryInterface;
@@ -16,6 +17,7 @@ class TeamRepository extends DocumentRepository implements TeamRepositoryInterfa
 {
     use FindByHttpQueryTrait;
     use UpdateOneTrait;
+    use DeleteTrait;
 
     private readonly TeamFactoryInterface $teamFactory;
 
@@ -53,14 +55,5 @@ class TeamRepository extends DocumentRepository implements TeamRepositoryInterfa
         }
 
         return $team;
-    }
-
-    public function delete(string $id): void
-    {
-        $this->createQueryBuilder()
-            ->remove()
-            ->field('id')->equals($id)
-            ->getQuery()
-            ->execute();
     }
 }

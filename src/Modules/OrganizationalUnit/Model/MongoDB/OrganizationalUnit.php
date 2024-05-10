@@ -39,7 +39,7 @@ class OrganizationalUnit implements OrganizationalUnitInterface
 
     #[ReferenceMany(
         targetDocument: OrganizationalUnit::class,
-        cascade: ['persist'],
+        cascade: ['all'],
         orphanRemoval: true,
         mappedBy: 'leagues'
     )]
@@ -47,7 +47,7 @@ class OrganizationalUnit implements OrganizationalUnitInterface
 
     #[ReferenceMany(
         targetDocument: OrganizationalUnit::class,
-        cascade: ['persist'],
+        cascade: ['all'],
         orphanRemoval: true,
         mappedBy: 'teams'
     )]
