@@ -16,5 +16,11 @@ leagues:
         namespace: App\Modules\League
     type: attribute
 
+teams:
+    resource:
+        path: ../src/Modules/Team/
+        namespace: App\Modules\Team
+    type: attribute
+
 api_login_check:
     path: /api/login

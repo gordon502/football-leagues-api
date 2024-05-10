@@ -78,3 +78,12 @@ services:
         public: true
     App\Modules\League\Repository\MariaDB\LeagueRepository:
         public: true
+
+    team_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\Team\Repository\{DB_IMPL}\TeamRepository']
+        class: App\Modules\Team\Repository\TeamRepositoryInterface
+    App\Modules\Team\Repository\MongoDB\TeamRepository:
+        public: true
+    App\Modules\Team\Repository\MariaDB\TeamRepository:
+        public: true
