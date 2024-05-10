@@ -75,7 +75,7 @@ trait UpdateOneTrait
                 $relatedEntityProperty = preg_replace('/Id$/', '', $property->getName());
                 $relatedEntity = $extractRelatedEntity($reflection, $property);
 
-                $qb->field($relatedEntityProperty)->references($relatedEntity);
+                $qb->field($relatedEntityProperty)->set($relatedEntity);
 
                 $fieldsToUpdateCount++;
                 continue;
