@@ -7,9 +7,13 @@ use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MongoDB\League;
 use App\Modules\Season\Model\SeasonInterface;
+use App\Modules\SeasonTeam\Model\MongoDB\SeasonTeam;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 
 #[Document(collection: 'season')]
@@ -31,6 +35,14 @@ class Season implements SeasonInterface
     #[ReferenceOne(targetDocument: League::class, inversedBy: 'seasons')]
     protected LeagueInterface $league;
 
+    #[ReferenceMany(targetDocument: SeasonTeam::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'season')]
+    protected Collection $seasonTeams;
+
+    public function __construct()
+    {
+        $this->seasonTeams = new ArrayCollection();
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -49,6 +61,11 @@ class Season implements SeasonInterface
     public function getLeague(): LeagueInterface
     {
         return $this->league;
+    }
+
+    public function getSeasonTeams(): Collection
+    {
+        return $this->seasonTeams;
     }
 
     public function setName(string $name): static

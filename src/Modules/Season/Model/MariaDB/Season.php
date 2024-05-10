@@ -8,11 +8,15 @@ use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MariaDB\League;
 use App\Modules\League\Repository\MariaDB\LeagueRepository;
 use App\Modules\Season\Model\SeasonInterface;
+use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: LeagueRepository::class)]
@@ -36,6 +40,15 @@ class Season implements SeasonInterface
     #[JoinColumn(name: 'league_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected LeagueInterface $league;
 
+    #[OneToMany(targetEntity: SeasonTeam::class, mappedBy: 'season', cascade: ['all'], orphanRemoval: true)]
+    #[JoinColumn(name: 'season_id', referencedColumnName: 'id')]
+    private Collection $seasonTeams;
+
+    public function __construct()
+    {
+        $this->seasonTeams = new ArrayCollection();
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -54,6 +67,11 @@ class Season implements SeasonInterface
     public function getLeague(): LeagueInterface
     {
         return $this->league;
+    }
+
+    public function getSeasonTeams(): Collection
+    {
+        return $this->seasonTeams;
     }
 
     public function setName(string $name): static

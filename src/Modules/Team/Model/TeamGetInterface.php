@@ -3,6 +3,7 @@
 namespace App\Modules\Team\Model;
 
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
+use Doctrine\Common\Collections\Collection;
 
 interface TeamGetInterface
 {
@@ -27,4 +28,6 @@ interface TeamGetInterface
     public function getStadium(): string|null;
 
     public function getOrganizationalUnit(): OrganizationalUnitInterface;
+
+    public function getSeasonTeams(): Collection;
 }

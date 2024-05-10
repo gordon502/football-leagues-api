@@ -6,13 +6,17 @@ use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\OrganizationalUnit\Model\MariaDB\OrganizationalUnit;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
+use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
 use App\Modules\Team\Model\TeamInterface;
 use App\Modules\Team\Repository\MariaDB\TeamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: TeamRepository::class)]
@@ -53,6 +57,15 @@ class Team implements TeamInterface
     #[ManyToOne(targetEntity: OrganizationalUnit::class, inversedBy: 'teams')]
     #[JoinColumn(name: 'organizational_unit_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private OrganizationalUnitInterface $organizationalUnit;
+
+    #[OneToMany(targetEntity: SeasonTeam::class, mappedBy: 'team', cascade: ['all'], orphanRemoval: true)]
+    #[JoinColumn(name: 'team_id', referencedColumnName: 'id')]
+    private Collection $seasonTeams;
+
+    public function __construct()
+    {
+        $this->seasonTeams = new ArrayCollection();
+    }
 
     public function getName(): string
     {
@@ -102,6 +115,11 @@ class Team implements TeamInterface
     public function getOrganizationalUnit(): OrganizationalUnitInterface
     {
         return $this->organizationalUnit;
+    }
+
+    public function getSeasonTeams(): Collection
+    {
+        return $this->seasonTeams;
     }
 
     public function setName(string $name): static

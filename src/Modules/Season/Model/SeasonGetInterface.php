@@ -3,6 +3,7 @@
 namespace App\Modules\Season\Model;
 
 use App\Modules\League\Model\LeagueInterface;
+use Doctrine\Common\Collections\Collection;
 
 interface SeasonGetInterface
 {
@@ -15,4 +16,6 @@ interface SeasonGetInterface
     public function getPeriod(): string;
 
     public function getLeague(): LeagueInterface;
+
+    public function getSeasonTeams(): Collection;
 }
