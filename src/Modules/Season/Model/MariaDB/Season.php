@@ -7,6 +7,7 @@ use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MariaDB\League;
 use App\Modules\League\Repository\MariaDB\LeagueRepository;
+use App\Modules\Round\Model\MariaDB\Round;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,9 +45,14 @@ class Season implements SeasonInterface
     #[JoinColumn(name: 'season_id', referencedColumnName: 'id')]
     private Collection $seasonTeams;
 
+    #[OneToMany(targetEntity: Round::class, mappedBy: 'season', cascade: ['all'], orphanRemoval: true)]
+    #[JoinColumn(name: 'season_id', referencedColumnName: 'id')]
+    private Collection $rounds;
+
     public function __construct()
     {
         $this->seasonTeams = new ArrayCollection();
+        $this->rounds = new ArrayCollection();
     }
 
     public function getName(): string
@@ -72,6 +78,11 @@ class Season implements SeasonInterface
     public function getSeasonTeams(): Collection
     {
         return $this->seasonTeams;
+    }
+
+    public function getRounds(): Collection
+    {
+        return $this->rounds;
     }
 
     public function setName(string $name): static

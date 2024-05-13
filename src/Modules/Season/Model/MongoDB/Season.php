@@ -6,6 +6,7 @@ use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MongoDB\League;
+use App\Modules\Round\Model\MongoDB\Round;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\MongoDB\SeasonTeam;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -38,9 +39,13 @@ class Season implements SeasonInterface
     #[ReferenceMany(targetDocument: SeasonTeam::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'season')]
     protected Collection $seasonTeams;
 
+    #[ReferenceMany(targetDocument: Round::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'season')]
+    protected Collection $rounds;
+
     public function __construct()
     {
         $this->seasonTeams = new ArrayCollection();
+        $this->rounds = new ArrayCollection();
     }
 
     public function getName(): string
@@ -66,6 +71,11 @@ class Season implements SeasonInterface
     public function getSeasonTeams(): Collection
     {
         return $this->seasonTeams;
+    }
+
+    public function getRounds(): Collection
+    {
+        return $this->rounds;
     }
 
     public function setName(string $name): static

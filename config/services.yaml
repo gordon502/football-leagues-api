@@ -105,3 +105,12 @@ services:
         public: true
     App\Modules\Team\Repository\MariaDB\TeamRepository:
         public: true
+
+    round_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\Round\Repository\{DB_IMPL}\RoundRepository']
+        class: App\Modules\Round\Repository\RoundRepositoryInterface
+    App\Modules\Round\Repository\MongoDB\RoundRepository:
+        public: true
+    App\Modules\Round\Repository\MariaDB\RoundRepository:
+        public: true
