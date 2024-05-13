@@ -5,7 +5,6 @@ namespace App\Modules\SeasonTeam\Repository\MongoDB;
 use App\Common\Repository\MongoDB\DeleteTrait;
 use App\Common\Repository\MongoDB\FindByHttpQueryTrait;
 use App\Common\Repository\MongoDB\UpdateOneTrait;
-use App\Modules\Season\Model\MongoDB\Season;
 use App\Modules\SeasonTeam\Factory\SeasonTeamFactoryInterface;
 use App\Modules\SeasonTeam\Model\MongoDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamCreatableInterface;
@@ -27,7 +26,7 @@ class SeasonTeamRepository extends DocumentRepository implements SeasonTeamRepos
         $this->seasonTeamFactory = $seasonTeamFactory;
 
         $uow = $dm->getUnitOfWork();
-        $classMetadata = $dm->getClassMetadata(Season::class);
+        $classMetadata = $dm->getClassMetadata(SeasonTeam::class);
 
         parent::__construct($dm, $uow, $classMetadata);
     }
