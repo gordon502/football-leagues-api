@@ -4,7 +4,6 @@ namespace App\Modules\SeasonTeam\Repository\MariaDB;
 
 use App\Common\Repository\MariaDB\FindByHttpQueryTrait;
 use App\Common\Repository\MariaDB\UpdateOneTrait;
-use App\Modules\Season\Model\MariaDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Factory\SeasonTeamFactoryInterface;
 use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
@@ -27,7 +26,7 @@ class SeasonTeamRepository extends ServiceEntityRepository implements SeasonTeam
     ) {
         $this->seasonTeamFactory = $seasonTeamFactory;
 
-        parent::__construct($registry, Season::class);
+        parent::__construct($registry, SeasonTeam::class);
     }
 
     public function create(
