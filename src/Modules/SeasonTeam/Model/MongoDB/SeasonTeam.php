@@ -4,6 +4,7 @@ namespace App\Modules\SeasonTeam\Model\MongoDB;
 
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
+use App\Modules\Season\Model\MongoDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
 use App\Modules\Team\Model\TeamInterface;
@@ -25,7 +26,7 @@ class SeasonTeam implements SeasonTeamInterface
     #[ReferenceOne(targetDocument: TeamInterface::class, inversedBy: 'seasonTeams')]
     protected TeamInterface $team;
 
-    #[ReferenceOne(targetDocument: SeasonTeam::class, inversedBy: 'seasonTeams')]
+    #[ReferenceOne(targetDocument: Season::class, inversedBy: 'seasonTeams')]
     protected SeasonInterface $season;
 
     public function getName(): string
