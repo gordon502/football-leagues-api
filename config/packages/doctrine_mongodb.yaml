@@ -34,6 +34,9 @@ doctrine_mongodb:
                 App\Modules\Game\Model\MongoDB:
                     dir: '%kernel.project_dir%/src/Modules/Game/Model/MongoDB'
                     prefix: 'App\Modules\Game\Model\MongoDB'
+                App\Modules\GameEvent\Model\MongoDB:
+                    dir: '%kernel.project_dir%/src/Modules/GameEvent/Model/MongoDB'
+                    prefix: 'App\Modules\GameEvent\Model\MongoDB'
 
 when@prod:
     doctrine_mongodb:

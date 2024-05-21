@@ -5,16 +5,21 @@ namespace App\Modules\Game\Model\MariaDB;
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\Game\Model\GameInterface;
+use App\Modules\GameEvent\Model\MariaDB\GameEvent;
 use App\Modules\Round\Model\MariaDB\Round;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\Game\Repository\MariaDB\GameRepository;
 use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: GameRepository::class)]
@@ -60,6 +65,15 @@ class Game implements GameInterface
 
     #[ManyToOne(targetEntity: SeasonTeam::class)]
     protected ?SeasonTeamInterface $seasonTeam2;
+
+    #[OneToMany(targetEntity: GameEvent::class, mappedBy: 'game', cascade: ['all'], orphanRemoval: true)]
+    #[JoinColumn(name: 'game_id', referencedColumnName: 'id')]
+    protected Collection $gameEvents;
+
+    public function __construct()
+    {
+        $this->gameEvents = new ArrayCollection();
+    }
 
     public function getDate(): DateTimeInterface
     {
@@ -119,6 +133,11 @@ class Game implements GameInterface
     public function getSeasonTeam2(): ?SeasonTeamInterface
     {
         return $this->seasonTeam2;
+    }
+
+    public function getGameEvents(): Collection
+    {
+        return $this->gameEvents;
     }
 
     public function setDate(DateTimeInterface $date): static

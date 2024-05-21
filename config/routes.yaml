@@ -4,6 +4,12 @@ games:
         namespace: App\Modules\Game
     type: attribute
 
+game_events:
+    resource:
+        path: ../src/Modules/GameEvent/
+        namespace: App\Modules\GameEvent
+    type: attribute
+
 leagues:
     resource:
         path: ../src/Modules/League/

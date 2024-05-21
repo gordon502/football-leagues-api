@@ -40,6 +40,9 @@ doctrine:
             App\Modules\Game\Model\MariaDB:
                 dir: '%kernel.project_dir%/src/Modules/Game/Model/MariaDB'
                 prefix: 'App\Modules\Game\Model\MariaDB'
+            App\Modules\GameEvent\Model\MariaDB:
+                dir: '%kernel.project_dir%/src/Modules/GameEvent/Model/MariaDB'
+                prefix: 'App\Modules\GameEvent\Model\MariaDB'
         controller_resolver:
             auto_mapping: true
 

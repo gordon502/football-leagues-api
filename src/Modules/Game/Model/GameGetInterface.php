@@ -5,6 +5,7 @@ namespace App\Modules\Game\Model;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 
 interface GameGetInterface
 {
@@ -31,4 +32,6 @@ interface GameGetInterface
     public function getSeasonTeam1(): ?SeasonTeamInterface;
 
     public function getSeasonTeam2(): ?SeasonTeamInterface;
+
+    public function getGameEvents(): Collection;
 }

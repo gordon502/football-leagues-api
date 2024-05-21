@@ -123,3 +123,12 @@ services:
         public: true
     App\Modules\Game\Repository\MariaDB\GameRepository:
         public: true
+
+    game_event_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\GameEvent\Repository\{DB_IMPL}\GameEventRepository']
+        class: App\Modules\GameEvent\Repository\GameEventRepositoryInterface
+    App\Modules\GameEvent\Repository\MongoDB\GameEventRepository:
+        public: true
+    App\Modules\GameEvent\Repository\MariaDB\GameEventRepository:
+        public: true

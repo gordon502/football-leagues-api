@@ -5,14 +5,18 @@ namespace App\Modules\Game\Model\MongoDB;
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\Game\Model\GameInterface;
+use App\Modules\GameEvent\Model\MongoDB\GameEvent;
 use App\Modules\Round\Model\MongoDB\Round;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\SeasonTeam\Model\MongoDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 
 #[Document(collection: 'game')]
@@ -57,6 +61,13 @@ class Game implements GameInterface
 
     #[ReferenceOne(nullable: true, targetDocument: SeasonTeam::class)]
     protected ?SeasonTeamInterface $seasonTeam2;
+
+    #[ReferenceMany(targetDocument: GameEvent::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'game')]
+    protected Collection $gameEvents;
+    public function __construct()
+    {
+        $this->gameEvents = new ArrayCollection();
+    }
 
     public function getDate(): DateTimeInterface
     {
@@ -116,6 +127,11 @@ class Game implements GameInterface
     public function getSeasonTeam2(): ?SeasonTeamInterface
     {
         return $this->seasonTeam2;
+    }
+
+    public function getGameEvents(): Collection
+    {
+        return $this->gameEvents;
     }
 
     public function setDate(DateTimeInterface $date): static
