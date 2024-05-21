@@ -212,18 +212,10 @@ class GameController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->gameRepository->updateOne($id, $dto, true);
+        $updatedGame = $this->gameRepository->updateOne($existingGame, $dto, true);
 
-        $updatedGame = $this->gameRepository->findById($id);
-
-        try {
-            $this->gameSeasonTeamBelongsToRightSeasonValidation->validate($updatedGame);
-        } catch (WrongSeasonTeamSelectedException $exception) {
-            $this->gameRepository->rollBackUpdateOne();
-            throw $exception;
-        }
-
-        $this->gameRepository->commitUpdateOne();
+        $this->gameSeasonTeamBelongsToRightSeasonValidation->validate($updatedGame);
+        $this->gameRepository->flushUpdateOne();
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(

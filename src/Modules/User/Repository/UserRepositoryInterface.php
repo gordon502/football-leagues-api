@@ -19,7 +19,11 @@ interface UserRepositoryInterface extends FindableByIdInterface
 
     public function findByHttpQuery(HttpQuery $query): PaginatedQueryResultInterface;
 
-    public function updateOne(string $id, UserUpdatableInterface $userUpdatable): bool;
+    public function updateOne(
+        string $id,
+        UserUpdatableInterface $userUpdatable,
+        bool $transactional = false
+    ): object|false;
 
     public function delete(string $id): void;
 }

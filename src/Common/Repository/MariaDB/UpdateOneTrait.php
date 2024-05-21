@@ -19,13 +19,8 @@ use ReflectionProperty;
  */
 trait UpdateOneTrait
 {
-    public function updateOne(string $id, object $updatable, bool $transactional = false): bool
+    public function updateOne(string|object $idOrObject, object $updatable, bool $transactional = false): object|false
     {
-        $connection = $this->getEntityManager()->getConnection();
-        if ($transactional) {
-            $connection->beginTransaction();
-        }
-
         $extractRelatedEntity = function (
             ReflectionClass $reflection,
             ReflectionProperty $property
@@ -64,11 +59,9 @@ trait UpdateOneTrait
             return $foundEntity;
         };
 
-        $qb = $this
-            ->createQueryBuilder('uo')
-            ->update($this->getEntityName(), 'uo')
-            ->where('uo.id = :id')
-            ->setParameter('id', $id);
+        $entity = is_string($idOrObject)
+            ? $this->findOneById($idOrObject)
+            : $idOrObject;
 
         $fieldsToUpdateCount = 0;
 
@@ -85,20 +78,13 @@ trait UpdateOneTrait
                 $relatedEntityProperty = preg_replace('/Id$/', '', $property->getName());
                 $relatedEntity = $extractRelatedEntity($reflection, $property);
 
-                $qb
-                    ->set("uo.{$relatedEntityProperty}", ":{$relatedEntityProperty}")
-                    ->setParameter(
-                        $relatedEntityProperty,
-                        $relatedEntity
-                    );
+                $entity->{'set' . ucfirst($relatedEntityProperty)}($relatedEntity);
 
                 $fieldsToUpdateCount++;
                 continue;
             }
 
-            $qb
-                ->set("uo.{$property->getName()}", ":{$property->getName()}")
-                ->setParameter($property->getName(), $value);
+            $entity->{'set' . ucfirst($property->getName())}($value);
 
             $fieldsToUpdateCount++;
         }
@@ -107,18 +93,15 @@ trait UpdateOneTrait
             return false;
         }
 
-        $qb->getQuery()->execute();
+        if (!$transactional) {
+            $this->getEntityManager()->flush();
+        }
 
-        return true;
+        return $entity;
     }
 
-    public function commitUpdateOne(): void
+    public function flushUpdateOne(): void
     {
-        $this->getEntityManager()->getConnection()->commit();
-    }
-
-    public function rollBackUpdateOne(): void
-    {
-        $this->getEntityManager()->getConnection()->rollBack();
+        $this->getEntityManager()->flush();
     }
 }
