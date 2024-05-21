@@ -4,7 +4,6 @@ namespace App\Modules\Game\Model\MariaDB;
 
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
-use App\Modules\Game\Enum\GameResultEnum;
 use App\Modules\Game\Model\GameInterface;
 use App\Modules\Round\Model\MariaDB\Round;
 use App\Modules\Round\Model\RoundInterface;
@@ -92,7 +91,7 @@ class Game implements GameInterface
         return $this->team2Score;
     }
 
-    public function getResult(): ?GameResultEnum
+    public function getResult(): ?string
     {
         return $this->result;
     }
@@ -164,7 +163,7 @@ class Game implements GameInterface
         return $this;
     }
 
-    public function setResult(?GameResultEnum $matchResult): static
+    public function setResult(?string $matchResult): static
     {
         $this->result = $matchResult;
 

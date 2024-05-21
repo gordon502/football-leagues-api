@@ -17,7 +17,7 @@ class GameCreateDto implements GameCreatableInterface
     private int|null $team2ScoreHalf;
     private int|null $team1Score;
     private int|null $team2Score;
-    private GameResultEnum|null $result;
+    private string|null $result;
     private string|null $viewers;
     private string|null $annotation;
     private string|null $roundId;
@@ -31,7 +31,7 @@ class GameCreateDto implements GameCreatableInterface
         int|null $team2ScoreHalf,
         int|null $team1Score,
         int|null $team2Score,
-        GameResultEnum|null $result,
+        string|null $result,
         string|null $viewers,
         string|null $annotation,
         string|null $roundId,
@@ -164,16 +164,16 @@ class GameCreateDto implements GameCreatableInterface
         RoleSerializationGroup::EDITOR
     ])]
     #[Assert\Choice(choices: [
-        GameResultEnum::TEAM_1,
-        GameResultEnum::TEAM_2,
-        GameResultEnum::DRAW,
-        GameResultEnum::NOT_PLAYED,
-        GameResultEnum::CANCELLED,
-        GameResultEnum::POSTPONED,
-        GameResultEnum::TEAM_1_WALKOVER,
-        GameResultEnum::TEAM_2_WALKOVER
+        GameResultEnum::TEAM_1->value,
+        GameResultEnum::TEAM_2->value,
+        GameResultEnum::DRAW->value,
+        GameResultEnum::NOT_PLAYED->value,
+        GameResultEnum::CANCELLED->value,
+        GameResultEnum::POSTPONED->value,
+        GameResultEnum::TEAM_1_WALKOVER->value,
+        GameResultEnum::TEAM_2_WALKOVER->value
     ])]
-    public function getResult(): GameResultEnum|null
+    public function getResult(): string|null
     {
         return $this->result;
     }

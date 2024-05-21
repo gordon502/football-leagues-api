@@ -2,8 +2,6 @@
 
 namespace App\Modules\Game\Model;
 
-use App\Modules\Game\Enum\GameResultEnum;
-
 interface GameCreatableInterface
 {
     public function getDate(): string | null;
@@ -18,7 +16,7 @@ interface GameCreatableInterface
 
     public function getTeam2Score(): int | null;
 
-    public function getResult(): GameResultEnum | null;
+    public function getResult(): string | null;
 
     public function getViewers(): string | null;
 

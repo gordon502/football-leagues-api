@@ -2,7 +2,6 @@
 
 namespace App\Modules\Game\Model;
 
-use App\Modules\Game\Enum\GameResultEnum;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
 use DateTimeInterface;
@@ -21,7 +20,7 @@ interface GameSetInterface
 
     public function setTeam2Score(?int $team2Score): static;
 
-    public function setResult(?GameResultEnum $matchResult): static;
+    public function setResult(?string $matchResult): static;
 
     public function setViewers(?string $viewers): static;
 

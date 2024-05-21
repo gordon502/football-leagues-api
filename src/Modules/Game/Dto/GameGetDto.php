@@ -68,7 +68,7 @@ readonly class GameGetDto
     #[OARoleBasedProperty('Game result.', RoleSerializationGroup::ALL)]
     public function getResult(): ?string
     {
-        return $this->game->getResult()?->getValue();
+        return $this->game->getResult();
     }
 
     #[Groups(RoleSerializationGroup::ALL)]

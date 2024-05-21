@@ -2,7 +2,6 @@
 
 namespace App\Modules\Game\Model;
 
-use App\Modules\Game\Enum\GameResultEnum;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
 use DateTimeInterface;
@@ -21,7 +20,7 @@ interface GameGetInterface
 
     public function getTeam2Score(): ?int;
 
-    public function getResult(): ?GameResultEnum;
+    public function getResult(): ?string;
 
     public function getViewers(): ?string;
 

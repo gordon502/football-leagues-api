@@ -25,7 +25,7 @@ readonly class GameUpdateDto implements GameUpdatableInterface
         private int|null|NotIncludedInBody $team2ScoreHalf = new NotIncludedInBody(),
         private int|null|NotIncludedInBody $team1Score = new NotIncludedInBody(),
         private int|null|NotIncludedInBody $team2Score = new NotIncludedInBody(),
-        private GameResultEnum|null|NotIncludedInBody $result = new NotIncludedInBody(),
+        private string|null|NotIncludedInBody $result = new NotIncludedInBody(),
         private string|null|NotIncludedInBody $viewers = new NotIncludedInBody(),
         private string|null|NotIncludedInBody $annotation = new NotIncludedInBody(),
         private string|null|NotIncludedInBody $roundId = new NotIncludedInBody(),
@@ -142,16 +142,16 @@ readonly class GameUpdateDto implements GameUpdatableInterface
         RoleSerializationGroup::EDITOR
     ])]
     #[Assert\Choice(choices: [
-        GameResultEnum::TEAM_1,
-        GameResultEnum::TEAM_2,
-        GameResultEnum::DRAW,
-        GameResultEnum::NOT_PLAYED,
-        GameResultEnum::CANCELLED,
-        GameResultEnum::POSTPONED,
-        GameResultEnum::TEAM_1_WALKOVER,
-        GameResultEnum::TEAM_2_WALKOVER
+        GameResultEnum::TEAM_1->value,
+        GameResultEnum::TEAM_2->value,
+        GameResultEnum::DRAW->value,
+        GameResultEnum::NOT_PLAYED->value,
+        GameResultEnum::CANCELLED->value,
+        GameResultEnum::POSTPONED->value,
+        GameResultEnum::TEAM_1_WALKOVER->value,
+        GameResultEnum::TEAM_2_WALKOVER->value
     ])]
-    public function getResult(): ?GameResultEnum
+    public function getResult(): ?string
     {
         return $this->toValueOrNull($this->result);
     }

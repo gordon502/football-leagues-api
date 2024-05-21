@@ -4,7 +4,6 @@ namespace App\Modules\Game\Model\MongoDB;
 
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
-use App\Modules\Game\Enum\GameResultEnum;
 use App\Modules\Game\Model\GameInterface;
 use App\Modules\Round\Model\MongoDB\Round;
 use App\Modules\Round\Model\RoundInterface;
@@ -41,8 +40,8 @@ class Game implements GameInterface
     #[Field(type: 'int', nullable: true)]
     protected ?int $team2Score = null;
 
-    #[Field(type: 'string', nullable: true, enumType: GameResultEnum::class)]
-    protected ?GameResultEnum $result = null;
+    #[Field(type: 'string', nullable: true)]
+    protected ?string $result = null;
 
     #[Field(type: 'string', nullable: true)]
     protected ?string $viewers = null;
@@ -89,7 +88,7 @@ class Game implements GameInterface
         return $this->team2Score;
     }
 
-    public function getResult(): ?GameResultEnum
+    public function getResult(): ?string
     {
         return $this->result;
     }
@@ -161,7 +160,7 @@ class Game implements GameInterface
         return $this;
     }
 
-    public function setResult(?GameResultEnum $matchResult): static
+    public function setResult(?string $matchResult): static
     {
         $this->result = $matchResult;
 
