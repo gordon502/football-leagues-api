@@ -129,7 +129,6 @@ trait UpdateOneTrait
 
         foreach ($this->lastChanges['fields'] as $field => $value) {
             if (is_array($value)) {
-                var_dump($value);
                 $qb->field($field)->set($this->getDocumentManager()->find($value['entityClass'], $value['id']));
                 continue;
             }
