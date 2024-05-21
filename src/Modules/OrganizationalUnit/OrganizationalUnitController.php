@@ -186,9 +186,7 @@ class OrganizationalUnitController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->organizationalUnitRepository->updateOne($id, $dto);
-
-        $updatedOrganizationalUnit = $this->organizationalUnitRepository->findById($id);
+        $updatedOrganizationalUnit = $this->organizationalUnitRepository->updateOne($existingOrganizationalUnit, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(

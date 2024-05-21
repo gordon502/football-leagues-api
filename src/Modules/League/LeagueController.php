@@ -192,9 +192,7 @@ class LeagueController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->leagueRepository->updateOne($id, $dto);
-
-        $updatedLeague = $this->leagueRepository->findById($id);
+        $updatedLeague = $this->leagueRepository->updateOne($existingLeague, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(

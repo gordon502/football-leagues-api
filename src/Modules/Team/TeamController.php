@@ -192,9 +192,7 @@ class TeamController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->teamRepository->updateOne($id, $dto);
-
-        $updatedTeam = $this->teamRepository->findById($id);
+        $updatedTeam = $this->teamRepository->updateOne($existingTeam, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(

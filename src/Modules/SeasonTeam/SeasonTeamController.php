@@ -193,9 +193,7 @@ class SeasonTeamController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->seasonTeamRepository->updateOne($id, $dto);
-
-        $updatedSeasonTeam = $this->seasonTeamRepository->findById($id);
+        $updatedSeasonTeam = $this->seasonTeamRepository->updateOne($existingSeasonTeam, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(

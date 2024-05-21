@@ -192,9 +192,7 @@ class SeasonController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->seasonRepository->updateOne($id, $dto);
-
-        $updatedSeason = $this->seasonRepository->findById($id);
+        $updatedSeason = $this->seasonRepository->updateOne($existingSeason, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(

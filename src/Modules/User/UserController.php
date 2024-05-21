@@ -187,9 +187,7 @@ class UserController extends AbstractController
             $this->userEmailAlreadyExistsValidation->validate($dto->getEmail());
         }
 
-        $this->userRepository->updateOne($id, $dto);
-
-        $updatedUser = $this->userRepository->findById($id);
+        $updatedUser = $this->userRepository->updateOne($existingUser, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject($updatedUser, UserGetDto::class)

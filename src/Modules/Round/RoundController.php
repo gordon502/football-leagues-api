@@ -192,9 +192,7 @@ class RoundController extends AbstractController
 
         $this->dtoValidator->validatePartial($dto);
 
-        $this->roundRepository->updateOne($id, $dto);
-
-        $updatedRound = $this->roundRepository->findById($id);
+        $updatedRound = $this->roundRepository->updateOne($existingRound, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(
