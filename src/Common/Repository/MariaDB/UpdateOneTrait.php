@@ -19,9 +19,13 @@ use ReflectionProperty;
  */
 trait UpdateOneTrait
 {
-    // TODO: handle referencing object, not only single properties
-    public function updateOne(string $id, object $updatable): bool
+    public function updateOne(string $id, object $updatable, bool $transactional = false): bool
     {
+        $connection = $this->getEntityManager()->getConnection();
+        if ($transactional) {
+            $connection->beginTransaction();
+        }
+
         $extractRelatedEntity = function (
             ReflectionClass $reflection,
             ReflectionProperty $property
@@ -106,5 +110,15 @@ trait UpdateOneTrait
         $qb->getQuery()->execute();
 
         return true;
+    }
+
+    public function commitUpdateOne(): void
+    {
+        $this->getEntityManager()->getConnection()->commit();
+    }
+
+    public function rollBackUpdateOne(): void
+    {
+        $this->getEntityManager()->getConnection()->rollBack();
     }
 }

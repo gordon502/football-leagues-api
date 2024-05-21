@@ -7,6 +7,7 @@ use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\Season\Model\MongoDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
+use App\Modules\Team\Model\MongoDB\Team;
 use App\Modules\Team\Model\TeamInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
@@ -23,7 +24,7 @@ class SeasonTeam implements SeasonTeamInterface
     #[Field(type: 'string')]
     protected string $name;
 
-    #[ReferenceOne(targetDocument: TeamInterface::class, inversedBy: 'seasonTeams')]
+    #[ReferenceOne(targetDocument: Team::class, inversedBy: 'seasonTeams')]
     protected TeamInterface $team;
 
     #[ReferenceOne(targetDocument: Season::class, inversedBy: 'seasonTeams')]

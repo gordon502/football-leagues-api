@@ -1,3 +1,9 @@
+games:
+    resource:
+        path: ../src/Modules/Game/
+        namespace: App\Modules\Game
+    type: attribute
+
 leagues:
     resource:
         path: ../src/Modules/League/

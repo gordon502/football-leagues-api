@@ -4,7 +4,6 @@ namespace App\Modules\SeasonTeam\Repository\MariaDB;
 
 use App\Common\Repository\MariaDB\FindByHttpQueryTrait;
 use App\Common\Repository\MariaDB\UpdateOneTrait;
-use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Factory\SeasonTeamFactoryInterface;
 use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamCreatableInterface;
@@ -45,7 +44,7 @@ class SeasonTeamRepository extends ServiceEntityRepository implements SeasonTeam
         return $seasonTeam;
     }
 
-    public function findById(string $id): ?SeasonInterface
+    public function findById(string $id): ?SeasonTeamInterface
     {
         $seasonTeam = $this->findOneBy(['id' => $id]);
 

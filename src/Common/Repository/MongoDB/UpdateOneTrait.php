@@ -18,21 +18,27 @@ use ReflectionProperty;
  */
 trait UpdateOneTrait
 {
-    public function updateOne(string $id, object $updatable): bool
+    protected array $lastChanges = [
+        'id' => null,
+        'fields' => [],
+    ];
+
+    // TODO: this won't work with orphan removal and cascade delete, migrate it to EntityManager
+    public function updateOne(string $id, object $updatable, $transactional = false): bool
     {
         $extractRelatedEntity = function (
             ReflectionClass $reflection,
             ReflectionProperty $property
-        ) use ($updatable): object|null {
+        ) use ($updatable): array {
             if (!$reflection->hasMethod('get' . ucfirst($property->getName()))) {
-                return null;
+                return [null, null];
             }
 
             $method = $reflection->getMethod('get' . ucfirst($property->getName()));
             $attributes = $method->getAttributes(DtoPropertyRelatedToEntity::class);
 
             if (count($attributes) === 0) {
-                return null;
+                return [null, null];
             }
 
             /** @var DtoPropertyRelatedToEntity $attribute */
@@ -53,8 +59,12 @@ trait UpdateOneTrait
                 throw new RelatedEntityNotFoundException();
             }
 
-            return $foundEntity;
+            return [$foundEntity, $entityClass];
         };
+
+        if ($transactional) {
+            $oldEntity = $this->findById($id);
+        }
 
         $qb = $this->createQueryBuilder('uo')
             ->updateOne()
@@ -73,7 +83,14 @@ trait UpdateOneTrait
 
             if (str_ends_with($property->getName(), 'Id')) {
                 $relatedEntityProperty = preg_replace('/Id$/', '', $property->getName());
-                $relatedEntity = $extractRelatedEntity($reflection, $property);
+                list($relatedEntity, $entityClass) = $extractRelatedEntity($reflection, $property);
+
+                if ($transactional) {
+                    $this->lastChanges['fields'][$relatedEntityProperty] = [
+                        'id' => $oldEntity->{'get' . ucfirst($relatedEntityProperty)}()->getId(),
+                        'entityClass' => $entityClass,
+                    ];
+                }
 
                 $qb->field($relatedEntityProperty)->set($relatedEntity);
 
@@ -82,6 +99,10 @@ trait UpdateOneTrait
             }
 
             $qb->field($property->getName())->set($value);
+
+            if ($transactional) {
+                $this->lastChanges['fields'][$property->getName()] = $value;
+            }
 
             $fieldsToUpdateCount++;
         }
@@ -93,5 +114,29 @@ trait UpdateOneTrait
         $result = $qb->getQuery()->execute();
 
         return $result->getModifiedCount() > 0;
+    }
+
+    public function commitUpdateOne(): void
+    {
+        // Nothing to do in MongoDB
+    }
+
+    public function rollBackUpdateOne(): void
+    {
+        $qb = $this->createQueryBuilder('uo')
+            ->updateOne()
+            ->field('id')->equals($this->lastChanges['id']);
+
+        foreach ($this->lastChanges['fields'] as $field => $value) {
+            if (is_array($value)) {
+                var_dump($value);
+                $qb->field($field)->set($this->getDocumentManager()->find($value['entityClass'], $value['id']));
+                continue;
+            }
+
+            $qb->field($field)->set($value);
+        }
+
+        $qb->getQuery()->execute();
     }
 }
