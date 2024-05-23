@@ -21,10 +21,10 @@ trait UpdateOneTrait
 {
     public function updateOne(string|object $idOrObject, object $updatable, bool $transactional = false): object|false
     {
-        $extractRelatedEntity = function (
+        $extractRelatedEntities = function (
             ReflectionClass $reflection,
             ReflectionProperty $property
-        ) use ($updatable): object|null {
+        ) use ($updatable): object|array|null {
             if (!$reflection->hasMethod('get' . ucfirst($property->getName()))) {
                 return null;
             }
@@ -50,7 +50,24 @@ trait UpdateOneTrait
             /** @var FindableByIdInterface $repository */
             $repository = $this->getEntityManager()->getRepository($entityClass);
 
-            $foundEntity = $repository->findById($property->getValue($updatable));
+            $propertyValue = $property->getValue($updatable);
+
+            if (is_array($propertyValue)) {
+                $foundEntities = [];
+                foreach ($propertyValue as $singleId) {
+                    $foundEntity = $repository->findById($singleId);
+
+                    if (!$foundEntity) {
+                        throw new RelatedEntityNotFoundException();
+                    }
+
+                    $foundEntities[] = $foundEntity;
+                }
+
+                return $foundEntities;
+            }
+
+            $foundEntity = $repository->findById($propertyValue);
 
             if (!$foundEntity) {
                 throw new RelatedEntityNotFoundException();
@@ -76,9 +93,16 @@ trait UpdateOneTrait
 
             if (str_ends_with($property->getName(), 'Id')) {
                 $relatedEntityProperty = preg_replace('/Id$/', '', $property->getName());
-                $relatedEntity = $extractRelatedEntity($reflection, $property);
+                $relatedEntities = $extractRelatedEntities($reflection, $property);
 
-                $entity->{'set' . ucfirst($relatedEntityProperty)}($relatedEntity);
+                if (!is_array($relatedEntities)) {
+                    $entity->{'set' . ucfirst($relatedEntityProperty)}($relatedEntities);
+                } else {
+                    $entity->{'clear' . ucfirst($relatedEntityProperty)}();
+                    foreach ($relatedEntities as $relatedEntity) {
+                        $entity->{'add' . ucfirst($relatedEntityProperty)}($relatedEntity);
+                    }
+                }
 
                 $fieldsToUpdateCount++;
                 continue;

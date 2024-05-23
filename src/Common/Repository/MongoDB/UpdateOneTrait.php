@@ -18,17 +18,12 @@ use ReflectionProperty;
  */
 trait UpdateOneTrait
 {
-    protected array $lastChanges = [
-        'id' => null,
-        'fields' => [],
-    ];
-
     public function updateOne(string|object $idOrObject, object $updatable, $transactional = false): object|false
     {
-        $extractRelatedEntity = function (
+        $extractRelatedEntities = function (
             ReflectionClass $reflection,
             ReflectionProperty $property
-        ) use ($updatable): object|null {
+        ) use ($updatable): object|array|null {
             if (!$reflection->hasMethod('get' . ucfirst($property->getName()))) {
                 return null;
             }
@@ -50,6 +45,24 @@ trait UpdateOneTrait
 
             $entityClass = preg_replace('/Interface$/', '', $interface);
             $entityClass = $namespaceParts . '\\MongoDB\\' . $entityClass;
+
+            $propertyValue = $property->getValue($updatable);
+
+            if (is_array($propertyValue)) {
+                $foundEntities = [];
+                foreach ($propertyValue as $singleId) {
+                    // TODO: for now we cannot get repository because of broken DI while extending DocumentRepository
+                    $foundEntity = $this->getDocumentManager()->find($entityClass, $singleId);
+
+                    if (!$foundEntity) {
+                        throw new RelatedEntityNotFoundException();
+                    }
+
+                    $foundEntities[] = $foundEntity;
+                }
+
+                return $foundEntities;
+            }
 
             // TODO: for now we cannot get repository because of broken DI while extending DocumentRepository
             $foundEntity = $this->getDocumentManager()->find($entityClass, $property->getValue($updatable));
@@ -76,9 +89,16 @@ trait UpdateOneTrait
 
             if (str_ends_with($property->getName(), 'Id')) {
                 $relatedEntityProperty = preg_replace('/Id$/', '', $property->getName());
-                $relatedEntity = $extractRelatedEntity($reflection, $property);
+                $relatedEntities = $extractRelatedEntities($reflection, $property);
 
-                $entity->{'set' . ucfirst($relatedEntityProperty)}($relatedEntity);
+                if (!is_array($relatedEntities)) {
+                    $entity->{'set' . ucfirst($relatedEntityProperty)}($relatedEntities);
+                } else {
+                    $entity->{'clear' . ucfirst($relatedEntityProperty)}();
+                    foreach ($relatedEntities as $relatedEntity) {
+                        $entity->{'add' . ucfirst($relatedEntityProperty)}($relatedEntity);
+                    }
+                }
 
                 $fieldsToUpdateCount++;
                 continue;
