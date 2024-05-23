@@ -132,3 +132,12 @@ services:
         public: true
     App\Modules\GameEvent\Repository\MariaDB\GameEventRepository:
         public: true
+
+    article_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\Article\Repository\{DB_IMPL}\ArticleRepository']
+        class: App\Modules\Article\Repository\ArticleRepositoryInterface
+    App\Modules\Article\Repository\MongoDB\ArticleRepository:
+        public: true
+    App\Modules\Article\Repository\MariaDB\ArticleRepository:
+        public: true

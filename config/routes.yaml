@@ -1,3 +1,9 @@
+articles:
+    resource:
+        path: ../src/Modules/Article/
+        namespace: App\Modules\Article
+    type: attribute
+
 games:
     resource:
         path: ../src/Modules/Game/

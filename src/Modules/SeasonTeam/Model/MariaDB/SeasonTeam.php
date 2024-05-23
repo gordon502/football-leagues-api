@@ -4,6 +4,8 @@ namespace App\Modules\SeasonTeam\Model\MariaDB;
 
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
+use App\Modules\Article\Model\ArticleInterface;
+use App\Modules\Article\Model\MariaDB\Article;
 use App\Modules\Game\Model\MariaDB\Game;
 use App\Modules\Season\Model\MariaDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
@@ -17,6 +19,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
@@ -48,10 +51,14 @@ class SeasonTeam implements SeasonTeamInterface
     #[JoinColumn(name: 'season_team2_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected Collection $gamesAsTeam2;
 
+    #[ManyToMany(targetEntity: Article::class, inversedBy: 'seasonTeams', cascade: ['all'])]
+    protected Collection $articles;
+
     public function __construct()
     {
         $this->gamesAsTeam1 = new ArrayCollection();
         $this->gamesAsTeam2 = new ArrayCollection();
+        $this->articles = new ArrayCollection();
     }
 
     public function getName(): string
@@ -79,6 +86,11 @@ class SeasonTeam implements SeasonTeamInterface
         return $this->gamesAsTeam2;
     }
 
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
     public function setName(string $name): static
     {
         $this->name = $name;
@@ -96,6 +108,29 @@ class SeasonTeam implements SeasonTeamInterface
     public function setSeason(SeasonInterface $season): static
     {
         $this->season = $season;
+
+        return $this;
+    }
+
+    public function addArticle(ArticleInterface $article): static
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles->add($article);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(ArticleInterface $article): static
+    {
+        $this->articles->removeElement($article);
+
+        return $this;
+    }
+
+    public function clearArticles(): static
+    {
+        $this->articles->clear();
 
         return $this;
     }

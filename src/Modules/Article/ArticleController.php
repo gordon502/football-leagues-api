@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\SeasonTeam;
+namespace App\Modules\Article;
 
 use App\Common\HttpQuery\HttpQueryHandlerInterface;
 use App\Common\OAAttributes\OAFilterQueryParameter;
@@ -13,12 +13,12 @@ use App\Common\Response\ResourceNotFoundException;
 use App\Common\Response\SingleObjectResponseFactoryInterface;
 use App\Common\Serialization\RoleBasedSerializerInterface;
 use App\Common\Validator\DtoValidatorInterface;
-use App\Modules\SeasonTeam\Dto\SeasonTeamCreateDto;
-use App\Modules\SeasonTeam\Dto\SeasonTeamGetDto;
-use App\Modules\SeasonTeam\Dto\SeasonTeamUpdateDto;
-use App\Modules\SeasonTeam\Model\SeasonTeamGetInterface;
-use App\Modules\SeasonTeam\Repository\SeasonTeamRepositoryInterface;
-use App\Modules\SeasonTeam\Voter\SeasonTeamVoter;
+use App\Modules\Article\Model\ArticleGetInterface;
+use App\Modules\Article\Dto\ArticleCreateDto;
+use App\Modules\Article\Dto\ArticleGetDto;
+use App\Modules\Article\Dto\ArticleUpdateDto;
+use App\Modules\Article\Repository\ArticleRepositoryInterface;
+use App\Modules\Article\Voter\ArticleVoter;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
@@ -28,11 +28,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-class SeasonTeamController extends AbstractController
+class ArticleController extends AbstractController
 {
     public function __construct(
-        #[Autowire(service: 'season_team_repository')]
-        private readonly SeasonTeamRepositoryInterface $seasonTeamRepository,
+        #[Autowire(service: 'article_repository')]
+        private readonly ArticleRepositoryInterface $articleRepository,
         private readonly RoleBasedSerializerInterface $serializer,
         private readonly DtoValidatorInterface $dtoValidator,
         private readonly HttpQueryHandlerInterface $httpQueryHandler,
@@ -41,16 +41,16 @@ class SeasonTeamController extends AbstractController
     ) {
     }
 
-    #[Route('/api/season-teams', name: 'api.seasons.teams.create', methods: ['POST'])]
-    #[OA\Tag(name: 'Season Teams')]
+    #[Route('/api/articles', name: 'api.articles.create', methods: ['POST'])]
+    #[OA\Tag(name: 'Articles')]
     #[OA\RequestBody(
         required: true,
-        content: new Model(type: SeasonTeamCreateDto::class)
+        content: new Model(type: ArticleCreateDto::class)
     )]
     #[OA\Response(
         response: HttpCode::CREATED,
-        description: 'Returns instance of the created season.',
-        content: new Model(type: SeasonTeamGetDto::class)
+        description: 'Returns instance of the created article.',
+        content: new Model(type: ArticleGetDto::class)
     )]
     #[OA\Response(
         response: HttpCode::FORBIDDEN,
@@ -62,66 +62,64 @@ class SeasonTeamController extends AbstractController
     )]
     public function create(Request $request): JsonResponse
     {
-        $this->denyAccessUnlessGranted(SeasonTeamVoter::CREATE);
+        $this->denyAccessUnlessGranted(ArticleVoter::CREATE);
 
-        /** @var SeasonTeamCreateDto $dto */
+        /** @var ArticleCreateDto $dto */
         $dto = $this->serializer->denormalize(
             $request->getPayload()->all(),
-            SeasonTeamCreateDto::class
+            ArticleCreateDto::class
         );
         $this->dtoValidator->validate($dto);
 
-        $season = $this->seasonTeamRepository->create($dto);
+        $article = $this->articleRepository->create($dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(
-                $season,
-                SeasonTeamGetDto::class
+                $article,
+                ArticleGetDto::class
             ),
             HttpCode::CREATED
         );
     }
 
-    #[Route('/api/season-teams/{id}', name: 'api.seasons.teams.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
-    #[OA\Tag(name: 'Season Teams')]
+    #[Route('/api/articles/{id}', name: 'api.articles.get_by_id', methods: ['GET'])]
+    #[OA\Tag(name: 'Articles')]
     #[OA\Parameter(
         name: 'id',
-        description: 'The id of the season to retrieve.',
+        description: 'The id of the article to retrieve.',
         in: 'path',
         required: true
     )]
     #[OA\Response(
         response: 200,
-        description: 'Returns the season with the given id.',
-        content: new Model(type: SeasonTeamGetDto::class)
+        description: 'Returns the article with the given id.',
+        content: new Model(type: ArticleGetDto::class)
     )]
     #[OA\Response(
         response: 404,
-        description: 'Season Teams not found.',
+        description: 'Article not found.',
     )]
     public function getById(string $id): JsonResponse
     {
-        $seasonTeam = $this->seasonTeamRepository->findById($id);
-        if ($seasonTeam === null) {
+        $article = $this->articleRepository->findById($id);
+        if ($article === null) {
             throw new ResourceNotFoundException();
         }
 
         return $this->json($this->singleObjectResponseFactory->fromObject(
-            $seasonTeam,
-            SeasonTeamGetDto::class
+            $article,
+            ArticleGetDto::class
         ));
     }
 
-    #[Route('/api/season-teams', name: 'api.seasons.teams.collection', methods: ['GET'])]
-    #[Security(name: null)]
-    #[OA\Tag(name: 'Season Teams')]
+    #[Route('/api/articles', name: 'api.articles.collection', methods: ['GET'])]
+    #[OA\Tag(name: 'Articles')]
     #[OA\Response(
         response: 200,
-        description: 'Returns the seasons that match the filter.',
+        description: 'Returns the articles that match the filter.',
         content: new OA\JsonContent(
             type: 'array',
-            items: new OA\Items(ref: new Model(type: SeasonTeamGetDto::class))
+            items: new OA\Items(ref: new Model(type: ArticleGetDto::class))
         )
     )]
     #[OAFilterQueryParameter]
@@ -132,35 +130,35 @@ class SeasonTeamController extends AbstractController
     {
         $httpQuery = $this->httpQueryHandler->handle(
             $request->query,
-            SeasonTeamGetInterface::class
+            ArticleGetInterface::class
         );
 
-        $paginatedSeasons = $this->seasonTeamRepository->findByHttpQuery($httpQuery);
+        $paginatedArticles = $this->articleRepository->findByHttpQuery($httpQuery);
 
         return $this->json(
             $this->paginatedResponseFactory->fromPaginatedQueryResultInterface(
-                $paginatedSeasons,
-                SeasonTeamGetDto::class
+                $paginatedArticles,
+                ArticleGetDto::class
             )
         );
     }
 
-    #[Route('/api/season-teams/{id}', name: 'api.seasons.teams.update', methods: ['PUT'])]
-    #[OA\Tag(name: 'Season Teams')]
+    #[Route('/api/articles/{id}', name: 'api.articles.update', methods: ['PUT'])]
+    #[OA\Tag(name: 'Articles')]
     #[OA\Parameter(
         name: 'id',
-        description: 'The id of the season to update.',
+        description: 'The id of the article to update.',
         in: 'path',
         required: true
     )]
     #[OA\RequestBody(
         required: true,
-        content: new Model(type: SeasonTeamUpdateDto::class)
+        content: new Model(type: ArticleUpdateDto::class)
     )]
     #[OA\Response(
         response: HttpCode::OK,
-        description: 'Returns instance of the season.',
-        content: new Model(type: SeasonTeamGetDto::class)
+        description: 'Returns instance of the article.',
+        content: new Model(type: ArticleGetDto::class)
     )]
     #[OA\Response(
         response: HttpCode::FORBIDDEN,
@@ -168,7 +166,7 @@ class SeasonTeamController extends AbstractController
     )]
     #[OA\Response(
         response: HttpCode::NOT_FOUND,
-        description: 'Season Teams not found.',
+        description: 'Article not found.',
     )]
     #[OA\Response(
         response: HttpCode::UNPROCESSABLE_ENTITY,
@@ -176,37 +174,37 @@ class SeasonTeamController extends AbstractController
     )]
     public function update(Request $request, string $id): JsonResponse
     {
-        $existingSeasonTeam = $this->seasonTeamRepository->findById($id);
+        $existingArticle = $this->articleRepository->findById($id);
 
-        if ($existingSeasonTeam === null) {
+        if ($existingArticle === null) {
             throw new ResourceNotFoundException();
         }
 
-        $this->denyAccessUnlessGranted(SeasonTeamVoter::UPDATE, $existingSeasonTeam);
+        $this->denyAccessUnlessGranted(ArticleVoter::UPDATE, $existingArticle);
 
-        /** @var SeasonTeamUpdateDto $dto */
+        /** @var ArticleUpdateDto $dto */
         $dto = $this->serializer->denormalize(
             $request->getPayload()->all(),
-            SeasonTeamUpdateDto::class,
+            ArticleUpdateDto::class,
         );
 
         $this->dtoValidator->validatePartial($dto);
 
-        $updatedSeasonTeam = $this->seasonTeamRepository->updateOne($existingSeasonTeam, $dto);
+        $updatedArticle = $this->articleRepository->updateOne($existingArticle, $dto);
 
         return $this->json(
             $this->singleObjectResponseFactory->fromObject(
-                $updatedSeasonTeam,
-                SeasonTeamGetDto::class
+                $updatedArticle,
+                ArticleGetDto::class
             )
         );
     }
 
-    #[Route('/api/season-teams/{id}', name: 'api.seasons.teams.delete', methods: ['DELETE'])]
-    #[OA\Tag(name: 'Season Teams')]
+    #[Route('/api/articles/{id}', name: 'api.articles.delete', methods: ['DELETE'])]
+    #[OA\Tag(name: 'Articles')]
     #[OA\Response(
         response: HttpCode::NO_CONTENT,
-        description: 'Season Teams deleted.',
+        description: 'Article deleted.',
     )]
     #[OA\Response(
         response: HttpCode::FORBIDDEN,
@@ -214,19 +212,19 @@ class SeasonTeamController extends AbstractController
     )]
     #[OA\Response(
         response: HttpCode::NOT_FOUND,
-        description: 'Season Teams not found.',
+        description: 'Article not found.',
     )]
     public function delete(string $id): JsonResponse
     {
-        $seasonTeam = $this->seasonTeamRepository->findById($id);
+        $article = $this->articleRepository->findById($id);
 
-        if ($seasonTeam === null) {
+        if ($article === null) {
             throw new ResourceNotFoundException();
         }
 
-        $this->denyAccessUnlessGranted(SeasonTeamVoter::DELETE, $seasonTeam);
+        $this->denyAccessUnlessGranted(ArticleVoter::DELETE, $article);
 
-        $this->seasonTeamRepository->delete($id);
+        $this->articleRepository->delete($id);
 
         return $this->json('', HttpCode::NO_CONTENT);
     }
