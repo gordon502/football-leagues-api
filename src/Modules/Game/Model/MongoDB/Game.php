@@ -56,10 +56,10 @@ class Game implements GameInterface
     #[ReferenceOne(targetDocument: Round::class, inversedBy: 'games')]
     protected RoundInterface $round;
 
-    #[ReferenceOne(nullable: true, targetDocument: SeasonTeam::class)]
+    #[ReferenceOne(nullable: true, targetDocument: SeasonTeam::class, inversedBy: 'gamesAsTeam1')]
     protected ?SeasonTeamInterface $seasonTeam1;
 
-    #[ReferenceOne(nullable: true, targetDocument: SeasonTeam::class)]
+    #[ReferenceOne(nullable: true, targetDocument: SeasonTeam::class, inversedBy: 'gamesAsTeam2')]
     protected ?SeasonTeamInterface $seasonTeam2;
 
     #[ReferenceMany(targetDocument: GameEvent::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'game')]

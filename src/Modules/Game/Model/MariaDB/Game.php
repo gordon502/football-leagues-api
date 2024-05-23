@@ -60,10 +60,12 @@ class Game implements GameInterface
     #[ManyToOne(targetEntity: Round::class, inversedBy: 'games')]
     protected RoundInterface $round;
 
-    #[ManyToOne(targetEntity: SeasonTeam::class)]
+    #[ManyToOne(targetEntity: SeasonTeam::class, inversedBy: 'gamesAsTeam1')]
+    #[JoinColumn(name: 'season_team1_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?SeasonTeamInterface $seasonTeam1;
 
-    #[ManyToOne(targetEntity: SeasonTeam::class)]
+    #[ManyToOne(targetEntity: SeasonTeam::class, inversedBy: 'gamesAsTeam2')]
+    #[JoinColumn(name: 'season_team2_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?SeasonTeamInterface $seasonTeam2;
 
     #[OneToMany(targetEntity: GameEvent::class, mappedBy: 'game', cascade: ['all'], orphanRemoval: true)]

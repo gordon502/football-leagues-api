@@ -14,4 +14,8 @@ interface SeasonTeamGetInterface
     public function getTeam(): TeamInterface;
 
     public function getSeason(): SeasonInterface;
+
+    public function getGamesAsTeam1(): Collection;
+
+    public function getGamesAsTeam2(): Collection;
 }

@@ -183,7 +183,7 @@ class SeasonTeamController extends AbstractController
             throw new ResourceNotFoundException();
         }
 
-        $this->denyAccessUnlessGranted(SeasonVoter::UPDATE, $existingSeasonTeam);
+        $this->denyAccessUnlessGranted(SeasonTeamVoter::UPDATE, $existingSeasonTeam);
 
         /** @var SeasonTeamUpdateDto $dto */
         $dto = $this->serializer->denormalize(
@@ -225,7 +225,7 @@ class SeasonTeamController extends AbstractController
             throw new ResourceNotFoundException();
         }
 
-        $this->denyAccessUnlessGranted(SeasonVoter::DELETE, $seasonTeam);
+        $this->denyAccessUnlessGranted(SeasonTeamVoter::DELETE, $seasonTeam);
 
         $this->seasonTeamRepository->delete($id);
 
