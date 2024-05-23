@@ -13,10 +13,10 @@ use App\Common\Response\ResourceNotFoundException;
 use App\Common\Response\SingleObjectResponseFactoryInterface;
 use App\Common\Serialization\RoleBasedSerializerInterface;
 use App\Common\Validator\DtoValidatorInterface;
-use App\Modules\Game\Model\GameGetInterface;
 use App\Modules\GameEvent\Dto\GameEventCreateDto;
 use App\Modules\GameEvent\Dto\GameEventGetDto;
 use App\Modules\GameEvent\Dto\GameEventUpdateDto;
+use App\Modules\GameEvent\Model\GameEventGetInterface;
 use App\Modules\GameEvent\Repository\GameEventRepositoryInterface;
 use App\Modules\GameEvent\Voter\GameEventVoter;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -132,7 +132,7 @@ class GameEventController extends AbstractController
     {
         $httpQuery = $this->httpQueryHandler->handle(
             $request->query,
-            GameGetInterface::class
+            GameEventGetInterface::class
         );
 
         $paginatedGameEvents = $this->gameEventRepository->findByHttpQuery($httpQuery);
