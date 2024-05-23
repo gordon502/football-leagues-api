@@ -83,7 +83,6 @@ class TeamController extends AbstractController
     }
 
     #[Route('/api/teams/{id}', name: 'api.teams.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Teams')]
     #[OA\Parameter(
         name: 'id',
@@ -114,7 +113,6 @@ class TeamController extends AbstractController
     }
 
     #[Route('/api/teams', name: 'api.teams.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Teams')]
     #[OA\Response(
         response: 200,

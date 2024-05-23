@@ -83,7 +83,6 @@ class OrganizationalUnitController extends AbstractController
     }
 
     #[Route('/api/organizational-units/{id}', name: 'api.organizational_units.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Organizational Units')]
     #[OA\Parameter(
         name: 'id',
@@ -114,7 +113,6 @@ class OrganizationalUnitController extends AbstractController
     }
 
     #[Route('/api/organizational-units', name: 'api.organizational_units.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Organizational Units')]
     #[OA\Response(
         response: 200,

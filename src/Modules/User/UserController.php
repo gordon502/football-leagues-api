@@ -82,7 +82,6 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users/{id}', name: 'api.users.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Users')]
     #[OA\Parameter(
         name: 'id',
@@ -110,7 +109,6 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users', name: 'api.users.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Users')]
     #[OA\Response(
         response: 200,

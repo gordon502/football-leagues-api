@@ -99,7 +99,6 @@ class GameController extends AbstractController
     }
 
     #[Route('/api/games/{id}', name: 'api.games.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Games')]
     #[OA\Parameter(
         name: 'id',
@@ -130,7 +129,6 @@ class GameController extends AbstractController
     }
 
     #[Route('/api/games', name: 'api.games.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Games')]
     #[OA\Response(
         response: 200,

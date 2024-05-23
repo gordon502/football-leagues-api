@@ -83,7 +83,6 @@ class RoundController extends AbstractController
     }
 
     #[Route('/api/rounds/{id}', name: 'api.rounds.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Rounds')]
     #[OA\Parameter(
         name: 'id',
@@ -114,7 +113,6 @@ class RoundController extends AbstractController
     }
 
     #[Route('/api/rounds', name: 'api.rounds.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Rounds')]
     #[OA\Response(
         response: 200,

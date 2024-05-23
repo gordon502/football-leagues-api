@@ -83,7 +83,6 @@ class LeagueController extends AbstractController
     }
 
     #[Route('/api/leagues/{id}', name: 'api.leagues.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Leagues')]
     #[OA\Parameter(
         name: 'id',
@@ -114,7 +113,6 @@ class LeagueController extends AbstractController
     }
 
     #[Route('/api/leagues', name: 'api.leagues.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Leagues')]
     #[OA\Response(
         response: 200,

@@ -83,7 +83,6 @@ class SeasonController extends AbstractController
     }
 
     #[Route('/api/seasons/{id}', name: 'api.seasons.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Seasons')]
     #[OA\Parameter(
         name: 'id',
@@ -114,7 +113,6 @@ class SeasonController extends AbstractController
     }
 
     #[Route('/api/seasons', name: 'api.seasons.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Seasons')]
     #[OA\Response(
         response: 200,

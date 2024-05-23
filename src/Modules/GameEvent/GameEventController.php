@@ -83,7 +83,6 @@ class GameEventController extends AbstractController
     }
 
     #[Route('/api/game-events/{id}', name: 'api.game_events.get_by_id', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Game Events')]
     #[OA\Parameter(
         name: 'id',
@@ -114,7 +113,6 @@ class GameEventController extends AbstractController
     }
 
     #[Route('/api/game-events', name: 'api.game_events.collection', methods: ['GET'])]
-    #[Security(name: null)]
     #[OA\Tag(name: 'Game Events')]
     #[OA\Response(
         response: 200,
