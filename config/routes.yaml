@@ -16,6 +16,12 @@ game_events:
         namespace: App\Modules\GameEvent
     type: attribute
 
+leaderboards:
+    resource:
+        path: ../src/Modules/Leaderboard/
+        namespace: App\Modules\Leaderboard
+    type: attribute
+
 leagues:
     resource:
         path: ../src/Modules/League/

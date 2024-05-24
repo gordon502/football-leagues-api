@@ -4,6 +4,8 @@ namespace App\Modules\Season\Model\MariaDB;
 
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
+use App\Modules\Leaderboard\Model\LeaderboardInterface;
+use App\Modules\Leaderboard\Model\MariaDB\Leaderboard;
 use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MariaDB\League;
 use App\Modules\League\Repository\MariaDB\LeagueRepository;
@@ -49,10 +51,14 @@ class Season implements SeasonInterface
     #[JoinColumn(name: 'season_id', referencedColumnName: 'id')]
     private Collection $rounds;
 
+    #[OneToMany(targetEntity: Leaderboard::class, mappedBy: 'season', cascade: ['all'], orphanRemoval: true)]
+    protected Collection $leaderboards;
+
     public function __construct()
     {
         $this->seasonTeams = new ArrayCollection();
         $this->rounds = new ArrayCollection();
+        $this->leaderboards = new ArrayCollection();
     }
 
     public function getName(): string
@@ -78,6 +84,11 @@ class Season implements SeasonInterface
     public function getSeasonTeams(): Collection
     {
         return $this->seasonTeams;
+    }
+
+    public function getLeaderboards(): Collection
+    {
+        return $this->leaderboards;
     }
 
     public function getRounds(): Collection

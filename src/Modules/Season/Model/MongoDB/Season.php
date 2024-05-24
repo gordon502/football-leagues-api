@@ -4,6 +4,7 @@ namespace App\Modules\Season\Model\MongoDB;
 
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
+use App\Modules\Leaderboard\Model\MongoDB\Leaderboard;
 use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MongoDB\League;
 use App\Modules\Round\Model\MongoDB\Round;
@@ -42,10 +43,14 @@ class Season implements SeasonInterface
     #[ReferenceMany(targetDocument: Round::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'season')]
     protected Collection $rounds;
 
+    #[ReferenceMany(targetDocument: Leaderboard::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'season')]
+    protected Collection $leaderboards;
+
     public function __construct()
     {
         $this->seasonTeams = new ArrayCollection();
         $this->rounds = new ArrayCollection();
+        $this->leaderboards = new ArrayCollection();
     }
 
     public function getName(): string
@@ -76,6 +81,11 @@ class Season implements SeasonInterface
     public function getRounds(): Collection
     {
         return $this->rounds;
+    }
+
+    public function getLeaderboards(): Collection
+    {
+        return $this->leaderboards;
     }
 
     public function setName(string $name): static

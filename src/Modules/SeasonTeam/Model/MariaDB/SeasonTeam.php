@@ -7,6 +7,8 @@ use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\Article\Model\ArticleInterface;
 use App\Modules\Article\Model\MariaDB\Article;
 use App\Modules\Game\Model\MariaDB\Game;
+use App\Modules\Leaderboard\Model\LeaderboardInterface;
+use App\Modules\Leaderboard\Model\MariaDB\Leaderboard;
 use App\Modules\Season\Model\MariaDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
@@ -22,6 +24,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: SeasonTeamRepository::class)]
@@ -53,6 +56,9 @@ class SeasonTeam implements SeasonTeamInterface
 
     #[ManyToMany(targetEntity: Article::class, inversedBy: 'seasonTeams', cascade: ['all'])]
     protected Collection $articles;
+
+    #[OneToOne(targetEntity: Leaderboard::class, mappedBy: 'seasonTeam', cascade: ['all'], orphanRemoval: true)]
+    protected ?LeaderboardInterface $leaderboard;
 
     public function __construct()
     {
@@ -89,6 +95,10 @@ class SeasonTeam implements SeasonTeamInterface
     public function getArticles(): Collection
     {
         return $this->articles;
+    }
+
+    public function getLeaderboard(): LeaderboardInterface
+    {
     }
 
     public function setName(string $name): static

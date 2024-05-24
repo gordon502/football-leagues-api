@@ -46,6 +46,9 @@ doctrine:
             App\Modules\Article\Model\MariaDB:
                 dir: '%kernel.project_dir%/src/Modules/Article/Model/MariaDB'
                 prefix: 'App\Modules\Article\Model\MariaDB'
+            App\Modules\Leaderboard\Model\MariaDB:
+                dir: '%kernel.project_dir%/src/Modules/Leaderboard/Model/MariaDB'
+                prefix: 'App\Modules\Leaderboard\Model\MariaDB'
         controller_resolver:
             auto_mapping: true
 

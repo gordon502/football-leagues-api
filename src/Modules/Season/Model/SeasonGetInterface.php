@@ -20,4 +20,6 @@ interface SeasonGetInterface
     public function getSeasonTeams(): Collection;
 
     public function getRounds(): Collection;
+
+    public function getLeaderboards(): Collection;
 }

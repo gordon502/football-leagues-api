@@ -141,3 +141,12 @@ services:
         public: true
     App\Modules\Article\Repository\MariaDB\ArticleRepository:
         public: true
+
+    leaderboard_repository:
+        factory: ['@autowire_factory', 'usingDatabaseImplementation']
+        arguments: ['App\Modules\Leaderboard\Repository\{DB_IMPL}\LeaderboardRepository']
+        class: App\Modules\Leaderboard\Repository\LeaderboardRepositoryInterface
+    App\Modules\Leaderboard\Repository\MongoDB\LeaderboardRepository:
+        public: true
+    App\Modules\Leaderboard\Repository\MariaDB\LeaderboardRepository:
+        public: true

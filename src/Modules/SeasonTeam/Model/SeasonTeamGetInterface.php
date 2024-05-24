@@ -2,6 +2,7 @@
 
 namespace App\Modules\SeasonTeam\Model;
 
+use App\Modules\Leaderboard\Model\LeaderboardInterface;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\Team\Model\TeamInterface;
 use Doctrine\Common\Collections\Collection;
@@ -21,4 +22,6 @@ interface SeasonTeamGetInterface
     public function getGamesAsTeam1(): Collection;
 
     public function getGamesAsTeam2(): Collection;
+
+    public function getLeaderboard(): ?LeaderboardInterface;
 }

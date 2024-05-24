@@ -40,6 +40,9 @@ doctrine_mongodb:
                 App\Modules\Article\Model\MongoDB:
                     dir: '%kernel.project_dir%/src/Modules/Article/Model/MongoDB'
                     prefix: 'App\Modules\Article\Model\MongoDB'
+                App\Modules\Leaderboard\Model\MongoDB:
+                    dir: '%kernel.project_dir%/src/Modules/Leaderboard/Model/MongoDB'
+                    prefix: 'App\Modules\Leaderboard\Model\MongoDB'
 
 when@prod:
     doctrine_mongodb:

@@ -8,6 +8,8 @@ use App\Modules\Article\Model\ArticleInterface;
 use App\Modules\Article\Model\MongoDB\Article;
 use App\Modules\Game\Model\GameInterface;
 use App\Modules\Game\Model\MongoDB\Game;
+use App\Modules\Leaderboard\Model\LeaderboardInterface;
+use App\Modules\Leaderboard\Model\MongoDB\Leaderboard;
 use App\Modules\Season\Model\MongoDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
@@ -46,6 +48,9 @@ class SeasonTeam implements SeasonTeamInterface
 
     #[ReferenceMany(targetDocument: Article::class, inversedBy: 'seasonTeams')]
     protected Collection $articles;
+
+    #[ReferenceOne(targetDocument: Leaderboard::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'seasonTeam')]
+    protected LeaderboardInterface $leaderboard;
 
     public function __construct()
     {
@@ -98,6 +103,11 @@ class SeasonTeam implements SeasonTeamInterface
     public function getArticles(): Collection
     {
         return $this->articles;
+    }
+
+    public function getLeaderboard(): LeaderboardInterface
+    {
+        return $this->leaderboard;
     }
 
     public function setName(string $name): static
