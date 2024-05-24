@@ -8,7 +8,7 @@ use App\Modules\Season\Model\SeasonInterface;
 interface SeasonFactoryInterface
 {
     public function create(
-        SeasonCreatableInterface $leagueCreatable,
+        SeasonCreatableInterface $seasonCreatable,
         string $modelClass
     ): SeasonInterface;
 }
