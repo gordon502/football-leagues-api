@@ -40,3 +40,9 @@ jobs:
 
     - name: Run codesniffer
       run: ./vendor/bin/phpcs
+
+    - name: Run test environment containers
+      run: docker compose -f docker-compose.test.yml -p football-leagues-api-test --env-file .env.test up -d
+
+    - name: Run E2E tests using docker test environment
+      run: docker compose -p football-leagues-api-test exec php bash -c "./vendor/bin/phpunit"
