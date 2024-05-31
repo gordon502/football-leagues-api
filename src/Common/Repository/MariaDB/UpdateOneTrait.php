@@ -6,16 +6,19 @@ use App\Common\Dto\DtoPropertyRelatedToEntity;
 use App\Common\Dto\NotIncludedInBody;
 use App\Common\Repository\Exception\RelatedEntityNotFoundException;
 use App\Common\Repository\FindableByIdInterface;
+use App\Modules\User\Model\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use ReflectionClass;
 use ReflectionProperty;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @method QueryBuilder createQueryBuilder(string $alias, ?string $indexBy = null)
  * @method object|null findOneById(string $id)
  * @method string getEntityName()
  * @method EntityManagerInterface getEntityManager()
+ * @property UserPasswordHasherInterface $passwordHasher
  */
 trait UpdateOneTrait
 {
@@ -104,6 +107,13 @@ trait UpdateOneTrait
                     }
                 }
 
+                $fieldsToUpdateCount++;
+                continue;
+            }
+
+            if ($property->getName() === 'password') {
+                /** @var UserInterface $entity */
+                $entity->setPassword($this->passwordHasher->hashPassword($entity, $value));
                 $fieldsToUpdateCount++;
                 continue;
             }

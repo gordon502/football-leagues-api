@@ -12,7 +12,7 @@ final class UserEmailIsAlreadyTakenException extends HttpException implements Js
         public $message = 'User with this email is already taken.'
     ) {
         parent::__construct(
-            statusCode: HttpCode::BAD_REQUEST,
+            statusCode: HttpCode::CONFLICT,
             message: $this->message
         );
     }

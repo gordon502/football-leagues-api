@@ -11,6 +11,7 @@ use App\Modules\User\Model\UserInterface;
 use App\Modules\User\Repository\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
@@ -18,12 +19,15 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     use UpdateOneTrait;
 
     private readonly UserFactoryInterface $userFactory;
+    private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(
         ManagerRegistry $registry,
-        UserFactoryInterface $userFactory
+        UserFactoryInterface $userFactory,
+        UserPasswordHasherInterface $passwordHasher
     ) {
         $this->userFactory = $userFactory;
+        $this->passwordHasher = $passwordHasher;
 
         parent::__construct($registry, User::class);
     }

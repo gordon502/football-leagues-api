@@ -21,7 +21,7 @@ class UserCreateDto implements UserCreatableInterface
         $this->password = $password;
     }
 
-    #[Groups([RoleSerializationGroup::GUEST])]
+    #[Groups(RoleSerializationGroup::ALL)]
     #[Property(description: 'User email. It will be used for login. It must be unique.')]
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -30,7 +30,7 @@ class UserCreateDto implements UserCreatableInterface
         return $this->email;
     }
 
-    #[Groups([RoleSerializationGroup::GUEST])]
+    #[Groups(RoleSerializationGroup::ALL)]
     #[Property(description: 'User display name.')]
     #[Assert\NotBlank]
     public function getName(): string|null
@@ -38,7 +38,7 @@ class UserCreateDto implements UserCreatableInterface
         return $this->name;
     }
 
-    #[Groups([RoleSerializationGroup::GUEST])]
+    #[Groups(RoleSerializationGroup::ALL)]
     #[Property(description: 'User password.')]
     #[Assert\NotBlank]
     #[Assert\Length(

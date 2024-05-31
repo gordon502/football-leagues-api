@@ -12,6 +12,7 @@ use App\Modules\User\Model\UserInterface;
 use App\Modules\User\Repository\UserRepositoryInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserRepository extends DocumentRepository implements UserRepositoryInterface
 {
@@ -20,10 +21,15 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
     use DeleteTrait;
 
     private readonly UserFactoryInterface $userFactory;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(DocumentManager $dm, UserFactoryInterface $userFactory)
-    {
+    public function __construct(
+        DocumentManager $dm,
+        UserFactoryInterface $userFactory,
+        UserPasswordHasherInterface $passwordHasher
+    ) {
         $this->userFactory = $userFactory;
+        $this->passwordHasher = $passwordHasher;
 
         $uow = $dm->getUnitOfWork();
         $classMetadata = $dm->getClassMetadata(User::class);

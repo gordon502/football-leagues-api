@@ -39,6 +39,6 @@ class UserVoter extends Voter
     {
         return
             $subject->getId() === $user->getId()
-            || in_array($user->getRole(), [UserRole::ADMIN, UserRole::MODERATOR, UserRole::EDITOR]);
+            || in_array($user->getRole(), [UserRole::ADMIN, UserRole::MODERATOR]);
     }
 }

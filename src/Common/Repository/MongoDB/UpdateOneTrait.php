@@ -5,6 +5,7 @@ namespace App\Common\Repository\MongoDB;
 use App\Common\Dto\DtoPropertyRelatedToEntity;
 use App\Common\Dto\NotIncludedInBody;
 use App\Common\Repository\Exception\RelatedEntityNotFoundException;
+use App\Modules\User\Model\UserInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use ReflectionClass;
@@ -100,6 +101,13 @@ trait UpdateOneTrait
                     }
                 }
 
+                $fieldsToUpdateCount++;
+                continue;
+            }
+
+            if ($property->getName() === 'password') {
+                /** @var UserInterface $entity */
+                $entity->setPassword($this->passwordHasher->hashPassword($entity, $value));
                 $fieldsToUpdateCount++;
                 continue;
             }

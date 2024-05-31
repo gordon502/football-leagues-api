@@ -38,7 +38,7 @@ trait FindByHttpQueryTrait
 
         $totalPages = (int) ceil($totalCount / $query->paginate->limit);
 
-        if ($query->paginate->page > $totalPages) {
+        if ($query->paginate->page > $totalPages && $query->paginate->page !== 1) {
             throw new PaginationOutOfBoundException();
         }
 

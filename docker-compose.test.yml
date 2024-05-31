@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        TIMEZONE: ${TIMEZONE}
+    volumes:
+      - ./:/var/www/html/
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_SECRET: ${APP_SECRET}
+    networks:
+      - nginx_to_php
+      - php_to_mariadb
+      - php_to_mongodb
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    networks:
+      - nginx_to_php
+
+  mariadb:
+    image: mariadb:10.11.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${DATABASE_NAME:-football_league}
+      MYSQL_USER: ${DATABASE_USER:-user}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-password}
+    networks:
+      - php_to_mariadb
+
+  mongodb:
+    image: mongo:7.0.8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-football_league}
+      MONGO_INITDB_USER: ${MONGO_INITDB_USER:-user}
+      MONGO_INITDB_PWD: ${MONGO_INITDB_PWD:-password}
+    volumes:
+      - ./docker/mongo/:/docker-entrypoint-initdb.d/
+    networks:
+      - php_to_mongodb
+
+networks:
+  nginx_to_php:
+    driver: bridge
+  php_to_mariadb:
+    driver: bridge
+  php_to_mongodb:
+    driver: bridge
