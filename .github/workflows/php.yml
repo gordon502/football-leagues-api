@@ -45,4 +45,6 @@ jobs:
       run: docker compose -f docker-compose.test.yml -p football-leagues-api-test --env-file .env.test up -d
 
     - name: Run E2E tests using docker test environment
-      run: docker compose -p football-leagues-api-test exec php bash -c "./vendor/bin/phpunit"
+      run: |
+        docker compose -p football-leagues-api-test exec php bash -c "php bin/console lexik:jwt:generate-keypair"
+        docker compose -p football-leagues-api-test exec php bash -c "./vendor/bin/phpunit"
