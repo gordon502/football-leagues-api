@@ -4,6 +4,7 @@ namespace Tests\App;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Tests\Modules\OrganizationalUnit\OrganizationalUnitControllerTest;
@@ -47,6 +48,7 @@ final class AppTest extends TestCase
     }
 
     #[Test]
+    #[Depends('userControllerTestMariaDB')]
     public function userControllerTestMongoDB()
     {
         self::replaceDatabaseImplementation('MongoDB');
