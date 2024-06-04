@@ -7,12 +7,14 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Tests\Modules\OrganizationalUnit\OrganizationalUnitControllerTest;
+use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
 
 final class AppTest extends TestCase
 {
     private static UserControllerTest $userControllerTest;
     private static OrganizationalUnitControllerTest $organizationalUnitControllerTest;
+    private static TeamControllerTest $teamControllerTest;
 
     public static function setUpBeforeClass(): void
     {
@@ -27,6 +29,7 @@ final class AppTest extends TestCase
 
         self::$userControllerTest = new UserControllerTest($client);
         self::$organizationalUnitControllerTest = new OrganizationalUnitControllerTest($client);
+        self::$teamControllerTest = new TeamControllerTest($client);
     }
 
     public static function tearDownAfterClass(): void
@@ -56,10 +59,12 @@ final class AppTest extends TestCase
     {
         self::$userControllerTest->runTests();
         self::$organizationalUnitControllerTest->runTests();
+        self::$teamControllerTest->runTests();
     }
 
     private function clearAfterTests(): void
     {
+        self::$teamControllerTest->clearAfterTests();
         self::$organizationalUnitControllerTest->clearAfterTests();
         self::$userControllerTest->clearAfterTests();
     }
