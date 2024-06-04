@@ -6,11 +6,13 @@ use GuzzleHttp\Client;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Tests\Modules\OrganizationalUnit\OrganizationalUnitControllerTest;
 use Tests\Modules\User\UserControllerTest;
 
 final class AppTest extends TestCase
 {
     private static UserControllerTest $userControllerTest;
+    private static OrganizationalUnitControllerTest $organizationalUnitControllerTest;
 
     public static function setUpBeforeClass(): void
     {
@@ -24,6 +26,7 @@ final class AppTest extends TestCase
         ]);
 
         self::$userControllerTest = new UserControllerTest($client);
+        self::$organizationalUnitControllerTest = new OrganizationalUnitControllerTest($client);
     }
 
     public static function tearDownAfterClass(): void
@@ -52,10 +55,12 @@ final class AppTest extends TestCase
     private function runTests(): void
     {
         self::$userControllerTest->runTests();
+        self::$organizationalUnitControllerTest->runTests();
     }
 
     private function clearAfterTests(): void
     {
+        self::$organizationalUnitControllerTest->clearAfterTests();
         self::$userControllerTest->clearAfterTests();
     }
 
