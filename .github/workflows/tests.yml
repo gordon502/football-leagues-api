@@ -1,0 +1,27 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run test environment containers
+      run: docker compose -f docker-compose.test.yml -p football-leagues-api-test --env-file .env.test up -d
+
+    - name: Run E2E tests using docker test environment
+      run: |
+        docker compose -p football-leagues-api-test exec php bash -c "composer install --prefer-dist --no-progress --no-scripts"
+        docker compose -p football-leagues-api-test exec php bash -c "php bin/console lexik:jwt:generate-keypair"
+        docker compose -p football-leagues-api-test exec php bash -c "./vendor/bin/phpunit"
