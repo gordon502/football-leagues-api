@@ -10,7 +10,7 @@ services:
     volumes:
       - ./:/var/www/html/
     environment:
-      APP_ENV: ${APP_ENV}
+      APP_ENV: test
       APP_SECRET: ${APP_SECRET}
     networks:
       - nginx_to_php
