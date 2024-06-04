@@ -5,13 +5,12 @@ namespace Tests\Modules\User;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Tests\Modules\AbstractControllerTest;
+use Tests\Util\TestAvailableResources;
 use Tests\Util\TestLoginUtil;
 
 // TODO: Collection tests!
 class UserControllerTest extends AbstractControllerTest
 {
-    private array $createdUsers = [];
-
     public function __construct(Client $client)
     {
         $this->endpoint = 'users';
@@ -21,7 +20,7 @@ class UserControllerTest extends AbstractControllerTest
 
     public function clearAfterTests(): void
     {
-        $this->createdUsers = [];
+        TestAvailableResources::$users = [];
     }
 
     protected function testShouldReturnInitialCollection(): void
@@ -45,7 +44,7 @@ class UserControllerTest extends AbstractControllerTest
 
         $this->assertEquals(201, $response->getStatusCode());
 
-        $this->createdUsers[] = json_decode($response->getBody()->getContents(), true);
+        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfModeratorCanCreateResource(): void
@@ -56,7 +55,7 @@ class UserControllerTest extends AbstractControllerTest
 
         $this->assertEquals(201, $response->getStatusCode());
 
-        $this->createdUsers[] = json_decode($response->getBody()->getContents(), true);
+        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfEditorCanCreateResource(): void
@@ -67,13 +66,13 @@ class UserControllerTest extends AbstractControllerTest
 
         $this->assertEquals(201, $response->getStatusCode());
 
-        $this->createdUsers[] = json_decode($response->getBody()->getContents(), true);
+        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
         $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $this->createdUsers[0]['email'],
+            email: TestAvailableResources::$users[0]['email'],
             password: TestLoginUtil::DEFAULT_PASSWORD
         );
 
@@ -81,7 +80,7 @@ class UserControllerTest extends AbstractControllerTest
 
         $this->assertEquals(201, $response->getStatusCode());
 
-        $this->createdUsers[] = json_decode($response->getBody()->getContents(), true);
+        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfGuestCanCreateResource(): void
@@ -90,14 +89,14 @@ class UserControllerTest extends AbstractControllerTest
 
         $this->assertEquals(201, $response->getStatusCode());
 
-        $this->createdUsers[] = json_decode($response->getBody()->getContents(), true);
+        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldReturnConflictIfUserIsAlreadyRegistered(): void
     {
         $response = $this->client->post('users', [
             'json' => [
-                'email' => $this->createdUsers[0]['email'],
+                'email' => TestAvailableResources::$users[0]['email'],
                 'name' => 'Test User',
                 'password' => TestLoginUtil::DEFAULT_PASSWORD
             ]
@@ -108,7 +107,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldReturnPreviouslyCreatedResources(): void
     {
-        foreach ($this->createdUsers as $user) {
+        foreach (TestAvailableResources::$users as $user) {
             $response = $this->client->get("{$this->endpoint}/{$user['id']}");
 
             $this->assertEquals(200, $response->getStatusCode());
@@ -127,8 +126,8 @@ class UserControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count($this->createdUsers) + 3, $json['data']);
-        $this->assertEquals(count($this->createdUsers) + 3, $json['pagination']['total']);
+        $this->assertCount(count(TestAvailableResources::$users) + 3, $json['data']);
+        $this->assertEquals(count(TestAvailableResources::$users) + 3, $json['pagination']['total']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -144,7 +143,9 @@ class UserControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $response = $this->client->get("{$this->endpoint}/{$this->createdUsers[0]['id']}", [
+        $id = TestAvailableResources::$users[0]['id'];
+
+        $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer $token"
             ]
@@ -166,7 +167,9 @@ class UserControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $response = $this->client->get("{$this->endpoint}/{$this->createdUsers[0]['id']}", [
+        $id = TestAvailableResources::$users[0]['id'];
+
+        $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer $token"
             ]
@@ -188,7 +191,9 @@ class UserControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $response = $this->client->get("{$this->endpoint}/{$this->createdUsers[0]['id']}", [
+        $id = TestAvailableResources::$users[0]['id'];
+
+        $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer $token"
             ]
@@ -209,11 +214,13 @@ class UserControllerTest extends AbstractControllerTest
         ];
 
         $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $this->createdUsers[0]['email'],
+            email: TestAvailableResources::$users[0]['email'],
             password: TestLoginUtil::DEFAULT_PASSWORD
         );
 
-        $response = $this->client->get("{$this->endpoint}/{$this->createdUsers[1]['id']}", [
+        $id = TestAvailableResources::$users[0]['id'];
+
+        $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer $token"
             ]
@@ -233,7 +240,9 @@ class UserControllerTest extends AbstractControllerTest
             'blocked',
         ];
 
-        $response = $this->client->get("{$this->endpoint}/{$this->createdUsers[0]['id']}");
+        $id = TestAvailableResources::$users[0]['id'];
+
+        $response = $this->client->get("{$this->endpoint}/{$id}");
 
         $this->assertReadableFieldsFromResponse($readableFields, $response);
     }
@@ -392,7 +401,7 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
         $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $this->createdUsers[1]['email'],
+            email: TestAvailableResources::$users[1]['email'],
             password: TestLoginUtil::DEFAULT_PASSWORD
         );
 
@@ -492,11 +501,11 @@ class UserControllerTest extends AbstractControllerTest
         $response = $this->updateUserRequest(
             0,
             $this->loginUtil->loginWithEmailAndPassword(
-                email: $this->createdUsers[0]['email'],
+                email: TestAvailableResources::$users[0]['email'],
                 password: TestLoginUtil::DEFAULT_PASSWORD
             ),
             [
-                'email' => $this->createdUsers[0]['email'],
+                'email' => TestAvailableResources::$users[0]['email'],
                 'name' => 'Updated by OWNER',
                 'password' => TestLoginUtil::DEFAULT_PASSWORD,
                 'avatar' => 'https://example.com/avatar.jpg',
@@ -508,7 +517,7 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckNotEditableFieldsByOwner(): void
     {
         $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $this->createdUsers[0]['email'],
+            email: TestAvailableResources::$users[0]['email'],
             password: TestLoginUtil::DEFAULT_PASSWORD
         );
 
@@ -530,14 +539,14 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckIfUpdateEmailToExistingOneIsImpossible(): void
     {
         $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $this->createdUsers[0]['email'],
+            email: TestAvailableResources::$users[0]['email'],
             password: TestLoginUtil::DEFAULT_PASSWORD
         );
 
         $response = $this->updateUserRequest(
             0,
             $token,
-            ['email' => $this->createdUsers[1]['email']]
+            ['email' => TestAvailableResources::$users[1]['email']]
         );
 
         $this->assertEquals(409, $response->getStatusCode());
@@ -545,7 +554,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfAdminCanDeleteResource(): void
     {
-        $user = array_pop($this->createdUsers);
+        $user = array_pop(TestAvailableResources::$users);
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -558,7 +567,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfModeratorCanDeleteResource(): void
     {
-        $user = array_pop($this->createdUsers);
+        $user = array_pop(TestAvailableResources::$users);
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -571,7 +580,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfEditorCanDeleteResource(): void
     {
-        $user = $this->createdUsers[0];
+        $user = TestAvailableResources::$users[0];
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -585,11 +594,11 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
         $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $this->createdUsers[1]['email'],
+            email: TestAvailableResources::$users[1]['email'],
             password: TestLoginUtil::DEFAULT_PASSWORD
         );
 
-        $user = $this->createdUsers[0];
+        $user = TestAvailableResources::$users[0];
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -602,7 +611,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $user = $this->createdUsers[0];
+        $user = TestAvailableResources::$users[0];
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}");
 
@@ -611,7 +620,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfOwnerCanDeleteResource(): void
     {
-        $user = array_pop($this->createdUsers);
+        $user = array_pop(TestAvailableResources::$users);
 
         $token = $this->loginUtil->loginWithEmailAndPassword(
             email: $user['email'],
@@ -653,8 +662,10 @@ class UserControllerTest extends AbstractControllerTest
             $headers['Authorization'] = "Bearer $token";
         }
 
+        $id = TestAvailableResources::$users[$userIndex]['id'];
+
         return $this->client->put(
-            "{$this->endpoint}/{$this->createdUsers[$userIndex]['id']}",
+            "{$this->endpoint}/{$id}",
             ['headers' => $headers, 'json' => $data]
         );
     }
