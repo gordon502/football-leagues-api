@@ -261,52 +261,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
                 'name' => 'Organizational Unit 1 Updated',
             ]
         );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsModerator(),
-            [
-                'country' => 'Country 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsModerator(),
-            [
-                'address' => 'Address 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsModerator(),
-            [
-                'city' => 'City 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsModerator(),
-            [
-                'postalCode' => 'Postal Code 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsModerator(),
-            [
-                'phone' => 'Phone 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     protected function testShouldCheckEditableFieldsByEditor(): void
@@ -323,52 +278,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
                 'name' => 'Organizational Unit 1 Updated',
             ]
         );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsEditor(),
-            [
-                'country' => 'Country 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsEditor(),
-            [
-                'address' => 'Address 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsEditor(),
-            [
-                'city' => 'City 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsEditor(),
-            [
-                'postalCode' => 'Postal Code 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $this->loginUtil->loginAsEditor(),
-            [
-                'phone' => 'Phone 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     protected function testShouldCheckEditableFieldsByUser(): void
@@ -390,52 +300,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
                 'name' => 'Organizational Unit 1 Updated',
             ]
         );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $token,
-            [
-                'country' => 'Country 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $token,
-            [
-                'address' => 'Address 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $token,
-            [
-                'city' => 'City 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $token,
-            [
-                'postalCode' => 'Postal Code 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            $token,
-            [
-                'phone' => 'Phone 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     protected function testShouldCheckEditableFieldsByGuest(): void
@@ -452,52 +317,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
                 'name' => 'Organizational Unit 1 Updated',
             ]
         );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            null,
-            [
-                'country' => 'Country 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            null,
-            [
-                'address' => 'Address 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            null,
-            [
-                'city' => 'City 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            null,
-            [
-                'postalCode' => 'Postal Code 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
-
-        $response = $this->updateOrganizationalUnitRequest(
-            0,
-            null,
-            [
-                'phone' => 'Phone 1 Updated',
-            ]
-        );
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(401, $response->getStatusCode());
     }
 
     protected function testShouldCheckIfAdminCanDeleteResource(): void

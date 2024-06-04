@@ -161,6 +161,14 @@ class OrganizationalUnitController extends AbstractController
         content: new Model(type: OrganizationalUnitGetDto::class)
     )]
     #[OA\Response(
+        response: HttpCode::UNAUTHORIZED,
+        description: 'Unauthorized.',
+    )]
+    #[OA\Response(
+        response: HttpCode::FORBIDDEN,
+        description: 'Operation forbidden.',
+    )]
+    #[OA\Response(
         response: HttpCode::NOT_FOUND,
         description: 'Organizational unit not found.',
     )]
@@ -175,6 +183,8 @@ class OrganizationalUnitController extends AbstractController
         if ($existingOrganizationalUnit === null) {
             throw new ResourceNotFoundException();
         }
+
+        $this->denyAccessUnlessGranted(OrganizationalUnitVoter::UPDATE, $existingOrganizationalUnit);
 
         /** @var OrganizationalUnitUpdateDto $dto */
         $dto = $this->serializer->denormalize(
