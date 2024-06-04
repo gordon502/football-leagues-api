@@ -35,15 +35,27 @@ final class AppTest extends TestCase
     public function userControllerTestMariaDB(): void
     {
         self::replaceDatabaseImplementation('MariaDB');
-        self::$userControllerTest->runTests();
-        self::$userControllerTest->clearAfterTests();
+
+        $this->runTests();
+        $this->clearAfterTests();
     }
 
     #[Test]
     public function userControllerTestMongoDB()
     {
         self::replaceDatabaseImplementation('MongoDB');
+
+        $this->runTests();
+        $this->clearAfterTests();
+    }
+
+    private function runTests(): void
+    {
         self::$userControllerTest->runTests();
+    }
+
+    private function clearAfterTests(): void
+    {
         self::$userControllerTest->clearAfterTests();
     }
 
@@ -117,6 +129,11 @@ final class AppTest extends TestCase
     {
         exec(sprintf(
             'php %s/../../bin/console doctrine:database:drop --force --env=test 2> /dev/null',
+            __DIR__
+        ));
+
+        exec(sprintf(
+            'php %s/../../bin/console doctrine:mongodb:schema:drop --env=test 2> /dev/null',
             __DIR__
         ));
     }
