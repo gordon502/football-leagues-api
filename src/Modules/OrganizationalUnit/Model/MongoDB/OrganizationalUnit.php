@@ -4,7 +4,9 @@ namespace App\Modules\OrganizationalUnit\Model\MongoDB;
 
 use App\Common\Model\MongoDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
+use App\Modules\League\Model\MongoDB\League;
 use App\Modules\OrganizationalUnit\Model\OrganizationalUnitInterface;
+use App\Modules\Team\Model\MongoDB\Team;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
@@ -38,18 +40,18 @@ class OrganizationalUnit implements OrganizationalUnitInterface
     protected ?string $phone = null;
 
     #[ReferenceMany(
-        targetDocument: OrganizationalUnit::class,
+        targetDocument: League::class,
         cascade: ['all'],
         orphanRemoval: true,
-        mappedBy: 'leagues'
+        mappedBy: 'organizationalUnit'
     )]
     protected Collection $leagues;
 
     #[ReferenceMany(
-        targetDocument: OrganizationalUnit::class,
+        targetDocument: Team::class,
         cascade: ['all'],
         orphanRemoval: true,
-        mappedBy: 'teams'
+        mappedBy: 'organizationalUnit'
     )]
     protected Collection $teams;
 

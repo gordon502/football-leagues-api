@@ -513,6 +513,45 @@ class TeamControllerTest extends AbstractControllerTest
         $this->assertEquals(401, $response->getStatusCode());
     }
 
+    protected function testShouldCheckIfDeletionOfOrganizationalUnitDeletesTeamAlso(): void
+    {
+        $token = $this->loginUtil->loginAsAdmin();
+
+        $team = array_pop(TestAvailableResources::$teams);
+        $relatedTeams = [
+            $team,
+            ...array_filter(
+                TestAvailableResources::$teams,
+                fn($t) => $t['organizationalUnitId'] === $team['organizationalUnitId']
+            )
+        ];
+
+        foreach ($relatedTeams as $relatedTeam) {
+            $response = $this->client->get("{$this->endpoint}/{$relatedTeam['id']}");
+            $this->assertEquals(200, $response->getStatusCode());
+        }
+
+        $response = $this->client->delete(
+            "organizational-units/{$team['organizationalUnitId']}",
+            ['headers' => ['Authorization' => "Bearer $token"]]
+        );
+        $this->assertEquals(204, $response->getStatusCode());
+        TestAvailableResources::$organizationalUnits = array_filter(
+            TestAvailableResources::$organizationalUnits,
+            fn($ou) => $ou['id'] !== $team['organizationalUnitId']
+        );
+
+        foreach ($relatedTeams as $relatedTeam) {
+            $response = $this->client->get("{$this->endpoint}/{$relatedTeam['id']}");
+            $this->assertEquals(404, $response->getStatusCode());
+        }
+
+        TestAvailableResources::$teams = array_filter(
+            TestAvailableResources::$teams,
+            fn($t) => $t['organizationalUnitId'] !== $team['organizationalUnitId']
+        );
+    }
+
     private function updateTeamRequest(
         int $teamIndex,
         ?string $token,
