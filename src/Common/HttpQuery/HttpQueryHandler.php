@@ -29,7 +29,7 @@ readonly class HttpQueryHandler implements HttpQueryHandlerInterface
             ),
             $this->paginateParser->parse(
                 page: $filterQuery->get('page') ?? '1',
-                limit: $filterQuery->get('limit') ?? '10'
+                limit: $filterQuery->get('limit') ?? '20'
             )
         );
     }
