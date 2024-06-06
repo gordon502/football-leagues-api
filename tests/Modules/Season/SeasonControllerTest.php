@@ -25,7 +25,7 @@ class SeasonControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
                 'json' => [
@@ -46,7 +46,7 @@ class SeasonControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
                 'json' => [
@@ -67,7 +67,7 @@ class SeasonControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
                 'json' => [
@@ -470,7 +470,7 @@ class SeasonControllerTest extends AbstractControllerTest
 
         TestAvailableResources::$seasons = array_filter(
             TestAvailableResources::$seasons,
-            fn($t) => $t['leagueId'] !== $season['leagueId']
+            fn($s) => $s['leagueId'] !== $season['leagueId']
         );
     }
 
