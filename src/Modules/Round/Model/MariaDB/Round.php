@@ -43,7 +43,6 @@ class Round implements RoundInterface
     protected SeasonInterface $season;
 
     #[OneToMany(targetEntity: Game::class, mappedBy: 'round', cascade: ['all'], orphanRemoval: true)]
-    #[JoinColumn(name: 'round_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected Collection $games;
 
     public function __construct()

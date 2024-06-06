@@ -58,6 +58,7 @@ class Game implements GameInterface
     protected ?string $annotation = null;
 
     #[ManyToOne(targetEntity: Round::class, inversedBy: 'games')]
+    #[JoinColumn(name: 'round_id', referencedColumnName: 'id')]
     protected RoundInterface $round;
 
     #[ManyToOne(targetEntity: SeasonTeam::class, inversedBy: 'gamesAsTeam1')]
@@ -69,7 +70,6 @@ class Game implements GameInterface
     protected ?SeasonTeamInterface $seasonTeam2;
 
     #[OneToMany(targetEntity: GameEvent::class, mappedBy: 'game', cascade: ['all'], orphanRemoval: true)]
-    #[JoinColumn(name: 'game_id', referencedColumnName: 'id')]
     protected Collection $gameEvents;
 
     public function __construct()
