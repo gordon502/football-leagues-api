@@ -4,13 +4,12 @@ namespace App\Modules\Season\Model\MariaDB;
 
 use App\Common\Model\MariaDB\ModelUuidTrait;
 use App\Common\Timestamp\TimestampableTrait;
-use App\Modules\Leaderboard\Model\LeaderboardInterface;
 use App\Modules\Leaderboard\Model\MariaDB\Leaderboard;
 use App\Modules\League\Model\LeagueInterface;
 use App\Modules\League\Model\MariaDB\League;
-use App\Modules\League\Repository\MariaDB\LeagueRepository;
 use App\Modules\Round\Model\MariaDB\Round;
 use App\Modules\Season\Model\SeasonInterface;
+use App\Modules\Season\Repository\MariaDB\SeasonRepository;
 use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,7 +21,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-#[Entity(repositoryClass: LeagueRepository::class)]
+#[Entity(repositoryClass: SeasonRepository::class)]
 #[Table(name: 'season')]
 #[HasLifecycleCallbacks]
 class Season implements SeasonInterface
@@ -48,7 +47,6 @@ class Season implements SeasonInterface
     private Collection $seasonTeams;
 
     #[OneToMany(targetEntity: Round::class, mappedBy: 'season', cascade: ['all'], orphanRemoval: true)]
-    #[JoinColumn(name: 'season_id', referencedColumnName: 'id')]
     private Collection $rounds;
 
     #[OneToMany(targetEntity: Leaderboard::class, mappedBy: 'season', cascade: ['all'], orphanRemoval: true)]

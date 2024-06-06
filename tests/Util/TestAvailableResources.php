@@ -9,6 +9,7 @@ final class TestAvailableResources
     public static array $teams = [];
     public static array $leagues = [];
     public static array $seasons = [];
+    public static array $rounds = [];
 
     private function __construct()
     {

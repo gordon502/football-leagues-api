@@ -9,6 +9,7 @@ use App\Modules\Round\Model\RoundInterface;
 use App\Modules\Round\Repository\MariaDB\RoundRepository;
 use App\Modules\Season\Model\MariaDB\Season;
 use App\Modules\Season\Model\SeasonInterface;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -38,6 +39,7 @@ class Round implements RoundInterface
     protected DateTimeInterface $standardEndDate;
 
     #[ManyToOne(targetEntity: Season::class, inversedBy: 'rounds')]
+    #[JoinColumn(name: 'season_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected SeasonInterface $season;
 
     #[OneToMany(targetEntity: Game::class, mappedBy: 'round', cascade: ['all'], orphanRemoval: true)]
@@ -81,16 +83,20 @@ class Round implements RoundInterface
         return $this;
     }
 
-    public function setStandardStartDate(DateTimeInterface $standardStartDate): static
+    public function setStandardStartDate(DateTimeInterface|string $standardStartDate): static
     {
-        $this->standardStartDate = $standardStartDate;
+        $this->standardStartDate = is_string($standardStartDate)
+            ? new DateTime($standardStartDate)
+            : $standardStartDate;
 
         return $this;
     }
 
-    public function setStandardEndDate(DateTimeInterface $standardEndDate): static
+    public function setStandardEndDate(DateTimeInterface|string $standardEndDate): static
     {
-        $this->standardEndDate = $standardEndDate;
+        $this->standardEndDate = is_string($standardEndDate)
+            ? new DateTime($standardEndDate)
+            : $standardEndDate;
 
         return $this;
     }
