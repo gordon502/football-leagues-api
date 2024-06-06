@@ -11,6 +11,7 @@ use Tests\Modules\League\LeagueControllerTest;
 use Tests\Modules\Round\RoundControllerTest;
 use Tests\Modules\Season\SeasonControllerTest;
 use Tests\Modules\OrganizationalUnit\OrganizationalUnitControllerTest;
+use Tests\Modules\SeasonTeam\SeasonTeamControllerTest;
 use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
 
@@ -21,6 +22,7 @@ final class AppTest extends TestCase
     private static TeamControllerTest $teamControllerTest;
     private static LeagueControllerTest $leagueControllerTest;
     private static SeasonControllerTest $seasonControllerTest;
+    private static SeasonTeamControllerTest $seasonTeamControllerTest;
     private static RoundControllerTest $roundControllerTest;
 
     public static function setUpBeforeClass(): void
@@ -39,6 +41,7 @@ final class AppTest extends TestCase
         self::$teamControllerTest = new TeamControllerTest($client);
         self::$leagueControllerTest = new LeagueControllerTest($client);
         self::$seasonControllerTest = new SeasonControllerTest($client);
+        self::$seasonTeamControllerTest = new SeasonTeamControllerTest($client);
         self::$roundControllerTest = new RoundControllerTest($client);
     }
 
@@ -73,12 +76,14 @@ final class AppTest extends TestCase
         self::$teamControllerTest->runTests();
         self::$leagueControllerTest->runTests();
         self::$seasonControllerTest->runTests();
+        self::$seasonTeamControllerTest->runTests();
         self::$roundControllerTest->runTests();
     }
 
     private function clearAfterTests(): void
     {
         self::$roundControllerTest->clearAfterTests();
+        self::$seasonTeamControllerTest->clearAfterTests();
         self::$seasonControllerTest->clearAfterTests();
         self::$leagueControllerTest->clearAfterTests();
         self::$teamControllerTest->clearAfterTests();

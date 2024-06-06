@@ -7,6 +7,7 @@ use App\Common\Dto\NotIncludedInBody;
 use App\Common\Dto\NotIncludedInBodyTrait;
 use App\Common\OAAttributes\OARoleBasedProperty;
 use App\Common\Serialization\RoleSerializationGroup;
+use App\Modules\Season\Model\SeasonInterface;
 use App\Modules\SeasonTeam\Model\SeasonTeamUpdatableInterface;
 use App\Modules\Team\Model\TeamInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -68,7 +69,7 @@ readonly class SeasonTeamUpdateDto implements SeasonTeamUpdatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[DtoPropertyRelatedToEntity(TeamInterface::class)]
+    #[DtoPropertyRelatedToEntity(SeasonInterface::class)]
     #[Assert\NotBlank]
     #[Assert\Uuid]
     public function getSeasonId(): string|null

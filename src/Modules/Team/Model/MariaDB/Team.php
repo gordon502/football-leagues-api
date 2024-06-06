@@ -59,7 +59,6 @@ class Team implements TeamInterface
     private OrganizationalUnitInterface $organizationalUnit;
 
     #[OneToMany(targetEntity: SeasonTeam::class, mappedBy: 'team', cascade: ['all'], orphanRemoval: true)]
-    #[JoinColumn(name: 'team_id', referencedColumnName: 'id')]
     private Collection $seasonTeams;
 
     public function __construct()
