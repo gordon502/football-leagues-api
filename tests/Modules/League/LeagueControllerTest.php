@@ -478,6 +478,10 @@ class LeagueControllerTest extends AbstractControllerTest
             TestAvailableResources::$leagues,
             fn($t) => $t['organizationalUnitId'] !== $league['organizationalUnitId']
         );
+        TestAvailableResources::$teams = array_filter(
+            TestAvailableResources::$teams,
+            fn($t) => $t['organizationalUnitId'] !== $league['organizationalUnitId']
+        );
     }
 
     private function randomOrganizationalUnitId(): string
