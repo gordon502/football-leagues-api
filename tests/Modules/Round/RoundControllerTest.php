@@ -459,20 +459,20 @@ class RoundControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$seasons = array_filter(
+        TestAvailableResources::$seasons = array_values(array_filter(
             TestAvailableResources::$seasons,
             fn($s) => $s['id'] !== $round['seasonId']
-        );
+        ));
 
         foreach ($relatedRounds as $relatedRound) {
             $response = $this->client->get("{$this->endpoint}/{$relatedRound['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
 
-        TestAvailableResources::$rounds = array_filter(
+        TestAvailableResources::$rounds = array_values(array_filter(
             TestAvailableResources::$rounds,
             fn($r) => $r['seasonId'] !== $round['seasonId']
-        );
+        ));
     }
 
     private function randomSeasonId(): string

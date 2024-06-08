@@ -458,20 +458,20 @@ class SeasonControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$leagues = array_filter(
+        TestAvailableResources::$leagues = array_values(array_filter(
             TestAvailableResources::$leagues,
             fn($l) => $l['id'] !== $season['leagueId']
-        );
+        ));
 
         foreach ($relatedSeasons as $relatedTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
 
-        TestAvailableResources::$seasons = array_filter(
+        TestAvailableResources::$seasons = array_values(array_filter(
             TestAvailableResources::$seasons,
             fn($s) => $s['leagueId'] !== $season['leagueId']
-        );
+        ));
     }
 
     private function randomLeagueId(): string

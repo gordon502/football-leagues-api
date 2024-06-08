@@ -536,20 +536,20 @@ class TeamControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$organizationalUnits = array_filter(
+        TestAvailableResources::$organizationalUnits = array_values(array_filter(
             TestAvailableResources::$organizationalUnits,
             fn($ou) => $ou['id'] !== $team['organizationalUnitId']
-        );
+        ));
 
         foreach ($relatedTeams as $relatedTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
 
-        TestAvailableResources::$teams = array_filter(
+        TestAvailableResources::$teams = array_values(array_filter(
             TestAvailableResources::$teams,
             fn($t) => $t['organizationalUnitId'] !== $team['organizationalUnitId']
-        );
+        ));
     }
 
     private function updateTeamRequest(

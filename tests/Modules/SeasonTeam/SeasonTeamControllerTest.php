@@ -445,20 +445,20 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$seasons = array_filter(
+        TestAvailableResources::$seasons = array_values(array_filter(
             TestAvailableResources::$seasons,
             fn($s) => $s['id'] !== $seasonTeam['seasonId']
-        );
+        ));
 
         foreach ($relatedSeasonsTeams as $relatedSeasonTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedSeasonTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
 
-        TestAvailableResources::$seasonTeams = array_filter(
+        TestAvailableResources::$seasonTeams = array_values(array_filter(
             TestAvailableResources::$seasonTeams,
             fn($st) => $st['seasonId'] !== $seasonTeam['seasonId']
-        );
+        ));
     }
 
     protected function testShouldCheckIfDeletionOfTeamDeletesSeasonTeamsAlso(): void
@@ -484,20 +484,20 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$teams = array_filter(
+        TestAvailableResources::$teams = array_values(array_filter(
             TestAvailableResources::$teams,
             fn($t) => $t['id'] !== $seasonTeam['teamId']
-        );
+        ));
 
         foreach ($relatedSeasonsTeams as $relatedSeasonTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedSeasonTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
 
-        TestAvailableResources::$seasonTeams = array_filter(
+        TestAvailableResources::$seasonTeams = array_values(array_filter(
             TestAvailableResources::$seasonTeams,
             fn($st) => $st['teamId'] !== $seasonTeam['teamId']
-        );
+        ));
     }
 
     private function randomTeamId(): string

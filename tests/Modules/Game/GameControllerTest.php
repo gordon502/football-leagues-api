@@ -637,10 +637,10 @@ class GameControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$rounds = array_filter(
+        TestAvailableResources::$rounds = array_values(array_filter(
             TestAvailableResources::$rounds,
             fn($r) => $r['id'] !== $game['roundId']
-        );
+        ));
 
         foreach ($relatedGames as $relatedGame) {
             $response = $this->client->get("{$this->endpoint}/{$relatedGame['id']}");
@@ -680,10 +680,10 @@ class GameControllerTest extends AbstractControllerTest
     {
         shuffle(TestAvailableResources::$seasonTeams);
         foreach (TestAvailableResources::$seasonTeams as $seasonTeam) {
-            $foundRounds = array_filter(
+            $foundRounds = array_values(array_filter(
                 TestAvailableResources::$rounds,
                 fn($round) => $round['seasonId'] === $seasonTeam['seasonId']
-            );
+            ));
 
             if (count($foundRounds) > 0) {
                 return [
@@ -700,10 +700,10 @@ class GameControllerTest extends AbstractControllerTest
     {
         shuffle(TestAvailableResources::$seasonTeams);
         foreach (TestAvailableResources::$seasonTeams as $seasonTeam) {
-            $foundRounds = array_filter(
+            $foundRounds = array_values(array_filter(
                 TestAvailableResources::$rounds,
                 fn($round) => $round['seasonId'] !== $seasonTeam['seasonId']
-            );
+            ));
 
             if (count($foundRounds) > 0) {
                 return [

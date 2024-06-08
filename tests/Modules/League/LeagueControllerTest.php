@@ -464,24 +464,24 @@ class LeagueControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$organizationalUnits = array_filter(
+        TestAvailableResources::$organizationalUnits = array_values(array_filter(
             TestAvailableResources::$organizationalUnits,
             fn($ou) => $ou['id'] !== $league['organizationalUnitId']
-        );
+        ));
 
         foreach ($relatedLeagues as $relatedTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
 
-        TestAvailableResources::$leagues = array_filter(
+        TestAvailableResources::$leagues = array_values(array_filter(
             TestAvailableResources::$leagues,
             fn($t) => $t['organizationalUnitId'] !== $league['organizationalUnitId']
-        );
-        TestAvailableResources::$teams = array_filter(
+        ));
+        TestAvailableResources::$teams = array_values(array_filter(
             TestAvailableResources::$teams,
             fn($t) => $t['organizationalUnitId'] !== $league['organizationalUnitId']
-        );
+        ));
     }
 
     private function randomOrganizationalUnitId(): string
