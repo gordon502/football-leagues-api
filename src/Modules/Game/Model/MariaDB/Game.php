@@ -21,6 +21,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Exception;
 
 #[Entity(repositoryClass: GameRepository::class)]
 #[Table(name: 'game')]
@@ -58,7 +59,7 @@ class Game implements GameInterface
     protected ?string $annotation = null;
 
     #[ManyToOne(targetEntity: Round::class, inversedBy: 'games')]
-    #[JoinColumn(name: 'round_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'round_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected RoundInterface $round;
 
     #[ManyToOne(targetEntity: SeasonTeam::class, inversedBy: 'gamesAsTeam1')]
@@ -142,9 +143,14 @@ class Game implements GameInterface
         return $this->gameEvents;
     }
 
-    public function setDate(DateTimeInterface $date): static
+    /**
+     * @throws Exception
+     */
+    public function setDate(DateTimeInterface|string $date): static
     {
-        $this->date = $date;
+        $this->date = is_string($date)
+            ? new \DateTime($date)
+            : $date;
 
         return $this;
     }

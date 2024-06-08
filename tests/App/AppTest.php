@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Tests\Modules\Game\GameControllerTest;
 use Tests\Modules\League\LeagueControllerTest;
 use Tests\Modules\Round\RoundControllerTest;
 use Tests\Modules\Season\SeasonControllerTest;
@@ -24,6 +25,7 @@ final class AppTest extends TestCase
     private static SeasonControllerTest $seasonControllerTest;
     private static SeasonTeamControllerTest $seasonTeamControllerTest;
     private static RoundControllerTest $roundControllerTest;
+    private static GameControllerTest $gameControllerTest;
 
     public static function setUpBeforeClass(): void
     {
@@ -43,6 +45,7 @@ final class AppTest extends TestCase
         self::$seasonControllerTest = new SeasonControllerTest($client);
         self::$seasonTeamControllerTest = new SeasonTeamControllerTest($client);
         self::$roundControllerTest = new RoundControllerTest($client);
+        self::$gameControllerTest = new GameControllerTest($client);
     }
 
     public static function tearDownAfterClass(): void
@@ -78,10 +81,12 @@ final class AppTest extends TestCase
         self::$seasonControllerTest->runTests();
         self::$seasonTeamControllerTest->runTests();
         self::$roundControllerTest->runTests();
+        self::$gameControllerTest->runTests();
     }
 
     private function clearAfterTests(): void
     {
+        self::$gameControllerTest->clearAfterTests();
         self::$roundControllerTest->clearAfterTests();
         self::$seasonTeamControllerTest->clearAfterTests();
         self::$seasonControllerTest->clearAfterTests();

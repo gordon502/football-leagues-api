@@ -47,11 +47,9 @@ class SeasonTeam implements SeasonTeamInterface
     protected SeasonInterface $season;
 
     #[OneToMany(targetEntity: Game::class, mappedBy: 'seasonTeam1', cascade: ['all'])]
-    #[JoinColumn(name: 'season_team1_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected Collection $gamesAsTeam1;
 
     #[OneToMany(targetEntity: Game::class, mappedBy: 'seasonTeam2', cascade: ['all'])]
-    #[JoinColumn(name: 'season_team2_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected Collection $gamesAsTeam2;
 
     #[ManyToMany(targetEntity: Article::class, inversedBy: 'seasonTeams', cascade: ['all'])]

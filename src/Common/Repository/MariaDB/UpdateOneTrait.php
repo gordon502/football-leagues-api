@@ -55,6 +55,10 @@ trait UpdateOneTrait
 
             $propertyValue = $property->getValue($updatable);
 
+            if ($propertyValue === null) {
+                return null;
+            }
+
             if (is_array($propertyValue)) {
                 $foundEntities = [];
                 foreach ($propertyValue as $singleId) {

@@ -10,6 +10,7 @@ use App\Modules\Round\Model\MongoDB\Round;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\SeasonTeam\Model\MongoDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,6 +19,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use Exception;
 
 #[Document(collection: 'game')]
 #[HasLifecycleCallbacks]
@@ -134,9 +136,14 @@ class Game implements GameInterface
         return $this->gameEvents;
     }
 
-    public function setDate(DateTimeInterface $date): static
+    /**
+     * @throws Exception
+     */
+    public function setDate(DateTimeInterface|string $date): static
     {
-        $this->date = $date;
+        $this->date = is_string($date)
+            ? new DateTime($date)
+            : $date;
 
         return $this;
     }
