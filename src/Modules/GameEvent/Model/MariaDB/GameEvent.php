@@ -40,7 +40,7 @@ class GameEvent implements GameEventInterface
     private string $eventType;
 
     #[ManyToOne(targetEntity: Game::class)]
-    #[JoinColumn(name: 'game_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'game_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private GameInterface $game;
 
     public function getMinute(): int

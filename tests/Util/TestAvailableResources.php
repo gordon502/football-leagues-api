@@ -12,6 +12,7 @@ final class TestAvailableResources
     public static array $seasonTeams = [];
     public static array $rounds = [];
     public static array $games = [];
+    public static array $gameEvents = [];
 
     private function __construct()
     {

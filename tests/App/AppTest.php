@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Tests\Modules\Game\GameControllerTest;
+use Tests\Modules\GameEvent\GameEventControllerTest;
 use Tests\Modules\League\LeagueControllerTest;
 use Tests\Modules\Round\RoundControllerTest;
 use Tests\Modules\Season\SeasonControllerTest;
@@ -26,6 +27,7 @@ final class AppTest extends TestCase
     private static SeasonTeamControllerTest $seasonTeamControllerTest;
     private static RoundControllerTest $roundControllerTest;
     private static GameControllerTest $gameControllerTest;
+    private static GameEventControllerTest $gameEventControllerTest;
 
     public static function setUpBeforeClass(): void
     {
@@ -46,6 +48,7 @@ final class AppTest extends TestCase
         self::$seasonTeamControllerTest = new SeasonTeamControllerTest($client);
         self::$roundControllerTest = new RoundControllerTest($client);
         self::$gameControllerTest = new GameControllerTest($client);
+        self::$gameEventControllerTest = new GameEventControllerTest($client);
     }
 
     public static function tearDownAfterClass(): void
@@ -82,10 +85,12 @@ final class AppTest extends TestCase
         self::$seasonTeamControllerTest->runTests();
         self::$roundControllerTest->runTests();
         self::$gameControllerTest->runTests();
+        self::$gameEventControllerTest->runTests();
     }
 
     private function clearAfterTests(): void
     {
+        self::$gameEventControllerTest->clearAfterTests();
         self::$gameControllerTest->clearAfterTests();
         self::$roundControllerTest->clearAfterTests();
         self::$seasonTeamControllerTest->clearAfterTests();
