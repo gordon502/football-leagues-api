@@ -26,7 +26,7 @@ class RoundControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
                 'json' => [
@@ -47,7 +47,7 @@ class RoundControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
                 'json' => [
@@ -68,7 +68,7 @@ class RoundControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
                 'json' => [

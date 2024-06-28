@@ -28,7 +28,7 @@ class GameControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             list($roundId, $seasonTeamId) = $this->randomRelatedRoundAndSeasonTeam();
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
@@ -58,7 +58,7 @@ class GameControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             list($roundId, $seasonTeamId) = $this->randomRelatedRoundAndSeasonTeam();
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
@@ -88,7 +88,7 @@ class GameControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             list($roundId, $seasonTeamId) = $this->randomRelatedRoundAndSeasonTeam();
             $response = $this->client->post($this->endpoint, [
                 'headers' => ['Authorization' => "Bearer $token"],
