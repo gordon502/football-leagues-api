@@ -13,7 +13,7 @@ use ReflectionProperty;
 
 /**
  * @method QueryBuilder createQueryBuilder(string $alias, ?string $indexBy = null)
- * @method object findOneById(string $id)
+ * @method object findById(string $id)
  * @method string getDocumentName()
  * @method DocumentManager getDocumentManager()
  */
