@@ -7,6 +7,7 @@ use App\Common\Timestamp\TimestampableTrait;
 use App\Modules\Article\Model\ArticleInterface;
 use App\Modules\SeasonTeam\Model\MongoDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,6 +15,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
+use Exception;
 
 #[Document(collection: 'article')]
 #[HasLifecycleCallbacks]
@@ -34,7 +36,7 @@ class Article implements ArticleInterface
     #[Field(type: 'date', nullable: true)]
     protected ?DateTimeInterface $postAt;
 
-    #[ReferenceMany(targetDocument: SeasonTeam::class, mappedBy: 'articles')]
+    #[ReferenceMany(targetDocument: SeasonTeam::class, inversedBy: 'articles')]
     protected Collection $seasonTeams;
 
     public function __construct()
@@ -88,9 +90,14 @@ class Article implements ArticleInterface
         return $this;
     }
 
-    public function setPostAt(?DateTimeInterface $postAt): static
+    /**
+     * @throws Exception
+     */
+    public function setPostAt(DateTimeInterface|string|null $postAt): static
     {
-        $this->postAt = $postAt;
+        $this->postAt = is_string($postAt)
+            ? new DateTime($postAt)
+            : $postAt;
 
         return $this;
     }

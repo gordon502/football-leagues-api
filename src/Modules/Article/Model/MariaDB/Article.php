@@ -8,6 +8,7 @@ use App\Modules\Article\Model\ArticleInterface;
 use App\Modules\Article\Repository\MariaDB\ArticleRepository;
 use App\Modules\SeasonTeam\Model\MariaDB\SeasonTeam;
 use App\Modules\SeasonTeam\Model\SeasonTeamInterface;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use Exception;
 
 #[Entity(repositoryClass: ArticleRepository::class)]
 #[Table(name: 'article')]
@@ -37,7 +39,7 @@ class Article implements ArticleInterface
     #[Column(type: 'datetime', nullable: true)]
     protected ?DateTimeInterface $postAt;
 
-    #[ManyToMany(targetEntity: SeasonTeam::class, mappedBy: 'articles', cascade: ['all'])]
+    #[ManyToMany(targetEntity: SeasonTeam::class, inversedBy: 'articles')]
     protected Collection $seasonTeams;
 
     public function __construct()
@@ -91,9 +93,14 @@ class Article implements ArticleInterface
         return $this;
     }
 
-    public function setPostAt(?DateTimeInterface $postAt): static
+    /**
+     * @throws Exception
+     */
+    public function setPostAt(DateTimeInterface|string|null $postAt): static
     {
-        $this->postAt = $postAt;
+        $this->postAt = is_string($postAt)
+            ? new DateTime($postAt)
+            : $postAt;
 
         return $this;
     }

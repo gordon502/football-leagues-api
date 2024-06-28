@@ -46,7 +46,7 @@ class SeasonTeam implements SeasonTeamInterface
     #[ReferenceMany(targetDocument: Game::class, mappedBy: 'seasonTeam2')]
     protected Collection $gamesAsTeam2;
 
-    #[ReferenceMany(targetDocument: Article::class, inversedBy: 'seasonTeams')]
+    #[ReferenceMany(targetDocument: Article::class, mappedBy: 'seasonTeams')]
     protected Collection $articles;
 
     #[ReferenceOne(targetDocument: Leaderboard::class, cascade: ['all'], orphanRemoval: true, mappedBy: 'seasonTeam')]

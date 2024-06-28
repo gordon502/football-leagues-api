@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Tests\Modules\Article\ArticleControllerTest;
 use Tests\Modules\Game\GameControllerTest;
 use Tests\Modules\GameEvent\GameEventControllerTest;
 use Tests\Modules\League\LeagueControllerTest;
@@ -28,6 +29,7 @@ final class AppTest extends TestCase
     private static RoundControllerTest $roundControllerTest;
     private static GameControllerTest $gameControllerTest;
     private static GameEventControllerTest $gameEventControllerTest;
+    private static ArticleControllerTest $articleControllerTest;
 
     public static function setUpBeforeClass(): void
     {
@@ -49,6 +51,7 @@ final class AppTest extends TestCase
         self::$roundControllerTest = new RoundControllerTest($client);
         self::$gameControllerTest = new GameControllerTest($client);
         self::$gameEventControllerTest = new GameEventControllerTest($client);
+        self::$articleControllerTest = new ArticleControllerTest($client);
     }
 
     public static function tearDownAfterClass(): void
@@ -83,6 +86,7 @@ final class AppTest extends TestCase
         self::$leagueControllerTest->runTests();
         self::$seasonControllerTest->runTests();
         self::$seasonTeamControllerTest->runTests();
+        self::$articleControllerTest->runTests();
         self::$roundControllerTest->runTests();
         self::$gameControllerTest->runTests();
         self::$gameEventControllerTest->runTests();
@@ -93,6 +97,7 @@ final class AppTest extends TestCase
         self::$gameEventControllerTest->clearAfterTests();
         self::$gameControllerTest->clearAfterTests();
         self::$roundControllerTest->clearAfterTests();
+        self::$articleControllerTest->clearAfterTests();
         self::$seasonTeamControllerTest->clearAfterTests();
         self::$seasonControllerTest->clearAfterTests();
         self::$leagueControllerTest->clearAfterTests();

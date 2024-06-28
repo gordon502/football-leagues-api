@@ -52,7 +52,7 @@ class SeasonTeam implements SeasonTeamInterface
     #[OneToMany(targetEntity: Game::class, mappedBy: 'seasonTeam2', cascade: ['all'])]
     protected Collection $gamesAsTeam2;
 
-    #[ManyToMany(targetEntity: Article::class, inversedBy: 'seasonTeams', cascade: ['all'])]
+    #[ManyToMany(targetEntity: Article::class, mappedBy: 'seasonTeams')]
     protected Collection $articles;
 
     #[OneToOne(targetEntity: Leaderboard::class, mappedBy: 'seasonTeam', cascade: ['all'], orphanRemoval: true)]
