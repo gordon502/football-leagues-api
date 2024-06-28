@@ -48,12 +48,6 @@ class TeamRepository extends DocumentRepository implements TeamRepositoryInterfa
 
     public function findById(string $id): ?TeamInterface
     {
-        $team = $this->find($id);
-
-        if ($team !== null) {
-            $this->getDocumentManager()->refresh($team);
-        }
-
-        return $team;
+        return $this->find($id);
     }
 }

@@ -46,13 +46,7 @@ class OrganizationalUnitRepository extends ServiceEntityRepository implements Or
 
     public function findById(string $id): ?OrganizationalUnitInterface
     {
-        $organizationalUnit = $this->findOneBy(['id' => $id]);
-
-        if ($organizationalUnit !== null) {
-            $this->getEntityManager()->refresh($organizationalUnit);
-        }
-
-        return $organizationalUnit;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

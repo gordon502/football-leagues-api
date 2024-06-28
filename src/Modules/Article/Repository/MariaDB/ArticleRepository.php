@@ -46,13 +46,7 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
 
     public function findById(string $id): ?ArticleInterface
     {
-        $article = $this->findOneBy(['id' => $id]);
-
-        if ($article !== null) {
-            $this->getEntityManager()->refresh($article);
-        }
-
-        return $article;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

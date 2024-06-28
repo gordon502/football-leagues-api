@@ -46,13 +46,7 @@ class SeasonRepository extends ServiceEntityRepository implements SeasonReposito
 
     public function findById(string $id): ?SeasonInterface
     {
-        $season = $this->findOneBy(['id' => $id]);
-
-        if ($season !== null) {
-            $this->getEntityManager()->refresh($season);
-        }
-
-        return $season;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

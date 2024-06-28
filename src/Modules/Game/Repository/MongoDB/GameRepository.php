@@ -48,12 +48,6 @@ class GameRepository extends DocumentRepository implements GameRepositoryInterfa
 
     public function findById(string $id): ?GameInterface
     {
-        $game = $this->find($id);
-
-        if ($game !== null) {
-            $this->getDocumentManager()->refresh($game);
-        }
-
-        return $game;
+        return $this->find($id);
     }
 }

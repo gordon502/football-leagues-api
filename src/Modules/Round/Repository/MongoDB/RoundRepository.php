@@ -48,12 +48,6 @@ class RoundRepository extends DocumentRepository implements RoundRepositoryInter
 
     public function findById(string $id): ?RoundInterface
     {
-        $round = $this->find($id);
-
-        if ($round !== null) {
-            $this->getDocumentManager()->refresh($round);
-        }
-
-        return $round;
+        return $this->find($id);
     }
 }

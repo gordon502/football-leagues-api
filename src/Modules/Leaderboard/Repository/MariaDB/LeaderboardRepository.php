@@ -47,13 +47,7 @@ class LeaderboardRepository extends ServiceEntityRepository implements Leaderboa
 
     public function findById(string $id): ?LeaderboardInterface
     {
-        $leaderboard = $this->findOneBy(['id' => $id]);
-
-        if ($leaderboard !== null) {
-            $this->getEntityManager()->refresh($leaderboard);
-        }
-
-        return $leaderboard;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

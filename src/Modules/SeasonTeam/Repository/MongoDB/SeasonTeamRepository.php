@@ -48,12 +48,6 @@ class SeasonTeamRepository extends DocumentRepository implements SeasonTeamRepos
 
     public function findById(string $id): ?SeasonTeamInterface
     {
-        $seasonTeam = $this->find($id);
-
-        if ($seasonTeam !== null) {
-            $this->getDocumentManager()->refresh($seasonTeam);
-        }
-
-        return $seasonTeam;
+        return $this->find($id);
     }
 }

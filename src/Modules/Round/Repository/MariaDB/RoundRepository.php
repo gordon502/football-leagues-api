@@ -46,13 +46,7 @@ class RoundRepository extends ServiceEntityRepository implements RoundRepository
 
     public function findById(string $id): ?RoundInterface
     {
-        $round = $this->findOneBy(['id' => $id]);
-
-        if ($round !== null) {
-            $this->getEntityManager()->refresh($round);
-        }
-
-        return $round;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

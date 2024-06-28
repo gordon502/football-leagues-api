@@ -49,13 +49,7 @@ class LeaderboardRepository extends DocumentRepository implements LeaderboardRep
 
     public function findById(string $id): ?LeaderboardInterface
     {
-        $leaderboard = $this->find($id);
-
-        if ($leaderboard !== null) {
-            $this->getDocumentManager()->refresh($leaderboard);
-        }
-
-        return $leaderboard;
+        return $this->find($id);
     }
 
     public function findAllForSeasonTeam(SeasonTeamInterface $seasonTeam): array

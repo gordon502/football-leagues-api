@@ -46,13 +46,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
 
     public function findById(string $id): ?UserInterface
     {
-        $user = $this->findOneBy(['id' => $id]);
-
-        if ($user !== null) {
-            $this->getEntityManager()->refresh($user);
-        }
-
-        return $user;
+        return $this->find($id);
     }
 
     public function findByEmail(string $email): ?UserInterface

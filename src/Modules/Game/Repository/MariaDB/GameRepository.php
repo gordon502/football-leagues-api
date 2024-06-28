@@ -46,13 +46,7 @@ class GameRepository extends ServiceEntityRepository implements GameRepositoryIn
 
     public function findById(string $id): ?GameInterface
     {
-        $game = $this->findOneBy(['id' => $id]);
-
-        if ($game !== null) {
-            $this->getEntityManager()->refresh($game);
-        }
-
-        return $game;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

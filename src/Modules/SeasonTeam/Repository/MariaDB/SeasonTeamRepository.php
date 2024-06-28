@@ -46,13 +46,7 @@ class SeasonTeamRepository extends ServiceEntityRepository implements SeasonTeam
 
     public function findById(string $id): ?SeasonTeamInterface
     {
-        $seasonTeam = $this->findOneBy(['id' => $id]);
-
-        if ($seasonTeam !== null) {
-            $this->getEntityManager()->refresh($seasonTeam);
-        }
-
-        return $seasonTeam;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

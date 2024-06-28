@@ -48,12 +48,6 @@ class GameEventRepository extends DocumentRepository implements GameEventReposit
 
     public function findById(string $id): ?GameEventInterface
     {
-        $gameEvent = $this->find($id);
-
-        if ($gameEvent !== null) {
-            $this->getDocumentManager()->refresh($gameEvent);
-        }
-
-        return $gameEvent;
+        return $this->find($id);
     }
 }

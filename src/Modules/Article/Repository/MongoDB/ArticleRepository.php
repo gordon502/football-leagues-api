@@ -48,12 +48,6 @@ class ArticleRepository extends DocumentRepository implements ArticleRepositoryI
 
     public function findById(string $id): ?ArticleInterface
     {
-        $article = $this->find($id);
-
-        if ($article !== null) {
-            $this->getDocumentManager()->refresh($article);
-        }
-
-        return $article;
+        return $this->find($id);
     }
 }

@@ -46,13 +46,7 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
 
     public function findById(string $id): ?LeagueInterface
     {
-        $league = $this->findOneBy(['id' => $id]);
-
-        if ($league !== null) {
-            $this->getEntityManager()->refresh($league);
-        }
-
-        return $league;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

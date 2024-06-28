@@ -48,12 +48,6 @@ class OrganizationalUnitRepository extends DocumentRepository implements Organiz
 
     public function findById(string $id): ?OrganizationalUnitInterface
     {
-        $organizationalUnit = $this->find($id);
-
-        if ($organizationalUnit !== null) {
-            $this->getDocumentManager()->refresh($organizationalUnit);
-        }
-
-        return $organizationalUnit;
+        return $this->find($id);
     }
 }

@@ -46,13 +46,7 @@ class GameEventRepository extends ServiceEntityRepository implements GameEventRe
 
     public function findById(string $id): ?GameEventInterface
     {
-        $gameEvent = $this->findOneBy(['id' => $id]);
-
-        if ($gameEvent !== null) {
-            $this->getEntityManager()->refresh($gameEvent);
-        }
-
-        return $gameEvent;
+        return $this->find($id);
     }
 
     public function delete(string $id): void

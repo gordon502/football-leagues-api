@@ -48,12 +48,6 @@ class LeagueRepository extends DocumentRepository implements LeagueRepositoryInt
 
     public function findById(string $id): ?LeagueInterface
     {
-        $league = $this->find($id);
-
-        if ($league !== null) {
-            $this->getDocumentManager()->refresh($league);
-        }
-
-        return $league;
+        return $this->find($id);
     }
 }

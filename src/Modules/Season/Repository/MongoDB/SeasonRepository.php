@@ -48,12 +48,6 @@ class SeasonRepository extends DocumentRepository implements SeasonRepositoryInt
 
     public function findById(string $id): ?SeasonInterface
     {
-        $season = $this->find($id);
-
-        if ($season !== null) {
-            $this->getDocumentManager()->refresh($season);
-        }
-
-        return $season;
+        return $this->find($id);
     }
 }

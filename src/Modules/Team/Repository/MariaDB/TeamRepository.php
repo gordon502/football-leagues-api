@@ -46,13 +46,7 @@ class TeamRepository extends ServiceEntityRepository implements TeamRepositoryIn
 
     public function findById(string $id): ?TeamInterface
     {
-        $team = $this->findOneBy(['id' => $id]);
-
-        if ($team !== null) {
-            $this->getEntityManager()->refresh($team);
-        }
-
-        return $team;
+        return $this->find($id);
     }
 
     public function delete(string $id): void
