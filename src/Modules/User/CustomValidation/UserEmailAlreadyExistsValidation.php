@@ -18,7 +18,7 @@ readonly class UserEmailAlreadyExistsValidation implements CustomValidationInter
     ) {
     }
 
-    public function validate($value): void
+    public function validate($value, array $customOptions = []): void
     {
         /** @var UserInterface $loggedUser */
         $loggedUser = $this->tokenStorage->getToken()?->getUser();

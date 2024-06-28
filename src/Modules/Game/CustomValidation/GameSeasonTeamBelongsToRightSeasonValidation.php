@@ -10,7 +10,7 @@ use ReflectionClass;
 
 final class GameSeasonTeamBelongsToRightSeasonValidation implements CustomValidationInterface
 {
-    public function validate($value): void
+    public function validate($value, array $customOptions = []): void
     {
         $reflection = new ReflectionClass($value);
 

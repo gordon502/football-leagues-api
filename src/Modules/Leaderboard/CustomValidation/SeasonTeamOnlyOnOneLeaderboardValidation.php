@@ -18,7 +18,7 @@ final readonly class SeasonTeamOnlyOnOneLeaderboardValidation implements CustomV
     ) {
     }
 
-    public function validate($value): void
+    public function validate($value, array $customOptions = []): void
     {
         $reflection = new ReflectionClass($value);
 
