@@ -15,7 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @method QueryBuilder createQueryBuilder(string $alias, ?string $indexBy = null)
- * @method object|null findOneById(string $id)
+ * @method object|null findById(string $id)
  * @method string getEntityName()
  * @method EntityManagerInterface getEntityManager()
  * @property UserPasswordHasherInterface $passwordHasher
@@ -84,7 +84,7 @@ trait UpdateOneTrait
         };
 
         $entity = is_string($idOrObject)
-            ? $this->findOneById($idOrObject)
+            ? $this->findById($idOrObject)
             : $idOrObject;
 
         $fieldsToUpdateCount = 0;
