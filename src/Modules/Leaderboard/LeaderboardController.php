@@ -16,12 +16,16 @@ use App\Common\Serialization\RoleBasedSerializerInterface;
 use App\Common\Validator\DtoValidatorInterface;
 use App\Modules\Leaderboard\CustomValidation\LeaderboardSeasonAndTeamRelatedValidation;
 use App\Modules\Leaderboard\CustomValidation\SeasonTeamOnlyOnOneLeaderboardValidation;
+use App\Modules\Leaderboard\Dto\LeaderboardBatchCreateDto;
+use App\Modules\Leaderboard\Dto\LeaderboardBatchUpdateDto;
+use App\Modules\Leaderboard\Dto\LeaderboardBatchUpdateSingleDto;
 use App\Modules\Leaderboard\Dto\LeaderboardCreateDto;
 use App\Modules\Leaderboard\Dto\LeaderboardGetDto;
 use App\Modules\Leaderboard\Dto\LeaderboardUpdateDto;
 use App\Modules\Leaderboard\Exception\SeasonTeamAlreadyOnLeaderboardException;
 use App\Modules\Leaderboard\Exception\WrongSeasonTeamSelectedException;
 use App\Modules\Leaderboard\Model\LeaderboardGetInterface;
+use App\Modules\Leaderboard\Model\LeaderboardInterface;
 use App\Modules\Leaderboard\Repository\LeaderboardRepositoryInterface;
 use App\Modules\Leaderboard\Voter\LeaderboardVoter;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -108,6 +112,188 @@ class LeaderboardController extends AbstractController
                 LeaderboardGetDto::class
             ),
             HttpCode::CREATED
+        );
+    }
+
+    /**
+     * @throws UniqueConstraintViolationException
+     */
+    #[Route('/api/leaderboards/batch-create', name: 'api.leaderboards.batch.create', methods: ['POST'])]
+    #[OA\Tag(name: 'Leaderboards')]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: LeaderboardBatchCreateDto::class)
+    )]
+    #[OA\Response(
+        response: HttpCode::CREATED,
+        description: 'Returns instances of the created leaderboards.',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: LeaderboardGetDto::class))
+        )
+    )]
+    #[OA\Response(
+        response: HttpCode::BAD_REQUEST,
+        description: 'One of Season team is already on a leaderboard or season team is not related to season.'
+    )]
+    #[OA\Response(
+        response: HttpCode::FORBIDDEN,
+        description: 'Access denied.'
+    )]
+    #[OA\Response(
+        response: HttpCode::UNPROCESSABLE_ENTITY,
+        description: 'Invalid input.'
+    )]
+    public function batchCreate(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(LeaderboardVoter::CREATE);
+
+        /** @var LeaderboardBatchCreateDto $dto */
+        $dto = $this->serializer->denormalize(
+            $request->getPayload()->all(),
+            LeaderboardBatchCreateDto::class
+        );
+        $this->dtoValidator->validate($dto);
+
+        /** @var LeaderboardCreateDto[] $denormalizedLeaderboards */
+        $denormalizedLeaderboards = [];
+        foreach ($dto->getLeaderboards() as $leaderboardArr) {
+            $denormalizedLeaderboards[] = $this->serializer->denormalize(
+                $leaderboardArr,
+                LeaderboardCreateDto::class
+            );
+            $this->dtoValidator->validate($denormalizedLeaderboards[count($denormalizedLeaderboards) - 1]);
+        }
+
+        /** @var LeaderboardInterface[] $createdLeaderboards */
+        $createdLeaderboards = [];
+        try {
+            foreach ($denormalizedLeaderboards as $leaderboard) {
+                $createdLeaderboards[] = $this->leaderboardRepository->create($leaderboard);
+            }
+
+            foreach ($createdLeaderboards as $leaderboard) {
+                $this->leaderboardSeasonAndTeamRelatedValidation->validate($leaderboard);
+                $this->seasonTeamOnlyOnOneLeaderboardValidation->validate($leaderboard);
+            }
+        } catch (
+            WrongSeasonTeamSelectedException
+            | SeasonTeamAlreadyOnLeaderboardException
+            | UniqueConstraintViolationException $exception
+        ) {
+            foreach ($createdLeaderboards as $leaderboard) {
+                $this->leaderboardRepository->delete($leaderboard->getId());
+            }
+
+            $exception instanceof UniqueConstraintViolationException
+                ? throw new SeasonTeamAlreadyOnLeaderboardException()
+                : throw $exception;
+        }
+
+        return $this->json(
+            array_map(
+                fn($leaderboard) => $this->singleObjectResponseFactory->fromObject(
+                    $leaderboard,
+                    LeaderboardGetDto::class
+                ),
+                $createdLeaderboards,
+            ),
+            HttpCode::CREATED
+        );
+    }
+
+    #[Route('/api/leaderboards/batch-update', name: 'api.leaderboards.batch.update', methods: ['POST'])]
+    #[OA\Tag(name: 'Leaderboards')]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: LeaderboardBatchUpdateDto::class)
+    )]
+    #[OA\Response(
+        response: HttpCode::CREATED,
+        description: 'Returns instances of the updated leaderboards.',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: LeaderboardGetDto::class))
+        )
+    )]
+    #[OA\Response(
+        response: HttpCode::BAD_REQUEST,
+        description: 'One of Season team is already on a leaderboard or season team is not related to season.'
+    )]
+    #[OA\Response(
+        response: HttpCode::FORBIDDEN,
+        description: 'Access denied.'
+    )]
+    #[OA\Response(
+        response: HttpCode::UNPROCESSABLE_ENTITY,
+        description: 'Invalid input.'
+    )]
+    public function batchUpdate(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(LeaderboardVoter::UPDATE);
+
+        /** @var LeaderboardBatchUpdateDto $dto */
+        $dto = $this->serializer->denormalize(
+            $request->getPayload()->all(),
+            LeaderboardBatchUpdateDto::class
+        );
+        $this->dtoValidator->validate($dto);
+
+        /** @var LeaderboardBatchUpdateSingleDto[] $denormalizedLeaderboards */
+        $denormalizedLeaderboards = [];
+        foreach ($dto->getLeaderboards() as $leaderboardArr) {
+            $denormalizedLeaderboards[] = $this->serializer->denormalize(
+                $leaderboardArr,
+                LeaderboardBatchUpdateSingleDto::class
+            );
+            $this->dtoValidator->validatePartial($denormalizedLeaderboards[count($denormalizedLeaderboards) - 1]);
+        }
+
+        /** @var LeaderboardInterface[] $updatedLeaderboards */
+        $updatedLeaderboards = [];
+        try {
+            foreach ($denormalizedLeaderboards as $leaderboardDto) {
+                $foundLeaderboard = $this->leaderboardRepository->findById($leaderboardDto->getId());
+                if ($foundLeaderboard === null) {
+                    throw new ResourceNotFoundException(
+                        'Could not find leaderboard with id ' . $leaderboardDto->getId()
+                    );
+                }
+
+                $updatedLeaderboards[] = $this->leaderboardRepository->updateOne(
+                    $foundLeaderboard,
+                    $leaderboardDto,
+                    true
+                );
+            }
+
+            foreach ($updatedLeaderboards as $leaderboard) {
+                $this->leaderboardSeasonAndTeamRelatedValidation->validate($leaderboard);
+                $this->seasonTeamOnlyOnOneLeaderboardValidation->validate($leaderboard, [
+                    'batchUpdateItems' => $updatedLeaderboards,
+                ]);
+            }
+        } catch (
+            WrongSeasonTeamSelectedException
+            | SeasonTeamAlreadyOnLeaderboardException
+            | UniqueConstraintViolationException $exception
+        ) {
+            $exception instanceof UniqueConstraintViolationException
+                ? throw new SeasonTeamAlreadyOnLeaderboardException()
+                : throw $exception;
+        }
+
+        $this->leaderboardRepository->flushUpdateOne();
+
+        return $this->json(
+            array_map(
+                fn($leaderboard) => $this->singleObjectResponseFactory->fromObject(
+                    $leaderboard,
+                    LeaderboardGetDto::class
+                ),
+                $updatedLeaderboards,
+            ),
+            HttpCode::OK
         );
     }
 

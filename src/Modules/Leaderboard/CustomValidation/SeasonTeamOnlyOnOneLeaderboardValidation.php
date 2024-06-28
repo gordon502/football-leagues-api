@@ -29,17 +29,40 @@ final readonly class SeasonTeamOnlyOnOneLeaderboardValidation implements CustomV
         /** @var LeaderboardInterface $value */
         $seasonTeam = $value->getSeasonTeam();
 
-        /** @var LeaderboardInterface[] $leaderboardsForSeasonTeam */
-        $leaderboardsForSeasonTeam = $this->leaderboardRepository->findAllForSeasonTeam($seasonTeam);
+        /** @var LeaderboardInterface[] $batchUpdateOtherItems */
+        $batchUpdateOtherItems = array_filter(
+            $customOptions['batchUpdateItems'] ?? [],
+            fn ($item) => $item instanceof LeaderboardInterface && $item->getId() !== $value->getId()
+        );
 
-        $count = count($leaderboardsForSeasonTeam);
+        /** @var LeaderboardInterface[] $leaderboardsForSeasonTeam */
+        $leaderboardsForSeasonTeamFromDatabase = $this->leaderboardRepository->findAllForSeasonTeam($seasonTeam);
+        $leaderboardsForSeasonTeamFromBatchUpdate = array_filter(
+            $batchUpdateOtherItems,
+            fn (LeaderboardInterface $leaderboard) => $leaderboard->getSeasonTeam()->getId() === $seasonTeam->getId()
+        );
+
+        /** @var array<string, LeaderboardInterface> $leaderboardsToCheckWith */
+        $leaderboardsToCheckWith = [];
+        foreach ($leaderboardsForSeasonTeamFromBatchUpdate as $leaderboard) {
+            $leaderboardsToCheckWith[$leaderboard->getId()] = $leaderboard;
+        }
+        foreach ($leaderboardsForSeasonTeamFromDatabase as $leaderboard) {
+            if (!isset($leaderboardsToCheckWith[$leaderboard->getId()])) {
+                $leaderboardsToCheckWith[$leaderboard->getId()] = $leaderboard;
+            }
+        }
+
+        $leaderboardsToCheckWith = array_values($leaderboardsToCheckWith);
+
+        $count = count($leaderboardsToCheckWith);
 
         if ($count === 0) {
             return;
         }
 
         if ($count === 1) {
-            $leaderboard = $leaderboardsForSeasonTeam[0];
+            $leaderboard = $leaderboardsToCheckWith[0];
             if ($leaderboard->getId() === $value->getId()) {
                 return;
             }

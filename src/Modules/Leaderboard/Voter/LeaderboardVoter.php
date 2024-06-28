@@ -17,11 +17,11 @@ class LeaderboardVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if ($attribute === self::CREATE) {
+        if ($attribute === self::CREATE || $attribute === self::UPDATE) {
             return true;
         }
 
-        if ($attribute !== self::DELETE && $attribute !== self::UPDATE) {
+        if ($attribute !== self::DELETE) {
             return false;
         }
 
@@ -55,7 +55,7 @@ class LeaderboardVoter extends Voter
         return in_array($user->getRole(), [UserRole::ADMIN, UserRole::MODERATOR, UserRole::EDITOR]);
     }
 
-    private function canUpdate(LeaderboardInterface $subject, UserInterface $user): bool
+    private function canUpdate(LeaderboardInterface|null $subject, UserInterface $user): bool
     {
         return in_array($user->getRole(), [UserRole::ADMIN, UserRole::MODERATOR, UserRole::EDITOR]);
     }
