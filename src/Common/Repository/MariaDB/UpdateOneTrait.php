@@ -98,6 +98,10 @@ trait UpdateOneTrait
                 continue;
             }
 
+            if ($property->getName() === 'id') {
+                continue;
+            }
+
             if (str_ends_with($property->getName(), 'Id')) {
                 $relatedEntityProperty = preg_replace('/Id$/', '', $property->getName());
                 $relatedEntities = $extractRelatedEntities($reflection, $property);
