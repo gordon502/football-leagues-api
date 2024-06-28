@@ -473,7 +473,7 @@ class GameEventControllerTest extends AbstractControllerTest
             $gameEvent,
             ...array_filter(
                 TestAvailableResources::$gameEvents,
-                fn($g) => $g['roundId'] === $gameEvent['gameId']
+                fn($g) => $g['gameId'] === $gameEvent['gameId']
             )
         ];
 
