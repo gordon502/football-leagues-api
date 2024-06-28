@@ -86,13 +86,13 @@ trait UpdateOneTrait
         $reflection = new ReflectionClass($updatable);
 
         foreach ($reflection->getProperties() as $property) {
-            $value = $property->getValue($updatable);
-
-            if ($value instanceof NotIncludedInBody) {
+            if ($property->getName() === 'id') {
                 continue;
             }
 
-            if ($property->getName() === 'id') {
+            $value = $property->getValue($updatable);
+
+            if ($value instanceof NotIncludedInBody) {
                 continue;
             }
 
