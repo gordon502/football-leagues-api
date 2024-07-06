@@ -17,19 +17,11 @@ use Tests\Modules\OrganizationalUnit\OrganizationalUnitControllerTest;
 use Tests\Modules\SeasonTeam\SeasonTeamControllerTest;
 use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
+use Tests\Util\TestDatabaseTypeEnum;
 
 final class AppTest extends TestCase
 {
-    private static UserControllerTest $userControllerTest;
-    private static OrganizationalUnitControllerTest $organizationalUnitControllerTest;
-    private static TeamControllerTest $teamControllerTest;
-    private static LeagueControllerTest $leagueControllerTest;
-    private static SeasonControllerTest $seasonControllerTest;
-    private static SeasonTeamControllerTest $seasonTeamControllerTest;
-    private static RoundControllerTest $roundControllerTest;
-    private static GameControllerTest $gameControllerTest;
-    private static GameEventControllerTest $gameEventControllerTest;
-    private static ArticleControllerTest $articleControllerTest;
+    private static Client $client;
 
     public static function setUpBeforeClass(): void
     {
@@ -37,21 +29,10 @@ final class AppTest extends TestCase
         self::setUpMongoDB();
         self::createAdminModeratorEditorUsers();
 
-        $client = new Client([
+        self::$client = new Client([
             'base_uri' => 'http://nginx/api/',
             'http_errors' => false
         ]);
-
-        self::$userControllerTest = new UserControllerTest($client);
-        self::$organizationalUnitControllerTest = new OrganizationalUnitControllerTest($client);
-        self::$teamControllerTest = new TeamControllerTest($client);
-        self::$leagueControllerTest = new LeagueControllerTest($client);
-        self::$seasonControllerTest = new SeasonControllerTest($client);
-        self::$seasonTeamControllerTest = new SeasonTeamControllerTest($client);
-        self::$roundControllerTest = new RoundControllerTest($client);
-        self::$gameControllerTest = new GameControllerTest($client);
-        self::$gameEventControllerTest = new GameEventControllerTest($client);
-        self::$articleControllerTest = new ArticleControllerTest($client);
     }
 
     public static function tearDownAfterClass(): void
@@ -60,50 +41,45 @@ final class AppTest extends TestCase
     }
 
     #[Test]
-    public function userControllerTestMariaDB(): void
+    public function testsMariaDB(): void
     {
-        self::replaceDatabaseImplementation('MariaDB');
+        self::replaceDatabaseImplementation(TestDatabaseTypeEnum::MariaDB);
 
-        $this->runTests();
-        $this->clearAfterTests();
+        $this->runTests(TestDatabaseTypeEnum::MariaDB);
     }
 
     #[Test]
-    #[Depends('userControllerTestMariaDB')]
-    public function userControllerTestMongoDB()
+    #[Depends('testsMariaDB')]
+    public function testsMongoDB()
     {
-        self::replaceDatabaseImplementation('MongoDB');
+        self::replaceDatabaseImplementation(TestDatabaseTypeEnum::MongoDB);
 
-        $this->runTests();
-        $this->clearAfterTests();
+        $this->runTests(TestDatabaseTypeEnum::MongoDB);
     }
 
-    private function runTests(): void
+    private function runTests(TestDatabaseTypeEnum $databaseTypeEnum): void
     {
-        self::$userControllerTest->runTests();
-        self::$organizationalUnitControllerTest->runTests();
-        self::$teamControllerTest->runTests();
-        self::$leagueControllerTest->runTests();
-        self::$seasonControllerTest->runTests();
-        self::$seasonTeamControllerTest->runTests();
-        self::$articleControllerTest->runTests();
-        self::$roundControllerTest->runTests();
-        self::$gameControllerTest->runTests();
-        self::$gameEventControllerTest->runTests();
-    }
+        $userControllerTest = new UserControllerTest(self::$client, $databaseTypeEnum);
+        $organizationalUnitControllerTest = new OrganizationalUnitControllerTest(self::$client, $databaseTypeEnum);
+        $teamControllerTest = new TeamControllerTest(self::$client, $databaseTypeEnum);
+        $leagueControllerTest = new LeagueControllerTest(self::$client, $databaseTypeEnum);
+        $seasonControllerTest = new SeasonControllerTest(self::$client, $databaseTypeEnum);
+        $seasonTeamControllerTest = new SeasonTeamControllerTest(self::$client, $databaseTypeEnum);
+        $roundControllerTest = new RoundControllerTest(self::$client, $databaseTypeEnum);
+        $gameControllerTest = new GameControllerTest(self::$client, $databaseTypeEnum);
+        $gameEventControllerTest = new GameEventControllerTest(self::$client, $databaseTypeEnum);
+        $articleControllerTest = new ArticleControllerTest(self::$client, $databaseTypeEnum);
 
-    private function clearAfterTests(): void
-    {
-        self::$gameEventControllerTest->clearAfterTests();
-        self::$gameControllerTest->clearAfterTests();
-        self::$roundControllerTest->clearAfterTests();
-        self::$articleControllerTest->clearAfterTests();
-        self::$seasonTeamControllerTest->clearAfterTests();
-        self::$seasonControllerTest->clearAfterTests();
-        self::$leagueControllerTest->clearAfterTests();
-        self::$teamControllerTest->clearAfterTests();
-        self::$organizationalUnitControllerTest->clearAfterTests();
-        self::$userControllerTest->clearAfterTests();
+        $userControllerTest->runTests();
+        $organizationalUnitControllerTest->runTests();
+        $teamControllerTest->runTests();
+        $leagueControllerTest->runTests();
+        $seasonControllerTest->runTests();
+        $seasonTeamControllerTest->runTests();
+        $articleControllerTest->runTests();
+        $roundControllerTest->runTests();
+        $gameControllerTest->runTests();
+        $gameEventControllerTest->runTests();
     }
 
     private static function setUpMariaDB(): void
@@ -142,9 +118,9 @@ final class AppTest extends TestCase
         ));
     }
 
-    private static function replaceDatabaseImplementation(string $newImplementation): void
+    private static function replaceDatabaseImplementation(TestDatabaseTypeEnum $newImplementation): void
     {
-        echo "\n\nReplacing database implementation with $newImplementation" . PHP_EOL;
+        echo "\n\nReplacing database implementation with $newImplementation->value" . PHP_EOL;
 
         $filePath = __DIR__ . '/../../.env.test';
 
@@ -153,12 +129,12 @@ final class AppTest extends TestCase
         $patternMariaDB = '/^DATABASE_IMPLEMENTATION="MariaDB"/m';
         $patternMongoDB = '/^DATABASE_IMPLEMENTATION="MongoDB"/m';
 
-        if ($newImplementation === 'MariaDB') {
+        if ($newImplementation->value === TestDatabaseTypeEnum::MariaDB->value) {
             $replacement = 'DATABASE_IMPLEMENTATION="MariaDB"';
-        } elseif ($newImplementation === 'MongoDB') {
+        } elseif ($newImplementation->value === TestDatabaseTypeEnum::MongoDB->value) {
             $replacement = 'DATABASE_IMPLEMENTATION="MongoDB"';
         } else {
-            throw new InvalidArgumentException("Unsupported implementation: $newImplementation");
+            throw new InvalidArgumentException("Unsupported implementation: $newImplementation->value");
         }
 
         if (preg_match($patternMariaDB, $fileContents) || preg_match($patternMongoDB, $fileContents)) {

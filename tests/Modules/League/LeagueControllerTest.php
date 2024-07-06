@@ -4,21 +4,17 @@ namespace Tests\Modules\League;
 
 use GuzzleHttp\Client;
 use Tests\Modules\AbstractControllerTest;
-use Tests\Util\TestAvailableResources;
-use Tests\Util\TestLoginUtil;
+use Tests\Util\TestDatabaseTypeEnum;
 
 class LeagueControllerTest extends AbstractControllerTest
 {
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
+    public const DEFAULT_ENDPOINT = 'leagues';
 
-        $this->endpoint = 'leagues';
-    }
-
-    public function clearAfterTests(): void
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
-        TestAvailableResources::$leagues = [];
+        parent::__construct($client, $databaseType);
+
+        $this->endpoint = self::DEFAULT_ENDPOINT;
     }
 
     protected function testShouldCheckIfAdminCanCreateResource(): void
@@ -37,8 +33,6 @@ class LeagueControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$leagues[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -58,8 +52,6 @@ class LeagueControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$leagues[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -79,15 +71,12 @@ class LeagueControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$leagues[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
-        $user = TestAvailableResources::$users[0];
-        $token = $this->loginUtil->loginWithEmailAndPassword($user['email'], TestLoginUtil::DEFAULT_PASSWORD);
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->client->post($this->endpoint, [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -120,7 +109,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        foreach (TestAvailableResources::$leagues as $resource) {
+        foreach ($this->availableResources->getLeagues() as $resource) {
             $response = $this->client->get("{$this->endpoint}/{$resource['id']}", [
                 'headers' => ['Authorization' => "Bearer $token"],
             ]);
@@ -141,7 +130,7 @@ class LeagueControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count(TestAvailableResources::$leagues), $json['data']);
+        $this->assertCount(count($this->availableResources->getLeagues()), $json['data']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -156,7 +145,7 @@ class LeagueControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -177,7 +166,7 @@ class LeagueControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -198,7 +187,7 @@ class LeagueControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -217,12 +206,9 @@ class LeagueControllerTest extends AbstractControllerTest
             'organizationalUnitId'
         ];
 
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -241,7 +227,7 @@ class LeagueControllerTest extends AbstractControllerTest
             'organizationalUnitId'
         ];
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}");
 
@@ -252,7 +238,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -265,8 +251,6 @@ class LeagueControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$leagues[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByAdmin(): void
@@ -278,7 +262,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -291,8 +275,6 @@ class LeagueControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$leagues[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByModerator(): void
@@ -304,7 +286,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -317,8 +299,6 @@ class LeagueControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$leagues[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByEditor(): void
@@ -333,12 +313,9 @@ class LeagueControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -360,7 +337,7 @@ class LeagueControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByGuest(): void
     {
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'json' => [
@@ -378,7 +355,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $league = array_pop(TestAvailableResources::$leagues);
+        $league = $this->availableResources->getLeagues()[0];
         $id = $league['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -392,7 +369,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $league = array_pop(TestAvailableResources::$leagues);
+        $league = $this->availableResources->getLeagues()[0];
         $id = $league['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -406,7 +383,7 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $league = array_pop(TestAvailableResources::$leagues);
+        $league = $this->availableResources->getLeagues()[0];
         $id = $league['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -418,12 +395,9 @@ class LeagueControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -434,7 +408,7 @@ class LeagueControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $id = TestAvailableResources::$leagues[0]['id'];
+        $id = $this->availableResources->getLeagues()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}");
 
@@ -445,11 +419,11 @@ class LeagueControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $league = array_pop(TestAvailableResources::$leagues);
+        $league = $this->availableResources->getLeagues()[0];
         $relatedLeagues = [
             $league,
             ...array_filter(
-                TestAvailableResources::$leagues,
+                array_slice($this->availableResources->getLeagues(), 1),
                 fn($l) => $l['organizationalUnitId'] === $league['organizationalUnitId']
             )
         ];
@@ -464,30 +438,19 @@ class LeagueControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$organizationalUnits = array_values(array_filter(
-            TestAvailableResources::$organizationalUnits,
-            fn($ou) => $ou['id'] !== $league['organizationalUnitId']
-        ));
 
         foreach ($relatedLeagues as $relatedTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
-
-        TestAvailableResources::$leagues = array_values(array_filter(
-            TestAvailableResources::$leagues,
-            fn($t) => $t['organizationalUnitId'] !== $league['organizationalUnitId']
-        ));
-        TestAvailableResources::$teams = array_values(array_filter(
-            TestAvailableResources::$teams,
-            fn($t) => $t['organizationalUnitId'] !== $league['organizationalUnitId']
-        ));
     }
 
     private function randomOrganizationalUnitId(): string
     {
-        return TestAvailableResources::$organizationalUnits[
-            array_rand(TestAvailableResources::$organizationalUnits)
+        $organizationalUnits = $this->availableResources->getOrganizationalUnits();
+
+        return $organizationalUnits[
+            array_rand($organizationalUnits)
         ]['id'];
     }
 }

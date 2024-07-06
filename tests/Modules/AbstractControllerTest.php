@@ -5,6 +5,11 @@ namespace Tests\Modules;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 use Psr\Http\Message\ResponseInterface;
+use Tests\Util\TestAvailableResources\TestAvailableResources;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesMariaDB;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesMongoDB;
+use Tests\Util\TestDatabaseTypeEnum;
 use Tests\Util\TestLoginUtil;
 
 // TODO: Collection tests!
@@ -14,12 +19,19 @@ abstract class AbstractControllerTest extends Assert
 
     protected readonly TestLoginUtil $loginUtil;
 
+    protected readonly TestAvailableResourcesInterface $availableResources;
+
     protected string $endpoint;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
+        $availableResources = $databaseType->value === TestDatabaseTypeEnum::MariaDB->value
+            ? new TestAvailableResourcesMariaDB()
+            : new TestAvailableResourcesMongoDB();
+
         $this->client = $client;
-        $this->loginUtil = new TestLoginUtil($client);
+        $this->availableResources = $availableResources;
+        $this->loginUtil = new TestLoginUtil($client, $availableResources);
     }
 
     public function runTests(): void
@@ -43,8 +55,6 @@ abstract class AbstractControllerTest extends Assert
             }
         }
     }
-
-    abstract public function clearAfterTests(): void;
 
     protected function testShouldReturnInitialCollection(): void
     {

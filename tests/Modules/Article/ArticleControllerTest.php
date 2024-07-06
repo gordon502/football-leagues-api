@@ -5,21 +5,17 @@ namespace Tests\Modules\Article;
 use DateTime;
 use GuzzleHttp\Client;
 use Tests\Modules\AbstractControllerTest;
-use Tests\Util\TestAvailableResources;
-use Tests\Util\TestLoginUtil;
+use Tests\Util\TestDatabaseTypeEnum;
 
 class ArticleControllerTest extends AbstractControllerTest
 {
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
+    public const DEFAULT_ENDPOINT = 'articles';
 
-        $this->endpoint = 'articles';
-    }
-
-    public function clearAfterTests(): void
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
-        TestAvailableResources::$articles = [];
+        parent::__construct($client, $databaseType);
+
+        $this->endpoint = self::DEFAULT_ENDPOINT;
     }
 
     protected function testShouldCheckIfAdminCanCreateResource(): void
@@ -39,8 +35,6 @@ class ArticleControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$articles[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -61,8 +55,6 @@ class ArticleControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$articles[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -83,15 +75,12 @@ class ArticleControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$articles[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
-        $user = TestAvailableResources::$users[0];
-        $token = $this->loginUtil->loginWithEmailAndPassword($user['email'], TestLoginUtil::DEFAULT_PASSWORD);
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->client->post($this->endpoint, [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -126,7 +115,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        foreach (TestAvailableResources::$articles as $resource) {
+        foreach ($this->availableResources->getArticles() as $resource) {
             $response = $this->client->get("{$this->endpoint}/{$resource['id']}", [
                 'headers' => ['Authorization' => "Bearer $token"],
             ]);
@@ -143,7 +132,7 @@ class ArticleControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count(TestAvailableResources::$articles), $json['data']);
+        $this->assertCount(count($this->availableResources->getArticles()), $json['data']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -159,7 +148,7 @@ class ArticleControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -181,7 +170,7 @@ class ArticleControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -203,7 +192,7 @@ class ArticleControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -222,12 +211,9 @@ class ArticleControllerTest extends AbstractControllerTest
             'seasonTeamsId'
         ];
 
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -246,7 +232,7 @@ class ArticleControllerTest extends AbstractControllerTest
             'seasonTeamsId'
         ];
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}");
 
@@ -257,7 +243,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
             'json' => [
@@ -270,8 +256,6 @@ class ArticleControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$articles[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByAdmin(): void
@@ -283,7 +267,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -297,8 +281,6 @@ class ArticleControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$articles[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByModerator(): void
@@ -310,7 +292,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -324,8 +306,6 @@ class ArticleControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$articles[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByEditor(): void
@@ -340,12 +320,9 @@ class ArticleControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -364,7 +341,7 @@ class ArticleControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByGuest(): void
     {
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'json' => [
@@ -379,7 +356,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $article = array_pop(TestAvailableResources::$articles);
+        $article = $this->availableResources->getArticles()[0];
         $id = $article['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -393,7 +370,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $article = array_pop(TestAvailableResources::$articles);
+        $article = $this->availableResources->getArticles()[0];
         $id = $article['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -407,7 +384,7 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $article = array_pop(TestAvailableResources::$articles);
+        $article = $this->availableResources->getArticles()[0];
         $id = $article['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -419,12 +396,9 @@ class ArticleControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -435,7 +409,7 @@ class ArticleControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $id = TestAvailableResources::$articles[0]['id'];
+        $id = $this->availableResources->getArticles()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}");
 
@@ -446,9 +420,9 @@ class ArticleControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $seasonTeamId = TestAvailableResources::$articles[0]['seasonTeamsId'][0];
+        $seasonTeamId = $this->availableResources->getArticles()[0]['seasonTeamsId'][0];
         $relatedArticles = array_filter(
-            TestAvailableResources::$articles,
+            $this->availableResources->getArticles(),
             fn($a) => in_array($seasonTeamId, $a['seasonTeamsId'])
         );
 
@@ -462,12 +436,8 @@ class ArticleControllerTest extends AbstractControllerTest
             "season-teams/{$seasonTeamId}",
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
-//        var_dump($response->getBody()->getContents());
+
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$seasonTeams = array_values(array_filter(
-            TestAvailableResources::$seasonTeams,
-            fn($st) => $st['id'] !== $seasonTeamId
-        ));
 
         foreach ($relatedArticles as $relatedArticle) {
             $response = $this->client->get("{$this->endpoint}/{$relatedArticle['id']}");
@@ -475,18 +445,16 @@ class ArticleControllerTest extends AbstractControllerTest
 
             $contents = json_decode($response->getBody()->getContents(), true);
             $this->assertFalse(in_array($seasonTeamId, $contents['seasonTeamsId']));
-            TestAvailableResources::$articles = array_values(array_map(
-                fn($a) => $a['id'] === $relatedArticle['id'] ? $contents : $a,
-                TestAvailableResources::$articles
-            ));
         }
     }
 
     private function randomSeasonTeamsId(): array
     {
+        $seasonTeams = $this->availableResources->getSeasonTeams();
+
         return [
-            TestAvailableResources::$seasonTeams[0]['id'],
-            TestAvailableResources::$seasonTeams[1]['id']
+            $seasonTeams[count($seasonTeams) - 2]['id'],
+            $seasonTeams[count($seasonTeams) - 1]['id']
         ];
     }
 }

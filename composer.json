@@ -31,7 +31,8 @@
         "symfony/yaml": "7.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "ext-mongodb": "*"
+        "ext-mongodb": "*",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.8",

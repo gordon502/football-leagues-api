@@ -4,21 +4,17 @@ namespace Tests\Modules\SeasonTeam;
 
 use GuzzleHttp\Client;
 use Tests\Modules\AbstractControllerTest;
-use Tests\Util\TestAvailableResources;
-use Tests\Util\TestLoginUtil;
+use Tests\Util\TestDatabaseTypeEnum;
 
 class SeasonTeamControllerTest extends AbstractControllerTest
 {
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
+    public const DEFAULT_ENDPOINT = 'season-teams';
 
-        $this->endpoint = 'season-teams';
-    }
-
-    public function clearAfterTests(): void
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
-        TestAvailableResources::$seasonTeams = [];
+        parent::__construct($client, $databaseType);
+
+        $this->endpoint = self::DEFAULT_ENDPOINT;
     }
 
     protected function testShouldCheckIfAdminCanCreateResource(): void
@@ -36,8 +32,6 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$seasonTeams[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -56,8 +50,6 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$seasonTeams[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -76,15 +68,12 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$seasonTeams[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
-        $user = TestAvailableResources::$users[0];
-        $token = $this->loginUtil->loginWithEmailAndPassword($user['email'], TestLoginUtil::DEFAULT_PASSWORD);
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->client->post($this->endpoint, [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -115,7 +104,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        foreach (TestAvailableResources::$seasonTeams as $resource) {
+        foreach ($this->availableResources->getSeasonTeams() as $resource) {
             $response = $this->client->get("{$this->endpoint}/{$resource['id']}", [
                 'headers' => ['Authorization' => "Bearer $token"],
             ]);
@@ -136,7 +125,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count(TestAvailableResources::$seasonTeams), $json['data']);
+        $this->assertCount(count($this->availableResources->getSeasonTeams()), $json['data']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -150,7 +139,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -170,7 +159,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -190,7 +179,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -208,12 +197,9 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             'seasonId'
         ];
 
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -231,7 +217,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             'seasonId'
         ];
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}");
 
@@ -242,7 +228,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -254,8 +240,6 @@ class SeasonTeamControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$seasonTeams[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByAdmin(): void
@@ -267,7 +251,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -279,8 +263,6 @@ class SeasonTeamControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$seasonTeams[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByModerator(): void
@@ -292,7 +274,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -304,8 +286,6 @@ class SeasonTeamControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$seasonTeams[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByEditor(): void
@@ -320,12 +300,9 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -344,7 +321,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByGuest(): void
     {
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'json' => [
@@ -359,7 +336,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $seasonTeam = array_pop(TestAvailableResources::$seasonTeams);
+        $seasonTeam = $this->availableResources->getSeasonTeams()[0];
         $id = $seasonTeam['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -373,7 +350,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $seasonTeam = array_pop(TestAvailableResources::$seasonTeams);
+        $seasonTeam = $this->availableResources->getSeasonTeams()[0];
         $id = $seasonTeam['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -387,7 +364,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $seasonTeam = array_pop(TestAvailableResources::$seasonTeams);
+        $seasonTeam = $this->availableResources->getSeasonTeams()[0];
         $id = $seasonTeam['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -399,12 +376,9 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -415,7 +389,7 @@ class SeasonTeamControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $id = TestAvailableResources::$seasonTeams[0]['id'];
+        $id = $this->availableResources->getSeasonTeams()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}");
 
@@ -426,11 +400,11 @@ class SeasonTeamControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $seasonTeam = array_pop(TestAvailableResources::$seasonTeams);
+        $seasonTeam = $this->availableResources->getSeasonTeams()[0];
         $relatedSeasonsTeams = [
             $seasonTeam,
             ...array_filter(
-                TestAvailableResources::$seasonTeams,
+                array_slice($this->availableResources->getSeasonTeams(), 1),
                 fn($st) => $st['seasonId'] === $seasonTeam['seasonId']
             )
         ];
@@ -445,31 +419,22 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$seasons = array_values(array_filter(
-            TestAvailableResources::$seasons,
-            fn($s) => $s['id'] !== $seasonTeam['seasonId']
-        ));
 
         foreach ($relatedSeasonsTeams as $relatedSeasonTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedSeasonTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
-
-        TestAvailableResources::$seasonTeams = array_values(array_filter(
-            TestAvailableResources::$seasonTeams,
-            fn($st) => $st['seasonId'] !== $seasonTeam['seasonId']
-        ));
     }
 
     protected function testShouldCheckIfDeletionOfTeamDeletesSeasonTeamsAlso(): void
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $seasonTeam = array_pop(TestAvailableResources::$seasonTeams);
+        $seasonTeam = $this->availableResources->getSeasonTeams()[0];
         $relatedSeasonsTeams = [
             $seasonTeam,
             ...array_filter(
-                TestAvailableResources::$seasonTeams,
+                array_slice($this->availableResources->getSeasonTeams(), 1),
                 fn($st) => $st['teamId'] === $seasonTeam['teamId']
             )
         ];
@@ -484,33 +449,24 @@ class SeasonTeamControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$teams = array_values(array_filter(
-            TestAvailableResources::$teams,
-            fn($t) => $t['id'] !== $seasonTeam['teamId']
-        ));
 
         foreach ($relatedSeasonsTeams as $relatedSeasonTeam) {
             $response = $this->client->get("{$this->endpoint}/{$relatedSeasonTeam['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
-
-        TestAvailableResources::$seasonTeams = array_values(array_filter(
-            TestAvailableResources::$seasonTeams,
-            fn($st) => $st['teamId'] !== $seasonTeam['teamId']
-        ));
     }
 
     private function randomTeamId(): string
     {
-        return TestAvailableResources::$teams[
-            array_rand(TestAvailableResources::$teams)
-        ]['id'];
+        $teams = $this->availableResources->getTeams();
+
+        return $teams[array_rand($teams)]['id'];
     }
 
     private function randomSeasonId(): string
     {
-        return TestAvailableResources::$seasons[
-            array_rand(TestAvailableResources::$seasons)
-        ]['id'];
+        $seasons = $this->availableResources->getSeasons();
+
+        return $seasons[array_rand($seasons)]['id'];
     }
 }

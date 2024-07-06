@@ -2,25 +2,23 @@
 
 namespace Tests\Modules\User;
 
+use App\Modules\User\Role\UserRole;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Tests\Modules\AbstractControllerTest;
-use Tests\Util\TestAvailableResources;
+use Tests\Util\TestDatabaseTypeEnum;
 use Tests\Util\TestLoginUtil;
 
 // TODO: Collection tests!
 class UserControllerTest extends AbstractControllerTest
 {
-    public function __construct(Client $client)
-    {
-        $this->endpoint = 'users';
+    public const DEFAULT_ENDPOINT = 'users';
 
-        parent::__construct($client);
-    }
-
-    public function clearAfterTests(): void
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
-        TestAvailableResources::$users = [];
+        $this->endpoint = self::DEFAULT_ENDPOINT;
+
+        parent::__construct($client, $databaseType);
     }
 
     protected function testShouldReturnInitialCollection(): void
@@ -43,8 +41,6 @@ class UserControllerTest extends AbstractControllerTest
         $response = $this->registerUserRequest($token, 'admin');
 
         $this->assertEquals(201, $response->getStatusCode());
-
-        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfModeratorCanCreateResource(): void
@@ -54,8 +50,6 @@ class UserControllerTest extends AbstractControllerTest
         $response = $this->registerUserRequest($token, 'moderator');
 
         $this->assertEquals(201, $response->getStatusCode());
-
-        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfEditorCanCreateResource(): void
@@ -65,22 +59,15 @@ class UserControllerTest extends AbstractControllerTest
         $response = $this->registerUserRequest($token, 'editor');
 
         $this->assertEquals(201, $response->getStatusCode());
-
-        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: TestAvailableResources::$users[0]['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->registerUserRequest($token, 'user');
 
         $this->assertEquals(201, $response->getStatusCode());
-
-        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckIfGuestCanCreateResource(): void
@@ -88,15 +75,13 @@ class UserControllerTest extends AbstractControllerTest
         $response = $this->registerUserRequest(null, 'guest');
 
         $this->assertEquals(201, $response->getStatusCode());
-
-        TestAvailableResources::$users[] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldReturnConflictIfUserIsAlreadyRegistered(): void
     {
         $response = $this->client->post('users', [
             'json' => [
-                'email' => TestAvailableResources::$users[0]['email'],
+                'email' => $this->availableResources->getUsers()[0]['email'],
                 'name' => 'Test User',
                 'password' => TestLoginUtil::DEFAULT_PASSWORD
             ]
@@ -107,7 +92,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldReturnPreviouslyCreatedResources(): void
     {
-        foreach (TestAvailableResources::$users as $user) {
+        foreach ($this->availableResources->getUsers() as $user) {
             $response = $this->client->get("{$this->endpoint}/{$user['id']}");
 
             $this->assertEquals(200, $response->getStatusCode());
@@ -126,8 +111,8 @@ class UserControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count(TestAvailableResources::$users) + 3, $json['data']);
-        $this->assertEquals(count(TestAvailableResources::$users) + 3, $json['pagination']['total']);
+        $this->assertCount(count($this->availableResources->getUsers()), $json['data']);
+        $this->assertEquals(count($this->availableResources->getUsers()), $json['pagination']['total']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -143,7 +128,7 @@ class UserControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$users[0]['id'];
+        $id = $this->availableResources->getUsers()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
@@ -167,7 +152,7 @@ class UserControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$users[0]['id'];
+        $id = $this->availableResources->getUsers()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
@@ -191,7 +176,7 @@ class UserControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$users[0]['id'];
+        $id = $this->availableResources->getUsers()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
@@ -213,12 +198,9 @@ class UserControllerTest extends AbstractControllerTest
             'blocked',
         ];
 
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: TestAvailableResources::$users[0]['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$users[0]['id'];
+        $id = $this->availableResources->getUsers()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => [
@@ -240,7 +222,7 @@ class UserControllerTest extends AbstractControllerTest
             'blocked',
         ];
 
-        $id = TestAvailableResources::$users[0]['id'];
+        $id = $this->availableResources->getUsers()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}");
 
@@ -250,30 +232,26 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckEditableFieldsByAdmin(): void
     {
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsAdmin(),
             ['name' => 'Updated by ADMIN']
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsAdmin(),
             ['role' => 'USER']
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsAdmin(),
             ['avatar' => 'https://example.com/avatar.jpg']
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsAdmin(),
-            ['blocked' => true]
+            ['blocked' => false]
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -281,14 +259,12 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckNotEditableFieldsByAdmin(): void
     {
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsAdmin(),
             ['email' => 'updated_by_admin@email.com']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsAdmin(),
             ['password' => 'test123123']
         );
@@ -298,23 +274,20 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckEditableFieldsByModerator(): void
     {
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsModerator(),
             ['name' => 'Updated by ADMIN']
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsModerator(),
             ['avatar' => 'https://example.com/avatar.jpg']
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsModerator(),
-            ['blocked' => true]
+            ['blocked' => false]
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -322,21 +295,18 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckNotEditableFieldsByModerator(): void
     {
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsModerator(),
             ['email' => 'updated_by_moderator@email.com']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsModerator(),
             ['role' => 'USER']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsModerator(),
             ['password' => 'test123123']
         );
@@ -351,42 +321,36 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckNotEditableFieldsByEditor(): void
     {
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsEditor(),
             ['email' => 'updated_by_editor@email.com']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsEditor(),
             ['name' => 'Updated by EDITOR']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsEditor(),
             ['avatar' => 'https://example.com/avatar.jpg']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsEditor(),
-            ['blocked' => true]
+            ['blocked' => false]
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsEditor(),
             ['role' => 'USER']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $this->loginUtil->loginAsEditor(),
             ['password' => 'test123123']
         );
@@ -400,49 +364,46 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: TestAvailableResources::$users[1]['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['email' => 'updated_by_user@email.com']
+            ['email' => 'updated_by_user@email.com'],
+            UserRole::EDITOR,
         );
         $this->assertEquals(422, $response->getStatusCode());
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['name' => 'Updated by EDITOR']
+            ['name' => 'Updated by EDITOR'],
+            UserRole::EDITOR,
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['avatar' => 'https://example.com/avatar.jpg']
+            ['avatar' => 'https://example.com/avatar.jpg'],
+            UserRole::EDITOR,
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['blocked' => true]
+            ['blocked' => false],
+            UserRole::EDITOR,
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['role' => 'USER']
+            ['role' => 'USER'],
+            UserRole::EDITOR,
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['password' => 'test123123']
+            ['password' => 'test123123'],
+            UserRole::EDITOR,
         );
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -455,41 +416,35 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckNotEditableFieldsByGuest(): void
     {
         $response = $this->updateUserRequest(
-            0,
             null,
             ['email' => 'updated_by_guest@email.com']
         );
         $this->assertEquals(422, $response->getStatusCode());
         $response = $this->updateUserRequest(
-            0,
             null,
             ['name' => 'Updated by GUEST']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             null,
             ['avatar' => 'https://example.com/avatar.jpg']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             null,
-            ['blocked' => true]
+            ['blocked' => false]
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             null,
             ['role' => 'USER']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             null,
             ['password' => 'test123123']
         );
@@ -499,13 +454,9 @@ class UserControllerTest extends AbstractControllerTest
     protected function testShouldCheckEditableFieldsByOwner(): void
     {
         $response = $this->updateUserRequest(
-            0,
-            $this->loginUtil->loginWithEmailAndPassword(
-                email: TestAvailableResources::$users[0]['email'],
-                password: TestLoginUtil::DEFAULT_PASSWORD
-            ),
+            $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser()),
             [
-                'email' => TestAvailableResources::$users[0]['email'],
+                'email' => 'not-used-mail-by-user@mail.com',
                 'name' => 'Updated by OWNER',
                 'password' => TestLoginUtil::DEFAULT_PASSWORD,
                 'avatar' => 'https://example.com/avatar.jpg',
@@ -516,37 +467,32 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByOwner(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: TestAvailableResources::$users[0]['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
             ['role' => 'USER']
         );
         $this->assertEquals(422, $response->getStatusCode());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['blocked' => true]
+            ['blocked' => false]
         );
         $this->assertEquals(422, $response->getStatusCode());
     }
 
     protected function testShouldCheckIfUpdateEmailToExistingOneIsImpossible(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: TestAvailableResources::$users[0]['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->updateUserRequest(
-            0,
             $token,
-            ['email' => TestAvailableResources::$users[1]['email']]
+            [
+                'email' => array_values(
+                    array_filter($this->availableResources->getUsers(), fn($user) => $user['role'] === UserRole::ADMIN)
+                )[0]['email']
+            ]
         );
 
         $this->assertEquals(409, $response->getStatusCode());
@@ -554,9 +500,9 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfAdminCanDeleteResource(): void
     {
-        $user = array_pop(TestAvailableResources::$users);
+        $id = $this->getUserAccountId();
 
-        $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
+        $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer {$this->loginUtil->loginAsAdmin()}"
             ]
@@ -567,9 +513,9 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfModeratorCanDeleteResource(): void
     {
-        $user = array_pop(TestAvailableResources::$users);
+        $id = $this->getUserAccountId();
 
-        $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
+        $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer {$this->loginUtil->loginAsModerator()}"
             ]
@@ -580,7 +526,9 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfEditorCanDeleteResource(): void
     {
-        $user = TestAvailableResources::$users[0];
+        $user = array_values(
+            array_filter($this->availableResources->getUsers(), fn($user) => $user['role'] === UserRole::ADMIN)
+        )[0];
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -593,12 +541,11 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: TestAvailableResources::$users[1]['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $user = TestAvailableResources::$users[0];
+        $user = array_values(
+            array_filter($this->availableResources->getUsers(), fn($user) => $user['role'] === UserRole::ADMIN)
+        )[0];
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -611,7 +558,7 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $user = TestAvailableResources::$users[0];
+        $user = $this->availableResources->getUsers()[0];
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}");
 
@@ -620,12 +567,9 @@ class UserControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfOwnerCanDeleteResource(): void
     {
-        $user = array_pop(TestAvailableResources::$users);
+        $user = $this->loginUtil->getFirstNonBlockedStandardUser();
 
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            email: $user['email'],
-            password: TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->client->delete("{$this->endpoint}/{$user['id']}", [
             'headers' => [
@@ -655,18 +599,33 @@ class UserControllerTest extends AbstractControllerTest
         ]);
     }
 
-    private function updateUserRequest(int $userIndex, ?string $token, array $data): ResponseInterface
-    {
+    private function updateUserRequest(
+        ?string $token,
+        array $data,
+        string $updatedUserRole = UserRole::USER
+    ): ResponseInterface {
         $headers = [];
         if ($token) {
             $headers['Authorization'] = "Bearer $token";
         }
 
-        $id = TestAvailableResources::$users[$userIndex]['id'];
+        $id = array_values(
+            array_filter($this->availableResources->getUsers(), fn($user) => $user['role'] === $updatedUserRole)
+        )[0]['id'];
 
         return $this->client->put(
             "{$this->endpoint}/{$id}",
             ['headers' => $headers, 'json' => $data]
         );
+    }
+
+    private function getUserAccountId(): string
+    {
+        return array_values(
+            array_filter(
+                $this->availableResources->getUsers(),
+                fn($user) => $user['role'] === UserRole::USER
+            )
+        )[0]['id'];
     }
 }

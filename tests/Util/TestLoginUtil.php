@@ -2,7 +2,10 @@
 
 namespace Tests\Util;
 
+use App\Modules\User\Role\UserRole;
 use GuzzleHttp\Client;
+use Tests\Util\TestAvailableResources\TestAvailableResources;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
 
 readonly class TestLoginUtil
 {
@@ -12,23 +15,36 @@ readonly class TestLoginUtil
 
     protected Client $client;
 
-    public function __construct(Client $client)
+    protected TestAvailableResourcesInterface $availableResources;
+
+    public function __construct(Client $client, TestAvailableResourcesInterface $availableResources)
     {
         $this->client = $client;
+        $this->availableResources = $availableResources;
     }
 
-    public function loginWithEmailAndPassword(string $email, string $password): string
+    public function loginWithEmailAndPassword(array $user): string
     {
         $response = $this->client->post('login', [
             'json' => [
-                'username' => $email,
-                'password' => $password
+                'username' => $user['email'],
+                'password' => self::DEFAULT_PASSWORD,
             ]
         ]);
 
         $json = json_decode($response->getBody()->getContents(), true);
 
         return $json['token'];
+    }
+
+    public function getFirstNonBlockedStandardUser(): array
+    {
+        return array_values(
+            array_filter(
+                $this->availableResources->getUsers(),
+                fn($user) => $user['role'] === UserRole::USER && $user['blocked'] === false
+            )
+        )[0];
     }
 
     public function loginAsAdmin(): string

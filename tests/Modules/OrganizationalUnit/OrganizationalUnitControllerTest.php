@@ -5,21 +5,17 @@ namespace Tests\Modules\OrganizationalUnit;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Tests\Modules\AbstractControllerTest;
-use Tests\Util\TestAvailableResources;
-use Tests\Util\TestLoginUtil;
+use Tests\Util\TestDatabaseTypeEnum;
 
 class OrganizationalUnitControllerTest extends AbstractControllerTest
 {
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
+    public const DEFAULT_ENDPOINT = 'organizational-units';
 
-        $this->endpoint = 'organizational-units';
-    }
-
-    public function clearAfterTests(): void
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
-        TestAvailableResources::$organizationalUnits = [];
+        parent::__construct($client, $databaseType);
+
+        $this->endpoint = self::DEFAULT_ENDPOINT;
     }
 
     protected function testShouldCheckIfAdminCanCreateResource(): void
@@ -40,8 +36,6 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$organizationalUnits[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -85,8 +79,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
-        $user = TestAvailableResources::$users[0];
-        $token = $this->loginUtil->loginWithEmailAndPassword($user['email'], TestLoginUtil::DEFAULT_PASSWORD);
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->client->post($this->endpoint, [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -123,7 +116,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        foreach (TestAvailableResources::$organizationalUnits as $resource) {
+        foreach ($this->availableResources->getOrganizationalUnits() as $resource) {
             $response = $this->client->get("{$this->endpoint}/{$resource['id']}", [
                 'headers' => ['Authorization' => "Bearer $token"],
             ]);
@@ -144,7 +137,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count(TestAvailableResources::$organizationalUnits), $json['data']);
+        $this->assertCount(count($this->availableResources->getOrganizationalUnits()), $json['data']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -153,7 +146,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -168,7 +161,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -183,7 +176,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -195,11 +188,10 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     protected function testShouldCheckIfUserCanReadResource(): void
     {
         $readableFields = ['id', 'name', 'country', 'address', 'city', 'postalCode', 'phone'];
+        
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $user = TestAvailableResources::$users[0];
-        $token = $this->loginUtil->loginWithEmailAndPassword($user['email'], TestLoginUtil::DEFAULT_PASSWORD);
-
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -212,7 +204,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     {
         $readableFields = ['id', 'name', 'country', 'address', 'city', 'postalCode', 'phone'];
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}");
 
@@ -223,7 +215,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -238,8 +230,6 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$organizationalUnits[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByAdmin(): void
@@ -288,10 +278,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->updateOrganizationalUnitRequest(
             0,
@@ -324,7 +311,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $organizationalUnit = array_pop(TestAvailableResources::$organizationalUnits);
+        $organizationalUnit = $this->availableResources->getOrganizationalUnits()[0];
         $id = $organizationalUnit['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -338,7 +325,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -351,7 +338,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -362,12 +349,9 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -378,7 +362,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $id = TestAvailableResources::$organizationalUnits[0]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}");
 
@@ -395,7 +379,7 @@ class OrganizationalUnitControllerTest extends AbstractControllerTest
             $headers['Authorization'] = "Bearer $token";
         }
 
-        $id = TestAvailableResources::$organizationalUnits[$organizationalUnitIndex]['id'];
+        $id = $this->availableResources->getOrganizationalUnits()[$organizationalUnitIndex]['id'];
 
         return $this->client->put(
             "{$this->endpoint}/{$id}",

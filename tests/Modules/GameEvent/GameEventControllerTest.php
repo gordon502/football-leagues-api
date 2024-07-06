@@ -7,21 +7,17 @@ use App\Modules\GameEvent\Enum\GameEventPartOrHalfEnum;
 use App\Modules\GameEvent\Enum\GameEventTeamRelatedEnum;
 use GuzzleHttp\Client;
 use Tests\Modules\AbstractControllerTest;
-use Tests\Util\TestAvailableResources;
-use Tests\Util\TestLoginUtil;
+use Tests\Util\TestDatabaseTypeEnum;
 
 class GameEventControllerTest extends AbstractControllerTest
 {
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
+    public const DEFAULT_ENDPOINT = 'game-events';
 
-        $this->endpoint = 'game-events';
-    }
-
-    public function clearAfterTests(): void
+    public function __construct(Client $client, TestDatabaseTypeEnum $databaseType)
     {
-        TestAvailableResources::$gameEvents = [];
+        parent::__construct($client, $databaseType);
+
+        $this->endpoint = self::DEFAULT_ENDPOINT;
     }
 
     protected function testShouldCheckIfAdminCanCreateResource(): void
@@ -42,8 +38,6 @@ class GameEventControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$gameEvents[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -65,8 +59,6 @@ class GameEventControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$gameEvents[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
@@ -88,15 +80,12 @@ class GameEventControllerTest extends AbstractControllerTest
             ]);
 
             $this->assertEquals(201, $response->getStatusCode());
-
-            TestAvailableResources::$gameEvents[] = json_decode($response->getBody()->getContents(), true);
         }
     }
 
     protected function testShouldCheckIfUserCanCreateResource(): void
     {
-        $user = TestAvailableResources::$users[0];
-        $token = $this->loginUtil->loginWithEmailAndPassword($user['email'], TestLoginUtil::DEFAULT_PASSWORD);
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
         $response = $this->client->post($this->endpoint, [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -133,7 +122,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        foreach (TestAvailableResources::$gameEvents as $resource) {
+        foreach ($this->availableResources->getGameEvents() as $resource) {
             $response = $this->client->get("{$this->endpoint}/{$resource['id']}", [
                 'headers' => ['Authorization' => "Bearer $token"],
             ]);
@@ -154,7 +143,7 @@ class GameEventControllerTest extends AbstractControllerTest
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        $this->assertCount(count(TestAvailableResources::$gameEvents), $json['data']);
+        $this->assertCount(count($this->availableResources->getGameEvents()), $json['data']);
     }
 
     protected function testShouldCheckIfAdminCanReadResource(): void
@@ -171,7 +160,7 @@ class GameEventControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -194,7 +183,7 @@ class GameEventControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -217,7 +206,7 @@ class GameEventControllerTest extends AbstractControllerTest
 
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -238,12 +227,9 @@ class GameEventControllerTest extends AbstractControllerTest
             'gameId'
         ];
 
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -264,7 +250,7 @@ class GameEventControllerTest extends AbstractControllerTest
             'gameId'
         ];
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->get("{$this->endpoint}/{$id}");
 
@@ -275,7 +261,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -290,8 +276,6 @@ class GameEventControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$gameEvents[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByAdmin(): void
@@ -303,7 +287,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -318,8 +302,6 @@ class GameEventControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$gameEvents[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByModerator(): void
@@ -331,7 +313,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -346,8 +328,6 @@ class GameEventControllerTest extends AbstractControllerTest
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        TestAvailableResources::$gameEvents[0] = json_decode($response->getBody()->getContents(), true);
     }
 
     protected function testShouldCheckNotEditableFieldsByEditor(): void
@@ -362,12 +342,9 @@ class GameEventControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByUser(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -386,7 +363,7 @@ class GameEventControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckNotEditableFieldsByGuest(): void
     {
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->put("{$this->endpoint}/{$id}", [
             'json' => [
@@ -401,7 +378,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $round = array_pop(TestAvailableResources::$gameEvents);
+        $round = $this->availableResources->getGameEvents()[0];
         $id = $round['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -415,7 +392,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsModerator();
 
-        $round = array_pop(TestAvailableResources::$gameEvents);
+        $round = $this->availableResources->getGameEvents()[0];
         $id = $round['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -429,7 +406,7 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsEditor();
 
-        $round = array_pop(TestAvailableResources::$gameEvents);
+        $round = $this->availableResources->getGameEvents()[0];
         $id = $round['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
@@ -441,12 +418,9 @@ class GameEventControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfUserCanDeleteResource(): void
     {
-        $token = $this->loginUtil->loginWithEmailAndPassword(
-            TestAvailableResources::$users[0]['email'],
-            TestLoginUtil::DEFAULT_PASSWORD
-        );
+        $token = $this->loginUtil->loginWithEmailAndPassword($this->loginUtil->getFirstNonBlockedStandardUser());
 
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}", [
             'headers' => ['Authorization' => "Bearer $token"],
@@ -457,7 +431,7 @@ class GameEventControllerTest extends AbstractControllerTest
 
     protected function testShouldCheckIfGuestCanDeleteResource(): void
     {
-        $id = TestAvailableResources::$gameEvents[0]['id'];
+        $id = $this->availableResources->getGameEvents()[0]['id'];
 
         $response = $this->client->delete("{$this->endpoint}/{$id}");
 
@@ -468,11 +442,11 @@ class GameEventControllerTest extends AbstractControllerTest
     {
         $token = $this->loginUtil->loginAsAdmin();
 
-        $gameEvent = array_pop(TestAvailableResources::$gameEvents);
+        $gameEvent = $this->availableResources->getGameEvents()[0];
         $relatedGameEvents = [
             $gameEvent,
             ...array_filter(
-                TestAvailableResources::$gameEvents,
+                $this->availableResources->getGameEvents(),
                 fn($g) => $g['gameId'] === $gameEvent['gameId']
             )
         ];
@@ -487,24 +461,16 @@ class GameEventControllerTest extends AbstractControllerTest
             ['headers' => ['Authorization' => "Bearer $token"]]
         );
         $this->assertEquals(204, $response->getStatusCode());
-        TestAvailableResources::$games = array_values(array_filter(
-            TestAvailableResources::$games,
-            fn($g) => $g['id'] !== $gameEvent['gameId']
-        ));
 
         foreach ($relatedGameEvents as $relatedGame) {
             $response = $this->client->get("{$this->endpoint}/{$relatedGame['id']}");
             $this->assertEquals(404, $response->getStatusCode());
         }
-
-        TestAvailableResources::$gameEvents = array_values(array_filter(
-            TestAvailableResources::$gameEvents,
-            fn($ge) => $ge['gameId'] !== $gameEvent['gameId']
-        ));
     }
 
     private function randomGameId(): string
     {
-        return TestAvailableResources::$games[array_rand(TestAvailableResources::$games)]['id'];
+        $games = $this->availableResources->getGames();
+        return $games[array_rand($games)]['id'];
     }
 }
