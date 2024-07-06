@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Modules\Article\ArticleControllerTest;
 use Tests\Modules\Game\GameControllerTest;
 use Tests\Modules\GameEvent\GameEventControllerTest;
+use Tests\Modules\Leaderboard\LeaderboardControllerTest;
 use Tests\Modules\League\LeagueControllerTest;
 use Tests\Modules\Round\RoundControllerTest;
 use Tests\Modules\Season\SeasonControllerTest;
@@ -69,6 +70,7 @@ final class AppTest extends TestCase
         $gameControllerTest = new GameControllerTest(self::$client, $databaseTypeEnum);
         $gameEventControllerTest = new GameEventControllerTest(self::$client, $databaseTypeEnum);
         $articleControllerTest = new ArticleControllerTest(self::$client, $databaseTypeEnum);
+        $leaderboardControllerTest = new LeaderboardControllerTest(self::$client, $databaseTypeEnum);
 
         $userControllerTest->runTests();
         $organizationalUnitControllerTest->runTests();
@@ -80,6 +82,7 @@ final class AppTest extends TestCase
         $roundControllerTest->runTests();
         $gameControllerTest->runTests();
         $gameEventControllerTest->runTests();
+        $leaderboardControllerTest->runTests();
     }
 
     private static function setUpMariaDB(): void

@@ -23,4 +23,6 @@ interface TestAvailableResourcesInterface
     public function getGameEvents(): array;
 
     public function getArticles(): array;
+
+    public function getLeaderboards(): array;
 }

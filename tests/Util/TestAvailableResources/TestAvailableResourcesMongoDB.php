@@ -210,4 +210,42 @@ final class TestAvailableResourcesMongoDB implements TestAvailableResourcesInter
             ];
         }, $articles);
     }
+
+    public function getLeaderboards(): array
+    {
+        $collection = $this->database->selectCollection('leaderboard');
+        $leaderboards = $collection->find()->toArray();
+
+        return array_map(function ($leaderboardDb) {
+            return [
+                'id' => $leaderboardDb['_id'],
+                'seasonId' => $leaderboardDb['season']['$id'],
+                'seasonTeamId' => $leaderboardDb['seasonTeam']['$id'],
+                'place' => $leaderboardDb['place'],
+                'matchesPlayed' => $leaderboardDb['matchesPlayed'],
+                'points' => $leaderboardDb['points'],
+                'wins' => $leaderboardDb['wins'],
+                'draws' => $leaderboardDb['draws'],
+                'losses' => $leaderboardDb['losses'],
+                'goalsScored' => $leaderboardDb['goalsScored'],
+                'goalsConceded' => $leaderboardDb['goalsConceded'],
+                'homeGoalsScored' => $leaderboardDb['homeGoalsScored'],
+                'homeGoalsConceded' => $leaderboardDb['homeGoalsConceded'],
+                'awayGoalsScored' => $leaderboardDb['awayGoalsScored'],
+                'awayGoalsConceded' => $leaderboardDb['awayGoalsConceded'],
+                'promotedToHigherDivision' => (bool) $leaderboardDb['promotedToHigherDivision'],
+                'eligibleForPromotionBargaining' => (bool) $leaderboardDb['eligibleForPromotionBargaining'],
+                'eligibleForRetentionBargaining' => (bool) $leaderboardDb['eligibleForRetentionBargaining'],
+                'relegatedToLowerDivision' => (bool) $leaderboardDb['relegatedToLowerDivision'],
+                'directMatchesPlayed' => $leaderboardDb['directMatchesPlayed'],
+                'directMatchesPoints' => $leaderboardDb['directMatchesPoints'],
+                'directMatchesWins' => $leaderboardDb['directMatchesWins'],
+                'directMatchesDraws' => $leaderboardDb['directMatchesDraws'],
+                'directMatchesLosses' => $leaderboardDb['directMatchesLosses'],
+                'directMatchesGoalsScored' => $leaderboardDb['directMatchesGoalsScored'],
+                'directMatchesGoalsConceded' => $leaderboardDb['directMatchesGoalsConceded'],
+                'annotation' => $leaderboardDb['annotation']
+            ];
+        }, $leaderboards);
+    }
 }

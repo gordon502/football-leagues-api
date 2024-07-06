@@ -209,6 +209,45 @@ final class TestAvailableResourcesMariaDB implements TestAvailableResourcesInter
         }, $articles);
     }
 
+    public function getLeaderboards(): array
+    {
+        $sql = 'SELECT * FROM leaderboard';
+        $stmt = $this->pdo->query($sql);
+        $leaderboards = $stmt->fetchAll();
+
+        return array_map(function ($leaderboardDb) {
+            return [
+                'id' => $leaderboardDb['id'],
+                'seasonId' => $leaderboardDb['season_id'],
+                'seasonTeamId' => $leaderboardDb['season_team_id'],
+                'place' => $leaderboardDb['place'],
+                'matchesPlayed' => $leaderboardDb['matches_played'],
+                'points' => $leaderboardDb['points'],
+                'wins' => $leaderboardDb['wins'],
+                'draws' => $leaderboardDb['draws'],
+                'losses' => $leaderboardDb['losses'],
+                'goalsScored' => $leaderboardDb['goals_scored'],
+                'goalsConceded' => $leaderboardDb['goals_conceded'],
+                'homeGoalsScored' => $leaderboardDb['home_goals_scored'],
+                'homeGoalsConceded' => $leaderboardDb['home_goals_conceded'],
+                'awayGoalsScored' => $leaderboardDb['away_goals_scored'],
+                'awayGoalsConceded' => $leaderboardDb['away_goals_conceded'],
+                'promotedToHigherDivision' => (bool) $leaderboardDb['promoted_to_higher_division'],
+                'eligibleForPromotionBargaining' => (bool) $leaderboardDb['eligible_for_promotion_bargaining'],
+                'eligibleForRetentionBargaining' => (bool) $leaderboardDb['eligible_for_retention_bargaining'],
+                'relegatedToLowerDivision' => (bool) $leaderboardDb['relegated_to_lower_division'],
+                'directMatchesPlayed' => $leaderboardDb['direct_matches_played'],
+                'directMatchesPoints' => $leaderboardDb['direct_matches_points'],
+                'directMatchesWins' => $leaderboardDb['direct_matches_wins'],
+                'directMatchesDraws' => $leaderboardDb['direct_matches_draws'],
+                'directMatchesLosses' => $leaderboardDb['direct_matches_losses'],
+                'directMatchesGoalsScored' => $leaderboardDb['direct_matches_goals_scored'],
+                'directMatchesGoalsConceded' => $leaderboardDb['direct_matches_goals_conceded'],
+                'annotation' => $leaderboardDb['annotation']
+            ];
+        }, $leaderboards);
+    }
+
     private function createPdo(): PDO
     {
         $dbUrl = $_ENV['DATABASE_URL'];
