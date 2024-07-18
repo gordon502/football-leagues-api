@@ -85,7 +85,7 @@ class Round implements RoundInterface
     public function setStandardStartDate(DateTimeInterface|string $standardStartDate): static
     {
         $this->standardStartDate = is_string($standardStartDate)
-            ? new DateTime($standardStartDate)
+            ? DateTime::createFromFormat('Y-m-d H:i:s', sprintf('%s 00:00:00', $standardStartDate))
             : $standardStartDate;
 
         return $this;
@@ -94,7 +94,7 @@ class Round implements RoundInterface
     public function setStandardEndDate(DateTimeInterface|string $standardEndDate): static
     {
         $this->standardEndDate = is_string($standardEndDate)
-            ? new DateTime($standardEndDate)
+            ? DateTime::createFromFormat('Y-m-d H:i:s', sprintf('%s 00:00:00', $standardEndDate))
             : $standardEndDate;
 
         return $this;

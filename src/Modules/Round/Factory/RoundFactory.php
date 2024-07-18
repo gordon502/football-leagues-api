@@ -7,6 +7,7 @@ use App\Modules\Round\Model\RoundCreatableInterface;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\Season\Repository\SeasonRepositoryInterface;
 use DateTime;
+use DateTimeInterface;
 use InvalidArgumentException;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -34,8 +35,14 @@ readonly class RoundFactory implements RoundFactoryInterface
         $model = new $modelClass();
 
         $model->setNumber($roundCreatable->getNumber());
-        $model->setStandardStartDate(DateTime::createFromFormat('Y-m-d', $roundCreatable->getStandardStartDate()));
-        $model->setStandardEndDate(DateTime::createFromFormat('Y-m-d', $roundCreatable->getStandardEndDate()));
+        $model->setStandardStartDate(DateTime::createFromFormat(DateTimeInterface::ATOM, sprintf(
+            '%sT00:00:00Z',
+            $roundCreatable->getStandardStartDate()
+        )));
+        $model->setStandardEndDate(DateTime::createFromFormat(DateTimeInterface::ATOM, sprintf(
+            '%sT00:00:00Z',
+            $roundCreatable->getStandardEndDate()
+        )));
 
         $season = $this->seasonRepository->findById($roundCreatable->getSeasonId());
         if (!$season) {
