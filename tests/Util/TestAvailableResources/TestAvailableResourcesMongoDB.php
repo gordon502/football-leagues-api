@@ -198,12 +198,18 @@ final class TestAvailableResourcesMongoDB implements TestAvailableResourcesInter
             /** @var BSONArray $seasonTeams */
             $seasonTeams = $articleDb['seasonTeams'];
 
+            /** @var UTCDateTime|null $postAt */
+            $postAt = $articleDb['postAt'];
+
             return [
                 'id' => $articleDb['_id'],
                 'title' => $articleDb['title'],
                 'content' => $articleDb['content'],
                 'draft' => (bool) $articleDb['draft'],
-                'postAt' => $articleDb['post_at'],
+                'postAt' => $postAt
+                    ?->toDateTime()
+                    ->setTimezone(new DateTimeZone('Europe/Warsaw'))
+                    ->format('Y-m-d H:i:s'),
                 'seasonTeamsId' => array_map(function ($seasonTeam) {
                     return $seasonTeam['$id'];
                 }, $seasonTeams->getArrayCopy()),
