@@ -3,6 +3,7 @@
 namespace App\Common\HttpQuery\Filter;
 
 use ReflectionClass;
+use ReflectionNamedType;
 
 use function trim;
 
@@ -31,17 +32,18 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
         foreach ($pairs as $pair) {
             $terms = explode(':', $pair);
 
-            if (count($terms) !== 3) {
+            if (count($terms) < 3) {
                 throw new HttpQueryFilterParserException($filterQuery);
             }
 
-            $objectFieldName = $terms[0];
+            $terms[2] = implode(':', array_slice($terms, 2));
+            $terms = array_slice($terms, 0, 3);
+
+            $objectFieldName = $this->extractInternalFieldName($terms[0]);
             $ucObjectFieldName = ucfirst($objectFieldName);
+            $getterMethod = $this->extractGetterMethod($reflection, $ucObjectFieldName);
 
-            $hasGetter = $reflection->hasMethod('get' . $ucObjectFieldName);
-            $hasIsser = $reflection->hasMethod('is' . $ucObjectFieldName);
-
-            if (!$hasGetter && !$hasIsser) {
+            if (!$getterMethod) {
                 throw new HttpQueryFilterParserException($filterQuery);
             }
 
@@ -49,17 +51,25 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
                 throw new HttpQueryFilterParserException($filterQuery);
             }
 
+            $filterValue = $this->convertValueBasedOnFieldType(
+                trim($terms[2], "'"),
+                $reflection,
+                $getterMethod
+            );
+
             $result[] = new HttpQueryFilter(
                 field: $objectFieldName,
-                operator: $this->convertOperator($terms[1]),
-                value: trim($terms[2], "'")
+                operator: $this->convertOperator($terms[1], $filterValue === null),
+                value: $filterValue,
+                isFieldReference: $objectFieldName !== $terms[0],
+                isValueDateTimeString: is_string($filterValue) && $this->isValueDateTimeType($filterValue),
             );
         }
 
         return $result;
     }
 
-    private function convertOperator(string $operator): string
+    private function convertOperator(string $operator, bool $isValueNull): string
     {
         if ($_ENV['DATABASE_IMPLEMENTATION'] === 'MongoDB') {
             return match ($operator) {
@@ -75,7 +85,7 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
         }
 
         return match ($operator) {
-            'eq' => '=',
+            'eq' => $isValueNull ? 'IS NULL' : '=',
             'ne' => '!=',
             'gt' => '>',
             'lt' => '<',
@@ -84,5 +94,67 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
             'like' => 'LIKE',
             default => throw new HttpQueryFilterParserException('Invalid operator'),
         };
+    }
+
+    private function extractInternalFieldName(string $fieldName): string
+    {
+        if (str_ends_with(lcfirst($fieldName), 'Id')) {
+            return substr($fieldName, 0, -2);
+        }
+
+        return $fieldName;
+    }
+
+    private function extractGetterMethod(ReflectionClass $reflection, string $ucObjectFieldName): ?string
+    {
+        if ($reflection->hasMethod('get' . $ucObjectFieldName)) {
+            return 'get' . $ucObjectFieldName;
+        }
+
+        if ($reflection->hasMethod('is' . $ucObjectFieldName)) {
+            return 'is' . $ucObjectFieldName;
+        }
+
+        return null;
+    }
+
+    private function convertValueBasedOnFieldType(
+        string $value,
+        ReflectionClass $modelClass,
+        string $getterMethod
+    ): string|int|null {
+        $returnType = $modelClass->getMethod($getterMethod)->getReturnType();
+
+        if ($returnType === null) {
+            return $value;
+        }
+
+        if ($value === 'null' && $returnType->allowsNull()) {
+            return null;
+        }
+
+        if ($returnType instanceof ReflectionNamedType) {
+            if ($returnType->getName() === 'string') {
+                return $value;
+            }
+
+            if ($returnType->getName() === 'int') {
+                return (int) $value;
+            }
+
+            if ($returnType->getName() === 'bool') {
+                return match ($value) {
+                    'false' => false,
+                    default => true,
+                };
+            }
+        }
+
+        return $value;
+    }
+
+    private function isValueDateTimeType(string $value): bool
+    {
+        return (bool) strtotime($value);
     }
 }

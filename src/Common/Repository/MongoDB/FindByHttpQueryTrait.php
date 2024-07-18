@@ -6,6 +6,7 @@ use App\Common\HttpQuery\HttpQuery;
 use App\Common\Pagination\PaginatedQueryResultInterface;
 use App\Common\Pagination\PaginationOutOfBoundException;
 use App\Common\Repository\PaginatedQueryResult;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use MongoDB\BSON\Regex;
 
@@ -14,6 +15,9 @@ use MongoDB\BSON\Regex;
  */
 trait FindByHttpQueryTrait
 {
+    /**
+     * @throws MongoDBException
+     */
     public function findByHttpQuery(HttpQuery $query): PaginatedQueryResultInterface
     {
         $qb = $this->createQueryBuilder();
@@ -26,8 +30,18 @@ trait FindByHttpQueryTrait
                 continue;
             }
 
+            $fieldToFilter = $filter->field;
+            if ($filter->isFieldReference) {
+                $fieldToFilter = $filter->field . '.$id';
+            }
+
+            $value = $filter->value;
+            if ($filter->isValueDateTimeString && !str_contains($value, ':')) {
+                $value = $filter->value . 'T00:00:00Z';
+            }
+
             $qb
-                ->field($filter->field)->{$filter->operator}($filter->value);
+                ->field($fieldToFilter)->{$filter->operator}($value);
         }
 
         foreach ($query->sort as $sort) {

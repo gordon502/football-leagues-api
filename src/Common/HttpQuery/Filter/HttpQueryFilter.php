@@ -7,7 +7,9 @@ readonly class HttpQueryFilter
     public function __construct(
         public string $field,
         public string $operator,
-        public string $value
+        public string|int|null $value,
+        public bool $isFieldReference,
+        public bool $isValueDateTimeString,
     ) {
     }
 }

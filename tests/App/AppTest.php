@@ -18,6 +18,7 @@ use Tests\Modules\OrganizationalUnit\OrganizationalUnitControllerTest;
 use Tests\Modules\SeasonTeam\SeasonTeamControllerTest;
 use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
+use Tests\Pagination\Filter\FilterTest;
 use Tests\Util\TestDatabaseTypeEnum;
 
 final class AppTest extends TestCase
@@ -46,7 +47,8 @@ final class AppTest extends TestCase
     {
         self::replaceDatabaseImplementation(TestDatabaseTypeEnum::MariaDB);
 
-        $this->runTests(TestDatabaseTypeEnum::MariaDB);
+        $this->runControllerTests(TestDatabaseTypeEnum::MariaDB);
+        $this->runPaginationTests(TestDatabaseTypeEnum::MariaDB);
     }
 
     #[Test]
@@ -55,10 +57,11 @@ final class AppTest extends TestCase
     {
         self::replaceDatabaseImplementation(TestDatabaseTypeEnum::MongoDB);
 
-        $this->runTests(TestDatabaseTypeEnum::MongoDB);
+        $this->runControllerTests(TestDatabaseTypeEnum::MongoDB);
+        $this->runPaginationTests(TestDatabaseTypeEnum::MongoDB);
     }
 
-    private function runTests(TestDatabaseTypeEnum $databaseTypeEnum): void
+    private function runControllerTests(TestDatabaseTypeEnum $databaseTypeEnum): void
     {
         $userControllerTest = new UserControllerTest(self::$client, $databaseTypeEnum);
         $organizationalUnitControllerTest = new OrganizationalUnitControllerTest(self::$client, $databaseTypeEnum);
@@ -83,6 +86,13 @@ final class AppTest extends TestCase
         $gameControllerTest->runTests();
         $gameEventControllerTest->runTests();
         $leaderboardControllerTest->runTests();
+    }
+
+    private function runPaginationTests(TestDatabaseTypeEnum $databaseTypeEnum): void
+    {
+        $filterTest = new FilterTest(self::$client, $databaseTypeEnum);
+
+        $filterTest->runTests();
     }
 
     private static function setUpMariaDB(): void

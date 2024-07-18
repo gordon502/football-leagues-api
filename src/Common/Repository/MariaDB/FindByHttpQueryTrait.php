@@ -18,6 +18,21 @@ trait FindByHttpQueryTrait
         $qb = $this->createQueryBuilder('filter');
 
         foreach ($query->filters as $filter) {
+            if ($filter->operator === 'IS NULL' || $filter->operator === 'IS NOT NULL') {
+                $qb->andWhere("filter.{$filter->field} {$filter->operator}");
+
+                continue;
+            }
+
+            if ($filter->isFieldReference) {
+                $qb
+                    ->join("filter.{$filter->field}", $filter->field)
+                    ->andWhere("{$filter->field}.id = :{$filter->field}")
+                    ->setParameter($filter->field, $filter->value);
+
+                continue;
+            }
+
             $qb
                 ->andWhere("filter.{$filter->field} {$filter->operator} :{$filter->field}")
                 ->setParameter($filter->field, $filter->value);
