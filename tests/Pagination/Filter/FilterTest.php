@@ -4,6 +4,7 @@ namespace Tests\Pagination\Filter;
 
 use GuzzleHttp\Client;
 use Tests\Pagination\Filter\Operator\FilterEqualOperatorTest;
+use Tests\Pagination\Filter\Operator\FilterGreaterThanOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterNotEqualOperatorTest;
 use Tests\Util\RunTests\RunTestsInterface;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
@@ -28,8 +29,10 @@ readonly class FilterTest implements RunTestsInterface
     {
         $filterEqualOperatorTest = new FilterEqualOperatorTest($this->client, $this->availableResources);
         $filterNotEqualOperatorTest = new FilterNotEqualOperatorTest($this->client, $this->availableResources);
+        $filterGreaterThanOperatorTest = new FilterGreaterThanOperatorTest($this->client, $this->availableResources);
 
         $filterEqualOperatorTest->runTests();
         $filterNotEqualOperatorTest->runTests();
+        $filterGreaterThanOperatorTest->runTests();
     }
 }
