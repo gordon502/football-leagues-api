@@ -5,7 +5,8 @@ namespace Tests\Modules;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 use Psr\Http\Message\ResponseInterface;
-use Tests\Util\TestAvailableResources\TestAvailableResources;
+use Tests\Util\RunTests\RunTestsInterface;
+use Tests\Util\RunTests\RunTestsTrait;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesMariaDB;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesMongoDB;
@@ -13,8 +14,10 @@ use Tests\Util\TestDatabaseTypeEnum;
 use Tests\Util\TestLoginUtil;
 
 // TODO: Collection tests!
-abstract class AbstractControllerTest extends Assert
+abstract class AbstractControllerTest extends Assert implements RunTestsInterface
 {
+    use RunTestsTrait;
+
     protected readonly Client $client;
 
     protected readonly TestLoginUtil $loginUtil;
@@ -32,28 +35,6 @@ abstract class AbstractControllerTest extends Assert
         $this->client = $client;
         $this->availableResources = $availableResources;
         $this->loginUtil = new TestLoginUtil($client, $availableResources);
-    }
-
-    public function runTests(): void
-    {
-        $reflection = new \ReflectionClass(static::class);
-
-        echo $reflection->getName() . PHP_EOL;
-
-        $this->testShouldReturnInitialCollection();
-        echo "\t✅  testShouldReturnInitialCollection" . PHP_EOL;
-
-        foreach ($reflection->getMethods() as $method) {
-            if ($method->name === 'testShouldReturnInitialCollection') {
-                continue;
-            }
-
-            if (str_starts_with($method->name, 'testShould')) {
-                $method->invoke($this);
-
-                echo "\t✅  {$method->name}" . PHP_EOL;
-            }
-        }
     }
 
     protected function testShouldReturnInitialCollection(): void
