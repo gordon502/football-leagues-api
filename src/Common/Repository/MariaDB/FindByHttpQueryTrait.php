@@ -26,8 +26,8 @@ trait FindByHttpQueryTrait
 
             if ($filter->isFieldReference) {
                 $qb
-                    ->join("filter.{$filter->field}", $filter->field)
-                    ->andWhere("{$filter->field}.id = :{$filter->field}")
+                    ->leftJoin("filter.{$filter->field}", $filter->field)
+                    ->andWhere("{$filter->field}.id {$filter->operator} :{$filter->field}")
                     ->setParameter($filter->field, $filter->value);
 
                 continue;

@@ -4,6 +4,7 @@ namespace Tests\Pagination\Filter;
 
 use GuzzleHttp\Client;
 use Tests\Pagination\Filter\Operator\FilterEqualOperatorTest;
+use Tests\Pagination\Filter\Operator\FilterNotEqualOperatorTest;
 use Tests\Util\RunTests\RunTestsInterface;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesMariaDB;
@@ -26,7 +27,9 @@ readonly class FilterTest implements RunTestsInterface
     public function runTests(): void
     {
         $filterEqualOperatorTest = new FilterEqualOperatorTest($this->client, $this->availableResources);
+        $filterNotEqualOperatorTest = new FilterNotEqualOperatorTest($this->client, $this->availableResources);
 
         $filterEqualOperatorTest->runTests();
+        $filterNotEqualOperatorTest->runTests();
     }
 }
