@@ -19,6 +19,7 @@ use Tests\Modules\SeasonTeam\SeasonTeamControllerTest;
 use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
 use Tests\Pagination\Filter\FilterTest;
+use Tests\Pagination\Paginate\PaginateTest;
 use Tests\Pagination\Sort\SortTest;
 use Tests\Util\TestDatabaseTypeEnum;
 
@@ -93,9 +94,11 @@ final class AppTest extends TestCase
     {
         $filterTest = new FilterTest(self::$client, $databaseTypeEnum);
         $sortTest = new SortTest(self::$client, $databaseTypeEnum);
+        $paginateTest = new PaginateTest(self::$client, $databaseTypeEnum);
 
         $filterTest->runTests();
         $sortTest->runTests();
+        $paginateTest->runTests();
     }
 
     private static function setUpMariaDB(): void
