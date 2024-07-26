@@ -8,6 +8,7 @@ use Tests\Pagination\Filter\Operator\FilterGreaterThanEqualOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterGreaterThanOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterLessThanEqualOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterLessThanOperatorTest;
+use Tests\Pagination\Filter\Operator\FilterLikeOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterNotEqualOperatorTest;
 use Tests\Util\RunTests\RunTestsInterface;
 use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
@@ -42,6 +43,7 @@ readonly class FilterTest implements RunTestsInterface
             $this->client,
             $this->availableResources
         );
+        $filterLikeOperatorTest = new FilterLikeOperatorTest($this->client, $this->availableResources);
 
         $filterEqualOperatorTest->runTests();
         $filterNotEqualOperatorTest->runTests();
@@ -49,5 +51,6 @@ readonly class FilterTest implements RunTestsInterface
         $filterGreaterThanEqualOperatorTest->runTests();
         $filterLessThanOperatorTest->runTests();
         $filterLessThanEqualOperatorTest->runTests();
+        $filterLikeOperatorTest->runTests();
     }
 }

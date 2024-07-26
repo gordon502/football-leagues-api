@@ -158,7 +158,7 @@ final class TestAvailableResourcesMongoDB implements TestAvailableResourcesInter
                 'roundId' => $gameDb['round']['$id'],
                 'seasonTeam1Id' => $gameDb['seasonTeam1']['$id'],
                 'seasonTeam2Id' => $gameDb['seasonTeam2']['$id'],
-                'date' => $date->toDateTime()->setTimezone(new DateTimeZone('Europe/Warsaw'))->format('Y-m-d H:i:s'),
+                'date' => $date->toDateTime()->setTimezone(new DateTimeZone(date_default_timezone_get()))->format('Y-m-d H:i:s'),
                 'stadium' => $gameDb['stadium'],
                 'team1ScoreHalf' => $gameDb['team1ScoreHalf'],
                 'team2ScoreHalf' => $gameDb['team2ScoreHalf'],
@@ -208,7 +208,7 @@ final class TestAvailableResourcesMongoDB implements TestAvailableResourcesInter
                 'draft' => (bool) $articleDb['draft'],
                 'postAt' => $postAt
                     ?->toDateTime()
-                    ->setTimezone(new DateTimeZone('Europe/Warsaw'))
+                    ->setTimezone(new DateTimeZone(date_default_timezone_get()))
                     ->format('Y-m-d H:i:s'),
                 'seasonTeamsId' => array_map(function ($seasonTeam) {
                     return $seasonTeam['$id'];
