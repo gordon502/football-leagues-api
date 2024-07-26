@@ -9,6 +9,7 @@ readonly class HttpQueryFilter
         public HttpQueryFilterOperatorEnum $operator,
         public string|int|bool|null $value,
         public bool $isFieldReference,
+        public bool $isFieldNotStringRegexable,
         public bool $isValueDateTimeString,
     ) {
     }

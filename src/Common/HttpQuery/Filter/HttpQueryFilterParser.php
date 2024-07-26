@@ -51,17 +51,28 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
                 throw new HttpQueryFilterParserException($filterQuery);
             }
 
+
+            $trimmedValue = trim($terms[2], "'");
+
+            $isValueAllowableNull = $this->isValueAllowableNull($trimmedValue, $reflection, $getterMethod);
+            $operator = $this->convertOperator($terms[1], $isValueAllowableNull);
+            $isOperatorLike =
+                $operator === HttpQueryFilterOperatorEnum::MARIA_DB_LIKE
+                || $operator === HttpQueryFilterOperatorEnum::MONGO_DB_LIKE;
+
             $filterValue = $this->convertValueBasedOnFieldType(
-                trim($terms[2], "'"),
+                $trimmedValue,
                 $reflection,
-                $getterMethod
+                $getterMethod,
+                $isOperatorLike
             );
 
             $result[] = new HttpQueryFilter(
                 field: $objectFieldName,
-                operator: $this->convertOperator($terms[1], $filterValue === null),
+                operator: $operator,
                 value: $filterValue,
                 isFieldReference: $objectFieldName !== $terms[0],
+                isFieldNotStringRegexable: $this->isFieldNotStringRegexable($reflection, $getterMethod),
                 isValueDateTimeString: is_string($filterValue) && $this->isValueDateTimeType($filterValue),
             );
         }
@@ -130,28 +141,39 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
         return null;
     }
 
-    private function convertValueBasedOnFieldType(
+    private function isValueAllowableNull(
         string $value,
         ReflectionClass $modelClass,
         string $getterMethod
+    ): bool {
+        $returnType = $modelClass->getMethod($getterMethod)->getReturnType();
+
+        if ($value === 'null' && $returnType?->allowsNull()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function convertValueBasedOnFieldType(
+        string $value,
+        ReflectionClass $modelClass,
+        string $getterMethod,
+        bool $likeOperator = false
     ): string|int|bool|null {
         $returnType = $modelClass->getMethod($getterMethod)->getReturnType();
+
+        if ($this->isValueAllowableNull($value, $modelClass, $getterMethod)) {
+            return null;
+        }
 
         if ($returnType === null) {
             return $value;
         }
 
-        if ($value === 'null' && $returnType->allowsNull()) {
-            return null;
-        }
-
         if ($returnType instanceof ReflectionNamedType) {
             if ($returnType->getName() === 'string') {
                 return $value;
-            }
-
-            if ($returnType->getName() === 'int') {
-                return (int) $value;
             }
 
             if ($returnType->getName() === 'bool') {
@@ -160,9 +182,34 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
                     default => true,
                 };
             }
+
+            if ($likeOperator) {
+                return $value;
+            }
+
+            if ($returnType->getName() === 'int') {
+                return (int) $value;
+            }
         }
 
         return $value;
+    }
+
+    private function isFieldNotStringRegexable(
+        ReflectionClass $modelClass,
+        string $getterMethod
+    ): bool {
+        $returnType = $modelClass->getMethod($getterMethod)->getReturnType();
+
+        if ($returnType === null) {
+            return false;
+        }
+
+        if ($returnType instanceof ReflectionNamedType) {
+            return $returnType->getName() !== 'string';
+        }
+
+        return false;
     }
 
     private function isValueDateTimeType(string $value): bool
