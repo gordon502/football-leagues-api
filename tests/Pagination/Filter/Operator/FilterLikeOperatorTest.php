@@ -8,15 +8,15 @@ use Tests\Modules\Round\RoundControllerTest;
 use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
 use Tests\Pagination\Filter\AbstractFilterOperatorTest;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
+use Tests\Util\TestDatabaseTypeEnum;
 
 class FilterLikeOperatorTest extends AbstractFilterOperatorTest
 {
     public function __construct(
         Client $client,
-        TestAvailableResourcesInterface $availableResources
+        TestDatabaseTypeEnum $databaseTypeEnum
     ) {
-        parent::__construct($client, $availableResources);
+        parent::__construct($client, $databaseTypeEnum);
     }
 
     protected function testShouldAllowFilterForOwnStringField(): void

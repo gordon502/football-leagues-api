@@ -2,30 +2,14 @@
 
 namespace Tests\Pagination\Paginate;
 
-use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 use Tests\Modules\User\UserControllerTest;
 use Tests\Util\RunTests\RunTestsInterface;
 use Tests\Util\RunTests\RunTestsTrait;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesMariaDB;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesMongoDB;
-use Tests\Util\TestDatabaseTypeEnum;
 
 class PaginateTest extends Assert implements RunTestsInterface
 {
     use RunTestsTrait;
-
-    private readonly TestAvailableResourcesInterface $availableResources;
-
-    public function __construct(
-        private readonly Client $client,
-        TestDatabaseTypeEnum $databaseType
-    ) {
-        $this->availableResources = $databaseType->value === TestDatabaseTypeEnum::MariaDB->value
-            ? new TestAvailableResourcesMariaDB()
-            : new TestAvailableResourcesMongoDB();
-    }
 
     public function testShouldCheckIfPaginationWorks(): void
     {

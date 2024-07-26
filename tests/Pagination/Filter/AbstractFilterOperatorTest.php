@@ -2,21 +2,13 @@
 
 namespace Tests\Pagination\Filter;
 
-use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 use Tests\Util\RunTests\RunTestsInterface;
 use Tests\Util\RunTests\RunTestsTrait;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
 
 abstract class AbstractFilterOperatorTest extends Assert implements RunTestsInterface
 {
     use RunTestsTrait;
-
-    public function __construct(
-        protected readonly Client $client,
-        protected readonly TestAvailableResourcesInterface $availableResources
-    ) {
-    }
 
     abstract protected function testShouldAllowFilterForOwnStringField(): void;
 

@@ -9,7 +9,6 @@ use Tests\Modules\AbstractControllerTest;
 use Tests\Util\TestDatabaseTypeEnum;
 use Tests\Util\TestLoginUtil;
 
-// TODO: Collection tests!
 class UserControllerTest extends AbstractControllerTest
 {
     public const DEFAULT_ENDPOINT = 'users';

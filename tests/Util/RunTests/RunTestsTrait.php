@@ -2,8 +2,25 @@
 
 namespace Tests\Util\RunTests;
 
+use GuzzleHttp\Client;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesMariaDB;
+use Tests\Util\TestAvailableResources\TestAvailableResourcesMongoDB;
+use Tests\Util\TestDatabaseTypeEnum;
+
 trait RunTestsTrait
 {
+    protected readonly TestAvailableResourcesInterface $availableResources;
+
+    public function __construct(
+        protected readonly Client $client,
+        protected readonly TestDatabaseTypeEnum $databaseType
+    ) {
+        $this->availableResources = $databaseType->value === TestDatabaseTypeEnum::MariaDB->value
+            ? new TestAvailableResourcesMariaDB()
+            : new TestAvailableResourcesMongoDB();
+    }
+
     public function runTests(): void
     {
         $reflection = new \ReflectionClass(static::class);

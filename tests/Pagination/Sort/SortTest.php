@@ -2,7 +2,6 @@
 
 namespace Tests\Pagination\Sort;
 
-use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 use Tests\Modules\Article\ArticleControllerTest;
 use Tests\Modules\Round\RoundControllerTest;
@@ -10,25 +9,10 @@ use Tests\Modules\Team\TeamControllerTest;
 use Tests\Modules\User\UserControllerTest;
 use Tests\Util\RunTests\RunTestsInterface;
 use Tests\Util\RunTests\RunTestsTrait;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesInterface;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesMariaDB;
-use Tests\Util\TestAvailableResources\TestAvailableResourcesMongoDB;
-use Tests\Util\TestDatabaseTypeEnum;
 
 class SortTest extends Assert implements RunTestsInterface
 {
     use RunTestsTrait;
-
-    private TestAvailableResourcesInterface $availableResources;
-
-    public function __construct(
-        private Client $client,
-        TestDatabaseTypeEnum $databaseType
-    ) {
-        $this->availableResources = $databaseType->value === TestDatabaseTypeEnum::MariaDB->value
-            ? new TestAvailableResourcesMariaDB()
-            : new TestAvailableResourcesMongoDB();
-    }
 
     public function testShouldAllowSortByOwnStringField(): void
     {

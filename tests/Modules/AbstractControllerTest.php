@@ -13,7 +13,6 @@ use Tests\Util\TestAvailableResources\TestAvailableResourcesMongoDB;
 use Tests\Util\TestDatabaseTypeEnum;
 use Tests\Util\TestLoginUtil;
 
-// TODO: Collection tests!
 abstract class AbstractControllerTest extends Assert implements RunTestsInterface
 {
     use RunTestsTrait;
