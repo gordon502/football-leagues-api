@@ -2,6 +2,7 @@
 
 namespace App\Common\Repository\MongoDB;
 
+use App\Common\HttpQuery\Filter\HttpQueryFilterOperatorEnum;
 use App\Common\HttpQuery\HttpQuery;
 use App\Common\Pagination\PaginatedQueryResultInterface;
 use App\Common\Pagination\PaginationOutOfBoundException;
@@ -23,7 +24,7 @@ trait FindByHttpQueryTrait
         $qb = $this->createQueryBuilder();
 
         foreach ($query->filters as $filter) {
-            if ($filter->operator === '$regex') {
+            if ($filter->operator === HttpQueryFilterOperatorEnum::MONGO_DB_LIKE) {
                 $qb
                     ->field($filter->field)
                     ->equals($this->sqlLikeToRegex($filter->value));
@@ -41,7 +42,7 @@ trait FindByHttpQueryTrait
             }
 
             $qb
-                ->field($fieldToFilter)->{$filter->operator}($value);
+                ->field($fieldToFilter)->{$filter->operator->value}($value);
         }
 
         foreach ($query->sort as $sort) {

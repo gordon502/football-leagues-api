@@ -69,29 +69,41 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
         return $result;
     }
 
-    private function convertOperator(string $operator, bool $isValueNull): string
+    private function convertOperator(string $operator, bool $isValueNull): HttpQueryFilterOperatorEnum
     {
         if ($_ENV['DATABASE_IMPLEMENTATION'] === 'MongoDB') {
             return match ($operator) {
-                'eq' => 'equals',
-                'ne' => 'notEqual',
-                'gt' => 'gt',
-                'lt' => 'lt',
-                'ge' => 'gte',
-                'le' => 'lte',
-                'like' => '$regex',
+                'eq' => HttpQueryFilterOperatorEnum::MONGO_DB_EQ,
+                'ne' => HttpQueryFilterOperatorEnum::MONGO_DB_NE,
+                'gt' => HttpQueryFilterOperatorEnum::MONGO_DB_GT,
+                'lt' => HttpQueryFilterOperatorEnum::MONGO_DB_LT,
+                'ge' => HttpQueryFilterOperatorEnum::MONGO_DB_GE,
+                'le' => HttpQueryFilterOperatorEnum::MONGO_DB_LE,
+                'like' => HttpQueryFilterOperatorEnum::MONGO_DB_LIKE,
                 default => throw new HttpQueryFilterParserException('Invalid operator'),
             };
         }
 
         return match ($operator) {
-            'eq' => $isValueNull ? 'IS NULL' : '=',
-            'ne' => $isValueNull ? 'IS NOT NULL' : '!=',
-            'gt' => '>',
-            'lt' => '<',
-            'ge' => $isValueNull ? '1 = 1' : '>=',
-            'le' => '<=',
-            'like' => 'LIKE',
+            'eq' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_IS_NULL
+                : HttpQueryFilterOperatorEnum::MARIA_DB_EQ,
+            'ne' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_IS_NOT_NULL
+                : HttpQueryFilterOperatorEnum::MARIA_DB_NE,
+            'gt' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_IS_NOT_NULL
+                : HttpQueryFilterOperatorEnum::MARIA_DB_GT,
+            'lt' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_ALWAYS_FALSE
+                : HttpQueryFilterOperatorEnum::MARIA_DB_LT,
+            'ge' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_ALWAYS_TRUE
+                : HttpQueryFilterOperatorEnum::MARIA_DB_GE,
+            'le' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_IS_NULL
+                : HttpQueryFilterOperatorEnum::MARIA_DB_LE,
+            'like' => HttpQueryFilterOperatorEnum::MARIA_DB_LIKE,
             default => throw new HttpQueryFilterParserException('Invalid operator'),
         };
     }

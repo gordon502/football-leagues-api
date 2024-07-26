@@ -2,6 +2,7 @@
 
 namespace App\Common\Repository\MariaDB;
 
+use App\Common\HttpQuery\Filter\HttpQueryFilterOperatorEnum;
 use App\Common\HttpQuery\HttpQuery;
 use App\Common\Pagination\PaginatedQueryResultInterface;
 use App\Common\Pagination\PaginationOutOfBoundException;
@@ -18,14 +19,23 @@ trait FindByHttpQueryTrait
         $qb = $this->createQueryBuilder('filter');
 
         foreach ($query->filters as $filter) {
-            if ($filter->operator === 'IS NULL' || $filter->operator === 'IS NOT NULL') {
-                $qb->andWhere("filter.{$filter->field} {$filter->operator}");
+            if (
+                $filter->operator === HttpQueryFilterOperatorEnum::MARIA_DB_IS_NULL
+                || $filter->operator === HttpQueryFilterOperatorEnum::MARIA_DB_IS_NOT_NULL
+            ) {
+                $qb->andWhere("filter.{$filter->field} {$filter->operator->value}");
 
                 continue;
             }
 
-            if ($filter->operator === '1 = 1') {
-                $qb->andWhere("1 = 1");
+            if ($filter->operator === HttpQueryFilterOperatorEnum::MARIA_DB_ALWAYS_TRUE) {
+                $qb->andWhere(HttpQueryFilterOperatorEnum::MARIA_DB_ALWAYS_TRUE->value);
+
+                continue;
+            }
+
+            if ($filter->operator === HttpQueryFilterOperatorEnum::MARIA_DB_ALWAYS_FALSE) {
+                $qb->andWhere(HttpQueryFilterOperatorEnum::MARIA_DB_ALWAYS_FALSE->value);
 
                 continue;
             }
@@ -33,14 +43,14 @@ trait FindByHttpQueryTrait
             if ($filter->isFieldReference) {
                 $qb
                     ->leftJoin("filter.{$filter->field}", $filter->field)
-                    ->andWhere("{$filter->field}.id {$filter->operator} :{$filter->field}")
+                    ->andWhere("{$filter->field}.id {$filter->operator->value} :{$filter->field}")
                     ->setParameter($filter->field, $filter->value);
 
                 continue;
             }
 
             $qb
-                ->andWhere("filter.{$filter->field} {$filter->operator} :{$filter->field}")
+                ->andWhere("filter.{$filter->field} {$filter->operator->value} :{$filter->field}")
                 ->setParameter($filter->field, $filter->value);
         }
 
