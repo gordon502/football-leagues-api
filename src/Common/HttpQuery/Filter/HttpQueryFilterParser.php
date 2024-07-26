@@ -114,7 +114,9 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
             'le' => $isValueNull
                 ? HttpQueryFilterOperatorEnum::MARIA_DB_IS_NULL
                 : HttpQueryFilterOperatorEnum::MARIA_DB_LE,
-            'like' => HttpQueryFilterOperatorEnum::MARIA_DB_LIKE,
+            'like' => $isValueNull
+                ? HttpQueryFilterOperatorEnum::MARIA_DB_IS_NULL
+                : HttpQueryFilterOperatorEnum::MARIA_DB_LIKE,
             default => throw new HttpQueryFilterParserException('Invalid operator'),
         };
     }
