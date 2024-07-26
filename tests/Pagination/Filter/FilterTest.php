@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Tests\Pagination\Filter\Operator\FilterEqualOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterGreaterThanEqualOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterGreaterThanOperatorTest;
+use Tests\Pagination\Filter\Operator\FilterLessThanEqualOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterLessThanOperatorTest;
 use Tests\Pagination\Filter\Operator\FilterNotEqualOperatorTest;
 use Tests\Util\RunTests\RunTestsInterface;
@@ -37,11 +38,16 @@ readonly class FilterTest implements RunTestsInterface
             $this->availableResources
         );
         $filterLessThanOperatorTest = new FilterLessThanOperatorTest($this->client, $this->availableResources);
+        $filterLessThanEqualOperatorTest = new FilterLessThanEqualOperatorTest(
+            $this->client,
+            $this->availableResources
+        );
 
         $filterEqualOperatorTest->runTests();
         $filterNotEqualOperatorTest->runTests();
         $filterGreaterThanOperatorTest->runTests();
         $filterGreaterThanEqualOperatorTest->runTests();
         $filterLessThanOperatorTest->runTests();
+        $filterLessThanEqualOperatorTest->runTests();
     }
 }
