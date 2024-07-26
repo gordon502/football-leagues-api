@@ -32,7 +32,7 @@ class HttpQuerySortParser implements HttpQuerySortParserInterface
                 throw new HttpQuerySortParserException($sortQuery);
             }
 
-            $objectFieldName = $terms[0];
+            $objectFieldName = $this->extractInternalFieldName($terms[0]);
 
             $hasGetter = $reflection->hasMethod('get' . ucfirst($objectFieldName));
             $hasIsser = $reflection->hasMethod('is' . ucfirst($objectFieldName));
@@ -47,9 +47,19 @@ class HttpQuerySortParser implements HttpQuerySortParserInterface
             $result[] = new HttpQuerySort(
                 field: $objectFieldName,
                 direction: $terms[1],
+                isFieldReference: $objectFieldName !== $terms[0]
             );
         }
 
         return $result;
+    }
+
+    private function extractInternalFieldName(string $fieldName): string
+    {
+        if (str_ends_with(lcfirst($fieldName), 'Id')) {
+            return substr($fieldName, 0, -2);
+        }
+
+        return $fieldName;
     }
 }

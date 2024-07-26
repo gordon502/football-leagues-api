@@ -55,6 +55,14 @@ trait FindByHttpQueryTrait
         }
 
         foreach ($query->sort as $sort) {
+            if ($sort->isFieldReference) {
+                $qb
+                    ->leftJoin("filter.{$sort->field}", $sort->field)
+                    ->addOrderBy("{$sort->field}.id", $sort->direction);
+
+                continue;
+            }
+
             $qb
                 ->addOrderBy("filter.{$sort->field}", $sort->direction);
         }
