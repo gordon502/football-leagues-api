@@ -24,6 +24,12 @@ trait FindByHttpQueryTrait
                 continue;
             }
 
+            if ($filter->operator === '1 = 1') {
+                $qb->andWhere("1 = 1");
+
+                continue;
+            }
+
             if ($filter->isFieldReference) {
                 $qb
                     ->leftJoin("filter.{$filter->field}", $filter->field)

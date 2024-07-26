@@ -86,10 +86,10 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
 
         return match ($operator) {
             'eq' => $isValueNull ? 'IS NULL' : '=',
-            'ne' => '!=',
+            'ne' => $isValueNull ? 'IS NOT NULL' : '!=',
             'gt' => '>',
             'lt' => '<',
-            'ge' => '>=',
+            'ge' => $isValueNull ? '1 = 1' : '>=',
             'le' => '<=',
             'like' => 'LIKE',
             default => throw new HttpQueryFilterParserException('Invalid operator'),
@@ -122,7 +122,7 @@ class HttpQueryFilterParser implements HttpQueryFilterParserInterface
         string $value,
         ReflectionClass $modelClass,
         string $getterMethod
-    ): string|int|null {
+    ): string|int|bool|null {
         $returnType = $modelClass->getMethod($getterMethod)->getReturnType();
 
         if ($returnType === null) {
