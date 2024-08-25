@@ -2,9 +2,10 @@
 
 namespace App\Modules\League\Repository;
 
-use App\Common\Repository\DeletableByIdInterface;
-use App\Common\Repository\FindableByIdInterface;
+use App\Common\Repository\HybridModelRepositoryInterface;
+use App\Modules\League\Model\LeagueInterface;
 
-interface LeagueRepositoryInterface extends FindableByIdInterface, DeletableByIdInterface
+interface LeagueRepositoryInterface extends HybridModelRepositoryInterface
 {
+    public function findById(string $id): ?LeagueInterface;
 }

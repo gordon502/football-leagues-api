@@ -31,12 +31,16 @@ class ArticleRepository extends DocumentRepository implements ArticleRepositoryI
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        ArticleCreatableInterface $articleCreatable
-    ): ArticleInterface {
-        /** @var ArticleInterface $article */
+    public function create(object $object): ArticleInterface
+    {
+        if (!$object instanceof ArticleCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . ArticleCreatableInterface::class
+            );
+        }
+
         $article = $this->articleFactory->create(
-            $articleCreatable,
+            $object,
             Article::class
         );
 

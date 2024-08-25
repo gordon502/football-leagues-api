@@ -31,12 +31,16 @@ class OrganizationalUnitRepository extends DocumentRepository implements Organiz
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        OrganizationalUnitCreatableInterface $organizationalUnitCreatable
-    ): OrganizationalUnitInterface {
-        /** @var OrganizationalUnit $organizationalUnit */
+    public function create(object $object): OrganizationalUnitInterface
+    {
+        if (!$object instanceof OrganizationalUnitCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . OrganizationalUnitCreatableInterface::class
+            );
+        }
+
         $organizationalUnit = $this->organizationalUnitFactory->create(
-            $organizationalUnitCreatable,
+            $object,
             OrganizationalUnit::class
         );
 

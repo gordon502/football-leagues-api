@@ -32,12 +32,16 @@ class LeaderboardRepository extends DocumentRepository implements LeaderboardRep
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        LeaderboardCreatableInterface $leaderboardCreatable
-    ): LeaderboardInterface {
-        /** @var Leaderboard $leaderboard */
+    public function create(object $object): LeaderboardInterface
+    {
+        if (!$object instanceof LeaderboardCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . LeaderboardCreatableInterface::class
+            );
+        }
+
         $leaderboard = $this->leaderboardFactory->create(
-            $leaderboardCreatable,
+            $object,
             Leaderboard::class
         );
 

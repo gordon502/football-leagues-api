@@ -31,12 +31,16 @@ class TeamRepository extends DocumentRepository implements TeamRepositoryInterfa
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        TeamCreatableInterface $teamCreatable
-    ): TeamInterface {
-        /** @var Team $team */
+    public function create(object $object): TeamInterface
+    {
+        if (!$object instanceof TeamCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . TeamCreatableInterface::class
+            );
+        }
+
         $team = $this->teamFactory->create(
-            $teamCreatable,
+            $object,
             Team::class
         );
 

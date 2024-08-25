@@ -28,12 +28,16 @@ class SeasonTeamRepository extends ServiceEntityRepository implements SeasonTeam
         parent::__construct($registry, SeasonTeam::class);
     }
 
-    public function create(
-        SeasonTeamCreatableInterface $seasonTeamCreatable
-    ): SeasonTeamInterface {
-        /** @var SeasonTeam $seasonTeam */
+    public function create(object $object): SeasonTeamInterface
+    {
+        if (!$object instanceof SeasonTeamCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . SeasonTeamCreatableInterface::class
+            );
+        }
+
         $seasonTeam = $this->seasonTeamFactory->create(
-            $seasonTeamCreatable,
+            $object,
             SeasonTeam::class
         );
 

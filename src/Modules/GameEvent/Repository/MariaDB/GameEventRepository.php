@@ -28,12 +28,16 @@ class GameEventRepository extends ServiceEntityRepository implements GameEventRe
         parent::__construct($registry, GameEvent::class);
     }
 
-    public function create(
-        GameEventCreatableInterface $gameEventCreatable
-    ): GameEventInterface {
-        /** @var GameEvent $gameEvent */
+    public function create(object $object): GameEventInterface
+    {
+        if (!$object instanceof GameEventCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . GameEventCreatableInterface::class
+            );
+        }
+
         $gameEvent = $this->gameEventFactory->create(
-            $gameEventCreatable,
+            $object,
             GameEvent::class
         );
 

@@ -31,12 +31,16 @@ class SeasonRepository extends DocumentRepository implements SeasonRepositoryInt
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        SeasonCreatableInterface $seasonCreatable
-    ): SeasonInterface {
-        /** @var Season $season */
+    public function create(object $object): SeasonInterface
+    {
+        if (!$object instanceof SeasonCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . SeasonCreatableInterface::class
+            );
+        }
+
         $season = $this->seasonFactory->create(
-            $seasonCreatable,
+            $object,
             Season::class
         );
 

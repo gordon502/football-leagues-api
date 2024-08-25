@@ -2,11 +2,10 @@
 
 namespace App\Modules\Season\Repository;
 
-use App\Common\Repository\DeletableByIdInterface;
-use App\Common\Repository\FindableByIdInterface;
+use App\Common\Repository\HybridModelRepositoryInterface;
 use App\Modules\Season\Model\SeasonInterface;
 
-interface SeasonRepositoryInterface extends FindableByIdInterface, DeletableByIdInterface
+interface SeasonRepositoryInterface extends HybridModelRepositoryInterface
 {
     public function findById(string $id): ?SeasonInterface;
 }

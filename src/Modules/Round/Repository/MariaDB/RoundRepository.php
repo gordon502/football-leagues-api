@@ -28,12 +28,16 @@ class RoundRepository extends ServiceEntityRepository implements RoundRepository
         parent::__construct($registry, Round::class);
     }
 
-    public function create(
-        RoundCreatableInterface $roundCreatable
-    ): RoundInterface {
-        /** @var Round $round */
+    public function create(object $object): RoundInterface
+    {
+        if (!$object instanceof RoundCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . RoundCreatableInterface::class
+            );
+        }
+
         $round = $this->roundFactory->create(
-            $roundCreatable,
+            $object,
             Round::class
         );
 

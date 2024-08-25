@@ -28,12 +28,16 @@ class TeamRepository extends ServiceEntityRepository implements TeamRepositoryIn
         parent::__construct($registry, Team::class);
     }
 
-    public function create(
-        TeamCreatableInterface $teamCreatable
-    ): TeamInterface {
-        /** @var Team $team */
+    public function create(object $object): TeamInterface
+    {
+        if (!$object instanceof TeamCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . TeamCreatableInterface::class
+            );
+        }
+
         $team = $this->teamFactory->create(
-            $teamCreatable,
+            $object,
             Team::class
         );
 

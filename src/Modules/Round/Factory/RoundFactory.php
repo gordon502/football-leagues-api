@@ -3,7 +3,7 @@
 namespace App\Modules\Round\Factory;
 
 use App\Common\Repository\Exception\RelatedEntityNotFoundException;
-use App\Modules\Round\Model\RoundCreatableInterface;
+use App\Modules\Round\Model\roundCreatableInterface;
 use App\Modules\Round\Model\RoundInterface;
 use App\Modules\Season\Repository\SeasonRepositoryInterface;
 use DateTime;
@@ -21,7 +21,7 @@ readonly class RoundFactory implements RoundFactoryInterface
     }
 
     public function create(
-        RoundCreatableInterface $roundCreatable,
+        roundCreatableInterface $roundCreatable,
         string $modelClass
     ): RoundInterface {
         $reflection = new ReflectionClass($modelClass);

@@ -5,7 +5,7 @@ namespace App\Common\Repository\MariaDB;
 use App\Common\Dto\DtoPropertyRelatedToEntity;
 use App\Common\Dto\NotIncludedInBody;
 use App\Common\Repository\Exception\RelatedEntityNotFoundException;
-use App\Common\Repository\FindableByIdInterface;
+use App\Common\Repository\HybridModelRepositoryInterface;
 use App\Modules\User\Model\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -50,7 +50,7 @@ trait UpdateOneTrait
             $entityClass = preg_replace('/Interface$/', '', $interface);
             $entityClass = $namespaceParts . '\\MariaDB\\' . $entityClass;
 
-            /** @var FindableByIdInterface $repository */
+            /** @var HybridModelRepositoryInterface $repository */
             $repository = $this->getEntityManager()->getRepository($entityClass);
 
             $propertyValue = $property->getValue($updatable);

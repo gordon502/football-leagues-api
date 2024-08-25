@@ -2,9 +2,10 @@
 
 namespace App\Modules\Team\Repository;
 
-use App\Common\Repository\DeletableByIdInterface;
-use App\Common\Repository\FindableByIdInterface;
+use App\Common\Repository\HybridModelRepositoryInterface;
+use App\Modules\Team\Model\TeamInterface;
 
-interface TeamRepositoryInterface extends FindableByIdInterface, DeletableByIdInterface
+interface TeamRepositoryInterface extends HybridModelRepositoryInterface
 {
+    public function findById(string $id): ?TeamInterface;
 }

@@ -28,12 +28,16 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
         parent::__construct($registry, League::class);
     }
 
-    public function create(
-        LeagueCreatableInterface $leagueCreatable
-    ): LeagueInterface {
-        /** @var League $league */
+    public function create(object $object): LeagueInterface
+    {
+        if (!$object instanceof LeagueCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . LeagueCreatableInterface::class
+            );
+        }
+
         $league = $this->leagueFactory->create(
-            $leagueCreatable,
+            $object,
             League::class
         );
 

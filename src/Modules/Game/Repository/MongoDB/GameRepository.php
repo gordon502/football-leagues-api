@@ -31,12 +31,16 @@ class GameRepository extends DocumentRepository implements GameRepositoryInterfa
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        GameCreatableInterface $gameCreatable
-    ): GameInterface {
-        /** @var Game $game */
+    public function create(object $object): GameInterface
+    {
+        if (!$object instanceof GameCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . GameCreatableInterface::class
+            );
+        }
+
         $game = $this->gameFactory->create(
-            $gameCreatable,
+            $object,
             Game::class
         );
 

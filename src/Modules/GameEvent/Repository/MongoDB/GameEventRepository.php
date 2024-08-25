@@ -31,12 +31,16 @@ class GameEventRepository extends DocumentRepository implements GameEventReposit
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        GameEventCreatableInterface $gameEventCreatable
-    ): GameEventInterface {
-        /** @var GameEventInterface $gameEvent */
+    public function create(object $object): GameEventInterface
+    {
+        if (!$object instanceof GameEventCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . GameEventCreatableInterface::class
+            );
+        }
+
         $gameEvent = $this->gameEventFactory->create(
-            $gameEventCreatable,
+            $object,
             GameEvent::class
         );
 

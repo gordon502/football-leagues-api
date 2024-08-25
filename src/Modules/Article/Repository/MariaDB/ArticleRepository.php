@@ -28,12 +28,17 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
         parent::__construct($registry, Article::class);
     }
 
-    public function create(
-        ArticleCreatableInterface $articleCreatable
-    ): ArticleInterface {
+    public function create(object $object): ArticleInterface
+    {
+        if (!$object instanceof ArticleCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . ArticleCreatableInterface::class
+            );
+        }
+
         /** @var Article $article */
         $article = $this->articleFactory->create(
-            $articleCreatable,
+            $object,
             Article::class
         );
 

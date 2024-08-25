@@ -31,12 +31,16 @@ class SeasonTeamRepository extends DocumentRepository implements SeasonTeamRepos
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(
-        SeasonTeamCreatableInterface $seasonCreatable
-    ): SeasonTeamInterface {
-        /** @var SeasonTeam $seasonTeam */
+    public function create(object $object): SeasonTeamInterface
+    {
+        if (!$object instanceof SeasonTeamCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . SeasonTeamCreatableInterface::class
+            );
+        }
+
         $seasonTeam = $this->seasonTeamFactory->create(
-            $seasonCreatable,
+            $object,
             SeasonTeam::class
         );
 

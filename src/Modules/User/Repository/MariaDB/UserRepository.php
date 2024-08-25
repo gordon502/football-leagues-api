@@ -32,10 +32,15 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         parent::__construct($registry, User::class);
     }
 
-    public function create(UserCreatableInterface $userCreatable): UserInterface
+    public function create(object $object): UserInterface
     {
-        /** @var User $user */
-        $user = $this->userFactory->create($userCreatable, User::class);
+        if (!$object instanceof UserCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . UserCreatableInterface::class
+            );
+        }
+
+        $user = $this->userFactory->create($object, User::class);
 
         $em = $this->getEntityManager();
         $em->persist($user);

@@ -37,10 +37,15 @@ class UserRepository extends DocumentRepository implements UserRepositoryInterfa
         parent::__construct($dm, $uow, $classMetadata);
     }
 
-    public function create(UserCreatableInterface $userCreatable): UserInterface
+    public function create(object $object): UserInterface
     {
-        /** @var User $user */
-        $user = $this->userFactory->create($userCreatable, User::class);
+        if (!$object instanceof UserCreatableInterface) {
+            throw new \InvalidArgumentException(
+                'Argument 1 must be an instance of ' . UserCreatableInterface::class
+            );
+        }
+
+        $user = $this->userFactory->create($object, User::class);
 
         $this->getDocumentManager()->persist($user);
         $this->getDocumentManager()->flush();
