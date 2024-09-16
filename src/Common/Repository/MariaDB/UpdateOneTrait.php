@@ -24,6 +24,10 @@ trait UpdateOneTrait
 {
     public function updateOne(string|object $idOrObject, object $updatable, bool $transactional = false): object|false
     {
+        if ($transactional) {
+            $this->getEntityManager()->beginTransaction();
+        }
+
         $extractRelatedEntities = function (
             ReflectionClass $reflection,
             ReflectionProperty $property
@@ -145,5 +149,9 @@ trait UpdateOneTrait
     public function flushUpdateOne(): void
     {
         $this->getEntityManager()->flush();
+
+        if ($this->getEntityManager()->getConnection()->isTransactionActive()) {
+            $this->getEntityManager()->commit();
+        }
     }
 }
