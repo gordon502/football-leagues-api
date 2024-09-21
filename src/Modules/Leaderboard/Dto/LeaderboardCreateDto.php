@@ -319,7 +319,7 @@ class LeaderboardCreateDto implements LeaderboardCreatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isPromotedToHigherDivision(): bool|null
     {
@@ -336,7 +336,7 @@ class LeaderboardCreateDto implements LeaderboardCreatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isEligibleForPromotionBargaining(): bool|null
     {
@@ -353,7 +353,7 @@ class LeaderboardCreateDto implements LeaderboardCreatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isEligibleForRetentionBargaining(): bool|null
     {
@@ -370,7 +370,7 @@ class LeaderboardCreateDto implements LeaderboardCreatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isRelegatedToLowerDivision(): bool|null
     {
