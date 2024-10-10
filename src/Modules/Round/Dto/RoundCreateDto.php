@@ -4,11 +4,11 @@ namespace App\Modules\Round\Dto;
 
 use App\Common\OAAttributes\OARoleBasedProperty;
 use App\Common\Serialization\RoleSerializationGroup;
-use App\Modules\Round\Model\roundCreatableInterface;
+use App\Modules\Round\Model\RoundCreatableInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class RoundCreateDto implements roundCreatableInterface
+class RoundCreateDto implements RoundCreatableInterface
 {
     private int|null $number;
     private string|null $standardStartDate;
