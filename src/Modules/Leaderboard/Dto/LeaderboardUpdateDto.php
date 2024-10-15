@@ -273,7 +273,7 @@ readonly class LeaderboardUpdateDto implements LeaderboardUpdatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isPromotedToHigherDivision(): bool|null
     {
@@ -290,7 +290,7 @@ readonly class LeaderboardUpdateDto implements LeaderboardUpdatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isEligibleForPromotionBargaining(): bool|null
     {
@@ -307,7 +307,7 @@ readonly class LeaderboardUpdateDto implements LeaderboardUpdatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isEligibleForRetentionBargaining(): bool|null
     {
@@ -324,7 +324,7 @@ readonly class LeaderboardUpdateDto implements LeaderboardUpdatableInterface
         RoleSerializationGroup::MODERATOR,
         RoleSerializationGroup::EDITOR
     ])]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Type('bool')]
     public function isRelegatedToLowerDivision(): bool|null
     {
